@@ -15,8 +15,8 @@
             </div>
 
             <div class="col-md-6">
-                <label class="form-label">Capacidad</label>
-                <input type="number" ng-model="nuevoLugar.capacidad" class="form-control" required>
+                <label class="form-label">ubicacion</label>
+                <input type="text" ng-model="nuevoLugar.ubicacion" class="form-control" required>
             </div>
 
             <div class="col-12 text-end">
@@ -32,17 +32,16 @@
                 <th>#</th>
                 <th>Nombre</th>
                 <th>Dirección</th>
-                <th>Capacidad</th>
+                <th>ubicacion</th>
                 <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="l in lugares">
-                <td>{{ $index + 1 }}</td>
-                <td>{{ l.nombre }}</td>
-                <td>{{ l.direccion }}</td>
-                <td>{{ l.capacidad }}</td>
-                <td>
+           <tr ng-repeat="l in lugares">
+               <td>{{ l.idLugar }}</td>
+               <td>{{ l.nombreLugar }}</td>
+               <td>{{ l.direccion }}</td>
+               <td>{{ l.ubicacion }}</td>
                     <button class="btn btn-danger btn-sm" ng-click="eliminar(l.id)">
                         Eliminar
                     </button>
