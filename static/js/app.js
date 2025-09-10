@@ -87,10 +87,13 @@ app.controller("eventosCtrl", function ($scope, $http) {
 app.controller("categoriasCtrl", function ($scope, $http) {
     $scope.categorias = []
 
-    // Obtener lista de categorías
-    $http.get("/categorias").then(function (res) {
-        $scope.categorias = res.data
-    })
+      // Obtener lista de categorías
+    $scope.listar = function () {
+        $http.get("/categorias/lista").then(function (res) {
+            $scope.categorias = res.data
+        })
+    }
+    $scope.listar()
 
     // Guardar categoría
     $scope.guardar = function (categoria) {
@@ -168,5 +171,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     activeMenuOption(location.hash)
 })
+
 
 
