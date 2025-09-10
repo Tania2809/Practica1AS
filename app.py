@@ -158,24 +158,22 @@ def guardarCategoria():
     if not con.is_connected():
         con.reconnect()
         
-        nombre      = request.form["nombreCategoria"]
-        descripcion = request.form["descripcion"]  
+    nombre      = request.form["nombreCategoria"]
+    descripcion = request.form["descripcion"]  
 
-        cursor = con.cursor(dictionary=True)
-        
-        sql = """
-        INSERT INTO categorias (nombre, descripcion)
-        VALUES (%s, %s)
-        """
-        val = (nombre, descripcion)
-        
-        cursor.execute(sql, val)
-        con.commit()
-        con.close()
+    cursor = con.cursor(dictionary=True)
+    
+    sql = """
+    INSERT INTO categorias (nombreCategoria, descripcion)
+    VALUES (%s, %s)
+    """
+    val = (nombre, descripcion)
+    
+    cursor.execute(sql, val)
+    con.commit()
+    con.close()
 
     return make_response(jsonify({}))
-
-
 
     
 
@@ -224,9 +222,9 @@ def buscarCategorias():
 
     cursor = con.cursor(dictionary=True)
     sql = """
-    SELECT idCategoria, nombre
+    SELECT idCategoria, nombreCategoria, descripcion
     FROM categorias
-    WHERE nombre LIKE %s
+    WHERE nombreCategoria LIKE %s
     ORDER BY idCategoria DESC
     LIMIT 10 OFFSET 0
     """
@@ -395,3 +393,4 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
