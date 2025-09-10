@@ -1,55 +1,44 @@
-<!-- Formulario para nueva categoría -->
-<form method="POST" action="/categorias/agregar" class="mb-4">
-    <div class="row">
-        <div class="col-md-4">
-            <input required type="text" name="nombreCategoria" class="form-control" placeholder="Nombre de la categoría">
+<!-- categorias.html -->
+<div ng-controller="categoriasCtrl" ng-init="init()">
+    <!-- Formulario para nueva categoría -->
+    <form ng-submit="guardar()" class="mb-4">
+        <div class="row">
+            <div class="col-md-4">
+                <input required type="text" ng-model="nuevaCategoria.nombreCategoria" class="form-control" placeholder="Nombre de la categoría">
+            </div>
+            <div class="col-md-6">
+                <input required type="text" ng-model="nuevaCategoria.descripcion" class="form-control" placeholder="Descripción">
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-success w-100" type="submit">Registrar</button>
+            </div>
         </div>
-        <div class="col-md-6">
-            <input required type="text" name="descripcion" class="form-control" placeholder="Descripción">
-        </div>
-        <div class="col-md-2">
-            <button class="btn btn-success w-100" type="submit">Registrar</button>
-        </div>
+    </form>
+
+    <br>
+
+    <div class="table-responsive">
+        <table class="table table-sm">
+            <thead class="table-active">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="categoria in categorias">
+                    <td>{{ categoria.idCategoria }}</td>
+                    <td>{{ categoria.nombreCategoria }}</td>
+                    <td>{{ categoria.descripcion }}</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" ng-click="eliminar(categoria.idCategoria)">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-</form>
-
-<br>
-
-<div class="table-responsive">
-    <table class="table table-sm">
-        <thead class="table-active">
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for categoria in categorias %}
-            <tr>
-                <td>{{ categoria.idCategoria }}</td>
-                <td>{{ categoria.nombreCategoria }}</td>
-                <td>{{ categoria.descripcion }}</td>
-                <td>
-                    <button class="btn btn-danger btn-sm" onclick="eliminarCategoria({{ categoria.idCategoria }})">
-                        Eliminar
-                    </button>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 </div>
-
-<script>
-function eliminarCategoria(id) {
-    if (confirm('¿Estás seguro de que quieres eliminar esta categoría?')) {
-        // Usando AngularJS para eliminar
-        const scope = angular.element(document.querySelector('[ng-controller="categoriasCtrl"]')).scope();
-        scope.$apply(function() {
-            scope.eliminar(id);
-        });
-    }
-}
-</script>
