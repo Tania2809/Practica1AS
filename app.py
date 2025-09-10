@@ -121,61 +121,303 @@ def categorias():
     return render_template("categorias.html", categorias=registros)
 
 
-
-
-
-@app.route("/productos")
-def productos():
+@app.route("/evento", methods=["POST"])
+def guardarEvento():
     if not con.is_connected():
         con.reconnect()
 
+    idEvento = request.form.get("idEvento")
+    nombre   = request.form["nombre"]
+    fecha    = request.form["fecha"]
+    hora     = request.form["hora"]
+    idLugar    = request.form["idLugar"]
+    idCliente  = request.form["idCliente"]
+    idCategoria= request.form["idCategoria"]
+
+    fechaHoraInicio = f"{fecha} {hora}"
+
+    cursor = con.cursor()
+
+    if idEvento:
+        sql = """
+        UPDATE eventos
+        SET descripcionEvento = %s,
+            fechaInicio      = %s,
+            idLugar          = %s,
+            idCliente        = %s,
+            idCategoria      = %s
+        WHERE idEvento = %s
+        """
+        val = (nombre, fechaHoraInicio, idLugar, idCliente, idCategoria, idEvento)
+    else:
+        sql = """
+        INSERT INTO eventos (descripcionEvento, fechaInicio, idLugar, idCliente, idCategoria)
+        VALUES (%s, %s, %s, %s, %s)
+        """
+        val = (nombre, fechaHoraInicio, idLugar, idCliente, idCategoria)
+
+    cursor.execute(sql, val)
+    con.commit()
+    con.close()
+
+    return make_response(jsonify({}))
+
+
+@app.route("/lugar", methods=["POST"])
+def guardarLugar():
+    if not con.is_connected():
+        con.reconnect()
+
+    idLugar = request.form.get("idLugar")
+    nombre  = request.form["nombre"]
+
+    cursor = con.cursor()
+
+    if idLugar:
+        sql = """
+        UPDATE lugares
+        SET nombre = %s
+        WHERE idLugar = %s
+        """
+        val = (nombre, idLugar)
+    else:
+        sql = """
+        INSERT INTO lugares (nombre)
+        VALUES (%s)
+        """
+        val = (nombre,)
+
+    cursor.execute(sql, val)
+    con.commit()
+    con.close()
+
+    return make_response(jsonify({}))
+
+
+@app.route("/cliente", methods=["POST"])
+def guardarCliente():
+    if not con.is_connected():
+        con.reconnect()
+
+    idCliente = request.form.get("idCliente")
+    nombre    = request.form["nombre"]
+    correo    = request.form.get("correo")  # si tienes este campo
+    telefono  = request.form.get("telefono") # si existe
+
+    cursor = con.cursor()
+
+    if idCliente:
+        sql = """
+        UPDATE clientes
+        SET nombre = %s,
+            correo = %s,
+            telefono = %s
+        WHERE idCliente = %s
+        """
+        val = (nombre, correo, telefono, idCliente)
+    else:
+        sql = """
+        INSERT INTO clientes (nombre, correo, telefono)
+        VALUES (%s, %s, %s)
+        """
+        val = (nombre, correo, telefono)
+
+    cursor.execute(sql, val)
+    con.commit()
+    con.close()
+
+    return make_response(jsonify({}))
+
+
+@app.route("/categoria", methods=["POST"])
+def guardarCategoria():
+    if not con.is_connected():
+        con.reconnect()
+
+    idCategoria = request.form.get("idCategoria")
+    nombre      = request.form["nombre"]
+
+    cursor = con.cursor()
+
+    if idCategoria:
+        sql = """
+        UPDATE categorias
+        SET nombre = %s
+        WHERE idCategoria = %s
+        """
+        val = (nombre, idCategoria)
+    else:
+        sql = """
+        INSERT INTO categorias (nombre)
+        VALUES (%s)
+        """
+        val = (nombre,)
+
+    cursor.execute(sql, val)
+    con.commit()
+    con.close()
+
+    return make_response(jsonify({}))
+
+
+@app.route("/eventos/buscar", methods=["GET"])
+def buscarEventos():
+    if not con.is_connected():
+        con.reconnect()
+
+    args     = request.args
+    busqueda = args["busqueda"]
+    busqueda = f"%{busqueda}%"
+
     cursor = con.cursor(dictionary=True)
-    sql    = """
-    SELECT Id_Producto,
-           Nombre_Producto,
-           Precio,
-           Existencias
-
-    FROM productos
-
-    ORDER BY Id_Producto DESC
-
+    sql = """
+    SELECT e.idEvento, e.descripcionEvento AS nombre,
+           DATE(e.fechaInicio) AS fecha,
+           TIME(e.fechaInicio) AS hora,
+           l.nombre AS lugar,
+           c.nombre AS cliente,
+           cat.nombre AS categoria
+    FROM eventos e
+    LEFT JOIN lugares l ON e.idLugar = l.idLugar
+    LEFT JOIN clientes c ON e.idCliente = c.idCliente
+    LEFT JOIN categorias cat ON e.idCategoria = cat.idCategoria
+    WHERE e.descripcionEvento LIKE %s
+       OR l.nombre LIKE %s
+       OR c.nombre LIKE %s
+       OR cat.nombre LIKE %s
+    ORDER BY e.idEvento DESC
     LIMIT 10 OFFSET 0
     """
+    val = (busqueda, busqueda, busqueda, busqueda)
 
-    cursor.execute(sql)
-    registros = cursor.fetchall()
+    try:
+        cursor.execute(sql, val)
+        registros = cursor.fetchall()
+    except mysql.connector.errors.ProgrammingError as error:
+        print(f"Ocurrió un error en MySQL: {error}")
+        registros = []
+    finally:
+        con.close()
 
-    # Si manejas fechas y horas
-    """
-    for registro in registros:
-        fecha_hora = registro["Fecha_Hora"]
+    return make_response(jsonify(registros))
 
-        registro["Fecha_Hora"] = fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
-        registro["Fecha"]      = fecha_hora.strftime("%d/%m/%Y")
-        registro["Hora"]       = fecha_hora.strftime("%H:%M:%S")
-    """
 
-    return render_template("productos.html", productos=registros)
-
-@app.route("/productos/ingredientes/<int:id>")
-def productos2(id):
+@app.route("/lugares/buscar", methods=["GET"])
+def buscarLugares():
     if not con.is_connected():
         con.reconnect()
 
+    args     = request.args
+    busqueda = args["busqueda"]
+    busqueda = f"%{busqueda}%"
+
     cursor = con.cursor(dictionary=True)
-    sql    = """
-    SELECT productos.Nombre_Producto, ingredientes.*, productos_ingredientes.Cantidad FROM productos_ingredientes
-    INNER JOIN productos ON productos.Id_Producto = productos_ingredientes.Id_Producto
-    INNER JOIN ingredientes ON ingredientes.Id_Ingrediente = productos_ingredientes.Id_Ingrediente
-    WHERE productos_ingredientes.Id_Producto = %s
-    ORDER BY productos.Nombre_Producto
+    sql = """
+    SELECT idLugar, nombre
+    FROM lugares
+    WHERE nombre LIKE %s
+    ORDER BY idLugar DESC
+    LIMIT 10 OFFSET 0
     """
+    val = (busqueda,)
 
-    cursor.execute(sql, (id, ))
-    registros = cursor.fetchall()
+    try:
+        cursor.execute(sql, val)
+        registros = cursor.fetchall()
+    except mysql.connector.errors.ProgrammingError as error:
+        print(f"Ocurrió un error en MySQL: {error}")
+        registros = []
+    finally:
+        con.close()
 
-    return render_template("modal.html", productosIngredientes=registros)
+    return make_response(jsonify(registros))
+    
+
+@app.route("/clientes/buscar", methods=["GET"])
+def buscarClientes():
+    if not con.is_connected():
+        con.reconnect()
+
+    args     = request.args
+    busqueda = args["busqueda"]
+    busqueda = f"%{busqueda}%"
+
+    cursor = con.cursor(dictionary=True)
+    sql = """
+    SELECT idCliente, nombre, correo, telefono
+    FROM clientes
+    WHERE nombre LIKE %s
+       OR correo LIKE %s
+       OR telefono LIKE %s
+    ORDER BY idCliente DESC
+    LIMIT 10 OFFSET 0
+    """
+    val = (busqueda, busqueda, busqueda)
+
+    try:
+        cursor.execute(sql, val)
+        registros = cursor.fetchall()
+    except mysql.connector.errors.ProgrammingError as error:
+        print(f"Ocurrió un error en MySQL: {error}")
+        registros = []
+    finally:
+        con.close()
+
+    return make_response(jsonify(registros))
+
+
+
+@app.route("/categorias/buscar", methods=["GET"])
+def buscarCategorias():
+    if not con.is_connected():
+        con.reconnect()
+        
+    args     = request.args
+    busqueda = args["busqueda"]
+    busqueda = f"%{busqueda}%"
+
+    cursor = con.cursor(dictionary=True)
+    sql = """
+    SELECT idCategoria, nombre
+    FROM categorias
+    WHERE nombre LIKE %s
+    ORDER BY idCategoria DESC
+    LIMIT 10 OFFSET 0
+    """
+    val = (busqueda,)
+
+    try:
+        cursor.execute(sql, val)
+        registros = cursor.fetchall()
+    except mysql.connector.errors.ProgrammingError as error:
+        print(f"Ocurrió un error en MySQL: {error}")
+        registros = []
+    finally:
+        con.close()
+
+    return make_response(jsonify(registros))
+
+
+@app.route("/categoria/eliminar", methods=["POST"])
+def eliminarCategoria():
+    if not con.is_connected():
+        con.reconnect()
+
+    idCategoria = request.form["idCategoria"]
+
+    cursor = con.cursor()
+    sql = "DELETE FROM categorias WHERE idCategoria = %s"
+    val = (idCategoria,)
+
+    cursor.execute(sql, val)
+    con.commit()
+    con.close()
+
+    return make_response(jsonify({}))
+
+
+
+
 
 @app.route("/productos/buscar", methods=["GET"])
 def buscarProductos():
@@ -307,6 +549,7 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
 
