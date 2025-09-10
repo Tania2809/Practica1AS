@@ -17,8 +17,7 @@ import pytz
 
 from flask_cors import CORS, cross_origin
 
-def get_connection():
-    return mysql.connector.connect(
+    con = mysql.connector.connect(
         host="185.232.14.52",
         database="u760464709_23005102_bd",
         user="u760464709_23005102_usr",
@@ -48,205 +47,78 @@ def app2():
     return "<h5>Hola, soy la view app</h5>"
 
 
+# EVENTOS
+@app.route("/eventos")
+def eventos():
+    if not con.is_connected():
+        con.reconnect()
 
-# ================================
-# CRUD - CATEGORIAS
-# ================================
-@app.route("/categorias", methods=["GET"])
-def get_categorias():
-    con = get_connection()
     cursor = con.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM categorias ORDER BY idCategoria DESC")
-    registros = cursor.fetchall()
-    con.close()
-    return make_response(jsonify(registros))
-
-@app.route("/categoria", methods=["POST"])
-def guardar_categoria():
-    con = get_connection()
-    cursor = con.cursor()
-
-    idCategoria = request.form.get("id")
-    nombre = request.form["nombre"]
-    descripcion = request.form.get("descripcion")
-
-    if idCategoria:  # Update
-        sql = "UPDATE categorias SET nombreCategoria=%s, descripcion=%s WHERE idCategoria=%s"
-        val = (nombre, descripcion, idCategoria)
-    else:  # Insert
-        sql = "INSERT INTO categorias (nombreCategoria, descripcion) VALUES (%s, %s)"
-        val = (nombre, descripcion)
-
-    cursor.execute(sql, val)
-    con.commit()
-    con.close()
-    return make_response(jsonify({"success": True}))
-
-@app.route("/categoria/eliminar", methods=["POST"])
-def eliminar_categoria():
-    con = get_connection()
-    cursor = con.cursor()
-    idCategoria = request.form["id"]
-    cursor.execute("DELETE FROM categorias WHERE idCategoria=%s", (idCategoria,))
-    con.commit()
-    con.close()
-    return make_response(jsonify({"success": True}))
-
-# ================================
-# CRUD - LUGARES
-# ================================
-@app.route("/lugares", methods=["GET"])
-def get_lugares():
-    con = get_connection()
-    cursor = con.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM lugares ORDER BY idLugar DESC")
-    registros = cursor.fetchall()
-    con.close()
-    return make_response(jsonify(registros))
-
-@app.route("/lugar", methods=["POST"])
-def guardar_lugar():
-    con = get_connection()
-    cursor = con.cursor()
-    idLugar = request.form.get("id")
-    nombre = request.form["nombre"]
-    direccion = request.form["direccion"]
-    ubicacion = request.form["ubicacion"]
-
-    if idLugar:
-        sql = """UPDATE lugares SET nombreLugar=%s, direccion=%s, ubicacion=%s WHERE idLugar=%s"""
-        val = (nombre, direccion, ubicacion, idLugar)
-    else:
-        sql = """INSERT INTO lugares (nombreLugar, direccion, ubicacion) VALUES (%s, %s, %s)"""
-        val = (nombre, direccion, ubicacion)
-
-    cursor.execute(sql, val)
-    con.commit()
-    con.close()
-    return make_response(jsonify({"success": True}))
-
-@app.route("/lugar/eliminar", methods=["POST"])
-def eliminar_lugar():
-    con = get_connection()
-    cursor = con.cursor()
-    idLugar = request.form["id"]
-    cursor.execute("DELETE FROM lugares WHERE idLugar=%s", (idLugar,))
-    con.commit()
-    con.close()
-    return make_response(jsonify({"success": True}))
-
-# ================================
-# CRUD - CLIENTES
-# ================================
-@app.route("/clientes", methods=["GET"])
-def get_clientes():
-    con = get_connection()
-    cursor = con.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM clientes ORDER BY idCliente DESC")
-    registros = cursor.fetchall()
-    con.close()
-    return make_response(jsonify(registros))
-
-@app.route("/cliente", methods=["POST"])
-def guardar_cliente():
-    con = get_connection()
-    cursor = con.cursor()
-    idCliente = request.form.get("id")
-    nombre = request.form["nombre"]
-    telefono = request.form["telefono"]
-    correo = request.form["correo"]
-
-    if idCliente:
-        sql = """UPDATE clientes SET nombreCliente=%s, telefono=%s, correoElectronico=%s WHERE idCliente=%s"""
-        val = (nombre, telefono, correo, idCliente)
-    else:
-        sql = """INSERT INTO clientes (nombreCliente, telefono, correoElectronico) VALUES (%s, %s, %s)"""
-        val = (nombre, telefono, correo)
-
-    cursor.execute(sql, val)
-    con.commit()
-    con.close()
-    return make_response(jsonify({"success": True}))
-
-@app.route("/cliente/eliminar", methods=["POST"])
-def eliminar_cliente():
-    con = get_connection()
-    cursor = con.cursor()
-    idCliente = request.form["id"]
-    cursor.execute("DELETE FROM clientes WHERE idCliente=%s", (idCliente,))
-    con.commit()
-    con.close()
-    return make_response(jsonify({"success": True}))
-
-# ================================
-# CRUD - EVENTOS
-# ================================
-@app.route("/eventos", methods=["GET"])
-def get_eventos():
-    con = get_connection()
-    cursor = con.cursor(dictionary=True)
-    sql = """
-    SELECT e.*, l.nombreLugar, c.nombreCliente, cat.nombreCategoria
+    sql    = """
+   SELECT e.idEvento, e.descripcionEvento AS nombre,
+           DATE(e.fechaInicio) AS fecha,
+           TIME(e.fechaInicio) AS hora,
+           l.nombre AS lugar,
+           c.nombre AS cliente,
+           cat.nombre AS categoria
     FROM eventos e
     LEFT JOIN lugares l ON e.idLugar = l.idLugar
     LEFT JOIN clientes c ON e.idCliente = c.idCliente
     LEFT JOIN categorias cat ON e.idCategoria = cat.idCategoria
-    ORDER BY e.idEvento DESC
     """
     cursor.execute(sql)
     registros = cursor.fetchall()
     con.close()
-    return make_response(jsonify(registros))
+    return render_template("eventos.html", eventos=registros)
 
-@app.route("/evento", methods=["POST"])
-def guardar_evento():
-    con = get_connection()
-    cursor = con.cursor()
+#lugares
+@app.route("/lugares")
+def lugares():
+    if not con.is_connected():
+        con.reconnect()
 
-    idEvento = request.form.get("id")
-    idLugar = request.form["idLugar"]
-    idCliente = request.form["idCliente"]
-    idCategoria = request.form["idCategoria"]
-    descripcionUbicacion = request.form["descripcionUbicacion"]
-    descripcionEvento = request.form["descripcionEvento"]
-    fechaInicio = request.form["fechaInicio"]
-    fechaFin = request.form["fechaFin"]
-    estado = request.form["estado"]
+    cursor = con.cursor(dictionary=True)
+    sql    = """
+    SELECT idLugar, nombre FROM lugares
+    """
 
-    if idEvento:
-        sql = """
-        UPDATE eventos 
-        SET idLugar=%s, idCliente=%s, idCategoria=%s, descripcionUbicacion=%s,
-            descripcionEvento=%s, fechaInicio=%s, fechaFin=%s, estado=%s
-        WHERE idEvento=%s
-        """
-        val = (idLugar, idCliente, idCategoria, descripcionUbicacion, descripcionEvento, fechaInicio, fechaFin, estado, idEvento)
-    else:
-        sql = """
-        INSERT INTO eventos (idLugar, idCliente, idCategoria, descripcionUbicacion, descripcionEvento, fechaInicio, fechaFin, estado)
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
-        """
-        val = (idLugar, idCliente, idCategoria, descripcionUbicacion, descripcionEvento, fechaInicio, fechaFin, estado)
+    cursor.execute(sql)
+    registros = cursor.fetchall()
 
-    cursor.execute(sql, val)
-    con.commit()
-    con.close()
-    return make_response(jsonify({"success": True}))
-
-@app.route("/evento/eliminar", methods=["POST"])
-def eliminar_evento():
-    con = get_connection()
-    cursor = con.cursor()
-    idEvento = request.form["id"]
-    cursor.execute("DELETE FROM eventos WHERE idEvento=%s", (idEvento,))
-    con.commit()
-    con.close()
-    return make_response(jsonify({"success": True}))
+    return render_template("lugares.html", lugares=registros)
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+#clientes
+@app.route("/clientes")
+def clientes():
+    if not con.is_connected():
+        con.reconnect()
 
+    cursor = con.cursor(dictionary=True)
+    sql    = """
+    SELECT * FROM clientes
+    """
+
+    cursor.execute(sql)
+    registros = cursor.fetchall()
+
+    return render_template("clientes.html", clientes=registros)
+
+#categorias
+@app.route("/categorias")
+def categorias():
+    if not con.is_connected():
+        con.reconnect()
+
+    cursor = con.cursor(dictionary=True)
+    sql    = """
+    SELECT * FROM categorias
+    """
+
+    cursor.execute(sql)
+    registros = cursor.fetchall()
+
+    return render_template("categorias.html", categorias=registros)
 
 
 
@@ -435,6 +307,7 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
 
