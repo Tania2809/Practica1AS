@@ -111,18 +111,15 @@ def guardarCategoria():
     return make_response(jsonify({}))
     
 
-@app.route("/categorias")
+@app.route("/categorias", methods=["GET"])
+@app.route("/categories", methods=["GET"])
 def categorias():
-    # Renderiza la plantilla que contiene formulario y tabla
-    return render_template("categorias.html")
-
-@app.route("/categorias/lista")
-def categorias_lista():
     if not con.is_connected():
         con.reconnect()
 
     cursor = con.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM categorias")
+    sql = "SELECT * FROM categorias"
+    cursor.execute(sql)
     registros = cursor.fetchall()
     cursor.close()
     return jsonify(registros)
@@ -403,6 +400,7 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
 
