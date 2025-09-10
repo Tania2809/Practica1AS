@@ -1,3 +1,4 @@
+static:
 function activeMenuOption(href) {
     $(".app-menu .nav-link")
     .removeClass("active")
@@ -85,54 +86,29 @@ app.controller("eventosCtrl", function ($scope, $http) {
 })
 
 app.controller("categoriasCtrl", function ($scope, $http) {
-  $scope.categorias = [];
-    $scope.nuevaCategoria = {};
-    
-    $scope.init = function() {
-        $scope.cargarCategorias();
-    };
+    $scope.categorias = []
 
-    // Cargar categorías desde API
-    $scope.cargarCategorias = function() {
-        $http.get("/api/categorias")
-        .then(function(response) {
-            $scope.categorias = response.data;
-        })
-        .catch(function(error) {
-            console.error("Error al cargar categorías:", error);
-            alert("Error al cargar las categorías");
-        });
-    };
+    // Obtener lista de categorías - corregí para usar $http en lugar de $
+    $http.get("/categorias").then(function (res) {
+        $scope.categorias = res.data
+    })
 
     // Guardar categoría
-    $scope.guardar = function() {
-        $http.post("/api/categorias/agregar", $scope.nuevaCategoria)
-        .then(function(response) {
-            alert(response.data.message);
-            $scope.nuevaCategoria = {}; // Limpiar formulario
-            $scope.cargarCategorias(); // Recargar lista
+    $scope.guardar = function (categoria) {
+        $http.post("/categorias/agregar", categoria).then(function () {
+            alert("Categoría guardada")
+            location.reload()
         })
-        .catch(function(error) {
-            console.error("Error:", error);
-            alert("Error al guardar la categoría");
-        });
-    };
+    }
 
     // Eliminar categoría
-    $scope.eliminar = function(id) {
-        if (confirm('¿Estás seguro de que quieres eliminar esta categoría?')) {
-            $http.post("/api/categoria/eliminar", {idCategoria: id})
-            .then(function(response) {
-                alert(response.data.message);
-                $scope.cargarCategorias(); // Recargar lista
-            })
-            .catch(function(error) {
-                console.error("Error:", error);
-                alert("Error al eliminar la categoría");
-            });
-        }
-    };
-});
+    $scope.eliminar = function (id) {
+        $http.post("/categoria/eliminar", {id: id}).then(function () {
+            alert("Categoría eliminada")
+            location.reload()
+        })
+    }
+})
 
 app.controller("clientesCtrl", function ($scope, $http) {
     $scope.clientes = []
@@ -183,9 +159,3 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     activeMenuOption(location.hash)
 })
-
-
-
-
-
-
