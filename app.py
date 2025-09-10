@@ -53,23 +53,36 @@ def eventos():
         con.reconnect()
 
     cursor = con.cursor(dictionary=True)
-    sql    = """
-    SELECT e.idEvento, e.descripcionEvento AS nombre,
-    DATE(e.fechaInicio) AS fecha,
-    TIME(e.fechaInicio) AS hora,
-    l.descripcionUbicacion AS lugar,
-    c.nombreCliente AS cliente,
-    cat.nombreCategoria AS categoria
-    FROM eventos e
-    LEFT JOIN lugares l ON e.idLugar = l.idLugar
-    LEFT JOIN clientes c ON e.idCliente = c.idCliente
-    LEFT JOIN categorias cat ON e.idCategoria = cat.idCategoria
-    """
-    cursor.execute(sql)
-    registros = cursor.fetchall()
+
+    # Consulta principal de eventos
+    cursor.execute("""
+        SELECT idEvento, descripcionEvento, fechaInicio
+        FROM eventos
+    """)
+    eventos = cursor.fetchall()
+
+    # Consulta de lugares
+    cursor.execute("SELECT idLugar, descripcionUbicacion FROM lugares")
+    lugares = {l['idLugar']: l['descripcionUbicacion'] for l in cursor.fetchall()}
+
+    # Consulta de clientes
+    cursor.execute("SELECT idCliente, nombreCliente FROM clientes")
+    clientes = {c['idCliente']: c['nombreCliente'] for c in cursor.fetchall()}
+
+    # Consulta de categorías
+    cursor.execute("SELECT idCategoria, nombreCategoria FROM categorias")
+    categorias = {cat['idCategoria']: cat['nombreCategoria'] for cat in cursor.fetchall()}
+
+    # Enriquecer eventos con datos relacionados
+    for e in eventos:
+        e['fecha'] = str(e['fechaInicio'].date())
+        e['hora'] = str(e['fechaInicio'].time())
+        e['lugar'] = lugares.get(e.get('idLugar'), 'Sin lugar')
+        e['cliente'] = clientes.get(e.get('idCliente'), 'Sin cliente')
+        e['categoria'] = categorias.get(e.get('idCategoria'), 'Sin categoría')
+
     con.close()
-        
-    return render_template("eventos.html", eventos=registros)
+    return render_template("eventos.html", eventos=eventos)
 
 #lugares
 @app.route("/lugares")
@@ -550,6 +563,7 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
 
