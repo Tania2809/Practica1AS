@@ -1,46 +1,56 @@
 <div ng-controller="categoriasCtrl" class="container mt-4">
     <h2 class="mb-3">Gestión de Categorías</h2>
 
-    <!-- Formulario nueva categoría -->
+    <!-- Formulario para nueva categoría o editar existente -->
     <form ng-submit="guardar(nuevaCategoria)" class="card p-3 mb-4">
         <div class="row g-3">
-            <div class="col-md-8">
-                <label class="form-label">Nombre</label>
-                <input type="text" ng-model="nuevaCategoria.nombre" class="form-control" required>
+            <input type="hidden" ng-model="nuevaCategoria.idCategoria"> <!-- Para editar -->
+
+            <div class="col-md-6">
+                <label class="form-label">Nombre <span class="text-danger">*</span></label>
+                <input type="text" ng-model="nuevaCategoria.nombre" class="form-control" placeholder="Nombre de la categoría" required>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <label class="form-label">Descripción</label>
-                <input type="text" ng-model="nuevaCategoria.descripcion" class="form-control">
+                <input type="text" ng-model="nuevaCategoria.descripcion" class="form-control" placeholder="Descripción opcional">
             </div>
 
             <div class="col-12 text-end">
-                <button type="submit" class="btn btn-success">Guardar Categoría</button>
+                <button type="submit" class="btn btn-success">
+                    {{ nuevaCategoria.idCategoria ? "Actualizar Categoría" : "Guardar Categoría" }}
+                </button>
+                <button type="button" class="btn btn-secondary ms-2" ng-click="nuevaCategoria={}">Limpiar</button>
             </div>
         </div>
     </form>
 
     <!-- Tabla de categorías -->
-    <table class="table table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>#</th>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="cat in categorias">
-                <td>{{ $index + 1 }}</td>
-                <td>{{ cat.nombre }}</td>
-                <td>{{ cat.descripcion }}</td>
-                <td>
-                    <button class="btn btn-danger btn-sm" ng-click="eliminar(cat.id)">
-                        Eliminar
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="cat in categorias">
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ cat.nombre }}</td>
+                    <td>{{ cat.descripcion || "-" }}</td>
+                    <td class="text-center">
+                        <button class="btn btn-danger btn-sm" ng-click="eliminar(cat.idCategoria)">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+                <tr ng-if="categorias.length === 0">
+                    <td colspan="4" class="text-center">No hay categorías registradas.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
