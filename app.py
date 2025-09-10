@@ -105,6 +105,7 @@ def clientes():
 
 #categorias
 @app.route("/categorias")
+@app.route("/categories")
 def categorias():
     if not con.is_connected():
         con.reconnect()
@@ -548,6 +549,7 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
 
