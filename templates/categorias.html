@@ -28,6 +28,7 @@
                 </tr>
             </thead>
             <tbody>
+                {% for categoria in categorias %}
                 <tr ng-repeat="categoria in categorias">
                     <td>{{ categoria.idCategoria }}</td>
                     <td>{{ categoria.nombreCategoria }}</td>
@@ -36,6 +37,7 @@
                         <button class="btn btn-danger btn-sm" ng-click="eliminar(categoria.idCategoria)">Eliminar</button>
                     </td>
                 </tr>
+                {% endfor %}
                 <tr ng-if="categorias.length === 0">
                     <td colspan="4" class="text-center">No hay categorías registradas.</td>
                 </tr>
