@@ -17,7 +17,7 @@ app.config(function ($routeProvider, $locationProvider) {
         templateUrl: "/app",
         controller: "appCtrl"
     })
-     .when("/categorias", {
+    .when("/categorias", {
         templateUrl: "/categorias",
         controller: "categoriasCtrl"
     })
@@ -33,6 +33,7 @@ app.config(function ($routeProvider, $locationProvider) {
         templateUrl: "/eventos",
         controller: "eventosCtrl"
     })
+    // Eliminé la ruta de productos ya que no está definida en tus controladores
     .otherwise({
         redirectTo: "/"
     })
@@ -78,19 +79,8 @@ app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, 
 
 app.controller("appCtrl", function ($scope, $http) {
 })
-app.controller("productosCtrl", function ($scope, $http) {
-    $(document).on("click", ".btn-ingredientes", function (event) {
-        const id = $(this).data("id")
 
-        $.get(`/productos/ingredientes/${id}`, function (html) {
-            modal(html, "Ingredientes", [
-                {html: "Aceptar", class: "btn btn-secondary", fun: function (event) {
-                    closeModal()
-                }}
-            ])
-        })
-    })
-})
+// Eliminé el controlador productosCtrl ya que no tienes ruta para él
 app.controller("eventosCtrl", function ($scope, $http) {
     $scope.eventos = []
     $scope.lugares = []
@@ -98,10 +88,11 @@ app.controller("eventosCtrl", function ($scope, $http) {
     $scope.categorias = []
 
     function cargarDatos() {
-        $.get("/eventos/json").then(res => $scope.eventos = res.data);
-        $.get("/lugares/json").then(res => $scope.lugares = res.data);
-        $.get("/clientes/json").then(res => $scope.clientes = res.data);
-        $.get("/categorias/json").then(res => $scope.categorias = res.data);
+        // Corregí las URLs para que sean consistentes
+        $http.get("/eventos/json").then(res => $scope.eventos = res.data);
+        $http.get("/lugares/json").then(res => $scope.lugares = res.data);
+        $http.get("/clientes/json").then(res => $scope.clientes = res.data);
+        $http.get("/categorias/json").then(res => $scope.categorias = res.data);
     }
 
     cargarDatos();
@@ -113,14 +104,13 @@ app.controller("eventosCtrl", function ($scope, $http) {
             location.reload()
         })
     }
-
 })
 
 app.controller("categoriasCtrl", function ($scope, $http) {
     $scope.categorias = []
 
-    // Obtener lista de categorías
-    $.get("/categorias").then(function (res) {
+    // Obtener lista de categorías - corregí para usar $http en lugar de $
+    $http.get("/categorias").then(function (res) {
         $scope.categorias = res.data
     })
 
@@ -144,8 +134,8 @@ app.controller("categoriasCtrl", function ($scope, $http) {
 app.controller("clientesCtrl", function ($scope, $http) {
     $scope.clientes = []
 
-    // Obtener lista de clientes
-    $.get("/clientes").then(function (res) {
+    // Obtener lista de clientes - corregí para usar $http
+    $http.get("/clientes").then(function (res) {
         $scope.clientes = res.data
     })
 
@@ -161,8 +151,8 @@ app.controller("clientesCtrl", function ($scope, $http) {
 app.controller("lugaresCtrl", function ($scope, $http) {
     $scope.lugares = []
 
-    // Obtener lista de lugares
-    $.get("/lugares").then(function (res) {
+    // Obtener lista de lugares - corregí para usar $http
+    $http.get("/lugares").then(function (res) {
         $scope.lugares = res.data
     })
 
@@ -173,9 +163,7 @@ app.controller("lugaresCtrl", function ($scope, $http) {
             location.reload()
         })
     }
-
 })
-
 
 const DateTime = luxon.DateTime
 let lxFechaHora
@@ -184,17 +172,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
     const configFechaHora = {
         locale: "es",
         weekNumbers: true,
-        // enableTime: true,
         minuteIncrement: 15,
         altInput: true,
         altFormat: "d/F/Y",
         dateFormat: "Y-m-d",
-        // time_24hr: false
     }
 
     activeMenuOption(location.hash)
 })
-
-
-
-
