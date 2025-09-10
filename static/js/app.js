@@ -98,10 +98,10 @@ app.controller("eventosCtrl", function ($scope, $http) {
     $scope.categorias = []
 
     function cargarDatos() {
-        $http.get("/eventos/json").then(res => $scope.eventos = res.data);
-        $http.get("/lugares/json").then(res => $scope.lugares = res.data);
-        $http.get("/clientes/json").then(res => $scope.clientes = res.data);
-        $http.get("/categorias/json").then(res => $scope.categorias = res.data);
+        $.get("/eventos/json").then(res => $scope.eventos = res.data);
+        $.get("/lugares/json").then(res => $scope.lugares = res.data);
+        $.get("/clientes/json").then(res => $scope.clientes = res.data);
+        $.get("/categorias/json").then(res => $scope.categorias = res.data);
     }
 
     cargarDatos();
@@ -194,6 +194,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     activeMenuOption(location.hash)
 })
+
 
 
 
