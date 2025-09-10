@@ -83,20 +83,22 @@ def clientes():
 
     return render_template("clientes.html", clientes=registros)
 
-# Endpoint para obtener categorías en formato JSON
-@app.route("/api/categorias")
-@app.route("/api/categories")
-def api_categorias():
+#categorias
+@app.route("/categorias")
+@app.route("/categories")
+def categorias():
     if not con.is_connected():
         con.reconnect()
 
     cursor = con.cursor(dictionary=True)
-    sql = "SELECT * FROM categorias"
+    sql    = """
+    SELECT * FROM categorias
+    """
+
     cursor.execute(sql)
     registros = cursor.fetchall()
-    con.close()
-    
-    return jsonify(registros)
+
+    return render_template("categorias.html", categorias=registros)
 
 
 
@@ -151,30 +153,28 @@ def guardarCliente():
     return make_response(jsonify({}))
 
 
-# Endpoint para agregar categorías (API)
-@app.route("/api/categorias/agregar", methods=["POST"])
-@app.route("/api/categories/add", methods=["POST"])
-def api_guardarCategoria():
+@app.route("/categorias/agregar", methods=["POST"])
+def guardarCategoria():
     if not con.is_connected():
         con.reconnect()
         
-    data = request.get_json()
-    nombreCategoria = data["nombreCategoria"]
-    descripcion = data["descripcion"]
+        nombre      = request.form["nombreCategoria"]
+        descripcion = request.form["descripcion"]  
 
-    cursor = con.cursor(dictionary=True)
-    
-    sql = """
-    INSERT INTO categorias (nombreCategoria, descripcion)
-    VALUES (%s, %s)
-    """
-    val = (nombreCategoria, descripcion)
-    
-    cursor.execute(sql, val)
-    con.commit()
-    con.close()
+        cursor = con.cursor(dictionary=True)
+        
+        sql = """
+        INSERT INTO categorias (nombre, descripcion)
+        VALUES (%s, %s)
+        """
+        val = (nombre, descripcion)
+        
+        cursor.execute(sql, val)
+        con.commit()
+        con.close()
 
-    return jsonify({"status": "success", "message": "Categoría guardada correctamente"})
+    return make_response(jsonify({}))
+
 
 
     
@@ -242,18 +242,14 @@ def buscarCategorias():
         con.close()
 
     return make_response(jsonify(registros))
-    
 
 
-# Endpoint para eliminar categorías (API)
-@app.route("/api/categoria/eliminar", methods=["POST"])
-@app.route("/api/category/delete", methods=["POST"])
-def api_eliminarCategoria():
+@app.route("/categoria/eliminar", methods=["POST"])
+def eliminarCategoria():
     if not con.is_connected():
         con.reconnect()
 
-    data = request.get_json()
-    idCategoria = data["idCategoria"]
+    idCategoria = request.form["idCategoria"]
 
     cursor = con.cursor()
     sql = "DELETE FROM categorias WHERE idCategoria = %s"
@@ -263,7 +259,7 @@ def api_eliminarCategoria():
     con.commit()
     con.close()
 
-    return jsonify({"status": "success", "message": "Categoría eliminada correctamente"})
+    return make_response(jsonify({}))
 
 
 
@@ -399,24 +395,3 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
