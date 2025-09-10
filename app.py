@@ -118,6 +118,7 @@ def categorias():
     return render_template("categorias.html")
 
 @app.route("/categorias/lista")
+@app.route("/categories/lista")
 def categorias_lista():
     if not con.is_connected():
         con.reconnect()
@@ -407,6 +408,7 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
 
