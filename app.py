@@ -152,12 +152,22 @@ def eliminarCategoria():
     else:
         idCategoria = request.form.get("idCategoria")
 
+    # Validar que idCategoria no sea None y convertir a int
+    if not idCategoria:
+        return make_response(jsonify({"error": "idCategoria es requerido"}), 400)
+    try:
+        idCategoria = int(idCategoria)
+    except ValueError:
+        return make_response(jsonify({"error": "idCategoria inválido"}), 400)
+
     cursor = con.cursor()
     sql = "DELETE FROM categorias WHERE idCategoria = %s"
     val = (idCategoria,)
     cursor.execute(sql, val)
     con.commit()
     cursor.close()
+    # Cerrar la conexión después de la operación
+    con.close()
     return make_response(jsonify({}))
 
 @app.route("/lugar", methods=["POST"])
