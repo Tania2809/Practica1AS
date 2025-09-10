@@ -1,5 +1,4 @@
 <div class="container-fluid">
-    <!-- Header con título y botón -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0">Eventos</h2>
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalEvento">
@@ -7,43 +6,6 @@
         </button>
     </div>
 
-    <!-- Tarjetas de resumen -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <h5 class="card-title">{{ eventos.length }}</h5>
-                    <p class="card-text">Total Eventos</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-success text-white">
-                <div class="card-body">
-                    <h5 class="card-title">{{ eventos.filter(e => e.estado === 'Activo').length }}</h5>
-                    <p class="card-text">Eventos Activos</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-info text-white">
-                <div class="card-body">
-                    <h5 class="card-title">{{ eventos.filter(e => e.estado === 'Completado').length }}</h5>
-                    <p class="card-text">Completados</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-warning text-white">
-                <div class="card-body">
-                    <h5 class="card-title">{{ eventos.filter(e => e.estado === 'Cancelado').length }}</h5>
-                    <p class="card-text">Cancelados</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tabla de eventos -->
     <div class="card">
         <div class="card-header bg-light">
             <h5 class="card-title mb-0">Lista de Eventos</h5>
@@ -53,47 +15,52 @@
                 <table class="table table-hover table-striped">
                     <thead class="table-dark">
                         <tr>
-                            <th>#</th>
+                            <th>ID</th>
                             <th>Descripción</th>
                             <th>Ubicación</th>
                             <th>Fecha Inicio</th>
                             <th>Fecha Fin</th>
                             <th>Estado</th>
+                            <th>Relaciones</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for evento in eventos %}
                         <tr>
-                            <td>{{ evento.idEvento }}</td>
+                            <td><strong>#{{ evento.idEvento }}</strong></td>
+                            <td>{{ evento.descriptionEvento }}</td>
+                            <td>{{ evento.descriptionUbicacion }}</td>
                             <td>
-                                <strong>{{ evento.descriptionEvento }}</strong>
-                                {% if evento.idCategoria %}
-                                <br>
-                                <small class="text-muted">Categoría: {{ evento.idCategoria }}</small>
+                                {% if evento.fechalnicio %}
+                                    {{ evento.fechalnicio.strftime('%d/%m/%Y %H:%M') }}
+                                {% else %}
+                                    <span class="text-muted">N/A</span>
                                 {% endif %}
                             </td>
                             <td>
-                                {{ evento.descriptionUbicacion }}
-                                {% if evento.idLugar %}
-                                <br>
-                                <small class="text-muted">Lugar ID: {{ evento.idLugar }}</small>
+                                {% if evento.fechaFin %}
+                                    {{ evento.fechaFin.strftime('%d/%m/%Y %H:%M') }}
+                                {% else %}
+                                    <span class="text-muted">N/A</span>
                                 {% endif %}
-                            </td>
-                            <td>
-                                {{ evento.fechainicio.strftime('%d/%m/%Y %H:%M') if evento.fechainicio else 'N/A' }}
-                            </td>
-                            <td>
-                                {{ evento.fechaFin.strftime('%d/%m/%Y %H:%M') if evento.fechaFin else 'N/A' }}
                             </td>
                             <td>
                                 <span class="badge 
                                     {% if evento.estado == 'Activo' %}bg-success
-                                    {% elif evento.estado == 'Completado' %}bg-info
-                                    {% elif evento.estado == 'Cancelado' %}bg-warning
+                                    {% elif evento.estado == 'Completado' %}bg-primary
+                                    {% elif evento.estado == 'Cancelado' %}bg-danger
+                                    {% elif evento.estado == 'Pendiente' %}bg-warning
                                     {% else %}bg-secondary{% endif %}">
-                                    {{ evento.estado or 'Pendiente' }}
+                                    {{ evento.estado or 'Sin estado' }}
                                 </span>
+                            </td>
+                            <td>
+                                <small class="text-muted">
+                                    Lugar: {{ evento.idLugar }}<br>
+                                    Cliente: {{ evento.idCliente }}<br>
+                                    Categoría: {{ evento.idCategoria }}
+                                </small>
                             </td>
                             <td>
                                 <div class="btn-group btn-group-sm">
@@ -111,7 +78,7 @@
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-4">
+                            <td colspan="8" class="text-center text-muted py-4">
                                 <i class="fas fa-calendar-times fa-2x mb-2"></i>
                                 <p>No hay eventos registrados</p>
                             </td>
@@ -123,36 +90,3 @@
         </div>
     </div>
 </div>
-
-<!-- Estilos adicionales -->
-<style>
-    .card {
-        border: none;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        margin-bottom: 20px;
-    }
-    
-    .table th {
-        border-top: none;
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.85rem;
-    }
-    
-    .badge {
-        font-size: 0.75rem;
-        padding: 0.4em 0.6em;
-    }
-    
-    .btn-group .btn {
-        border-radius: 6px;
-        margin-right: 2px;
-    }
-    
-    .table-hover tbody tr:hover {
-        background-color: rgba(0,123,255,0.05);
-        transform: translateY(-1px);
-        transition: all 0.2s ease;
-    }
-</style>
