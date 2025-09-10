@@ -17,12 +17,14 @@ import pytz
 
 from flask_cors import CORS, cross_origin
 
-con = mysql.connector.connect(
-    host="185.232.14.52",
-    database="u760464709_23005102_bd",
-    user="u760464709_23005102_usr",
-    password="*Q~ic:$9XVr2"
-)
+def get_connection():
+    return mysql.connector.connect(
+        host="185.232.14.52",
+        database="u760464709_23005102_bd",
+        user="u760464709_23005102_usr",
+        password="*Q~ic:$9XVr2"
+    )
+
 
 app = Flask(__name__)
 CORS(app)
@@ -46,25 +48,6 @@ def app2():
     return "<h5>Hola, soy la view app</h5>"
 
 
-from flask import Flask, render_template, request, jsonify, make_response
-import mysql.connector
-from flask_cors import CORS
-
-# Conexión a la base de datos
-def get_connection():
-    return mysql.connector.connect(
-        host="185.232.14.52",
-        database="u760464709_23005102_bd",
-        user="u760464709_23005102_usr",
-        password="*Q~ic:$9XVr2"
-    )
-
-app = Flask(__name__)
-CORS(app)
-
-@app.route("/")
-def index():
-    return render_template("index.html")
 
 # ================================
 # CRUD - CATEGORIAS
@@ -452,5 +435,6 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
