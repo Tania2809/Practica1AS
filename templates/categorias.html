@@ -29,7 +29,7 @@
             </thead>
             <tbody>
                 {% for categoria in categorias %}
-                <tr ng-repeat="categoria in categorias">
+                <tr>
                     <td>{{ categoria.idCategoria }}</td>
                     <td>{{ categoria.nombreCategoria }}</td>
                     <td>{{ categoria.descripcion }}</td>
@@ -38,9 +38,9 @@
                     </td>
                 </tr>
                 {% endfor %}
-                <tr ng-if="categorias.length === 0">
-                    <td colspan="4" class="text-center">No hay categorías registradas.</td>
-                </tr>
+
+
+
             </tbody>
         </table>
     </div>

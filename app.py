@@ -112,7 +112,6 @@ def guardarCategoria():
     
 
 @app.route("/categorias", methods=["GET"])
-@app.route("/categories", methods=["GET"])
 def categorias():
     if not con.is_connected():
         con.reconnect()
