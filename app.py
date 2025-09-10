@@ -54,12 +54,12 @@ def eventos():
 
     cursor = con.cursor(dictionary=True)
     sql    = """
-   SELECT e.idEvento, e.descripcionEvento AS nombre,
-           DATE(e.fechaInicio) AS fecha,
-           TIME(e.fechaInicio) AS hora,
-           l.nombre AS lugar,
-           c.nombre AS cliente,
-           cat.nombre AS categoria
+    SELECT e.idEvento, e.descripcionEvento AS nombre,
+    DATE(e.fechaInicio) AS fecha,
+    TIME(e.fechaInicio) AS hora,
+    l.descripcionUbicacion AS lugar,
+    c.nombreCliente AS cliente,
+    cat.nombreCategoria AS categoria
     FROM eventos e
     LEFT JOIN lugares l ON e.idLugar = l.idLugar
     LEFT JOIN clientes c ON e.idCliente = c.idCliente
@@ -550,6 +550,7 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
 
