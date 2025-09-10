@@ -1,93 +1,28 @@
-<div class="container-fluid">
-    <!-- Contenido de la tabla de eventos que te proporcioné anteriormente -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">Eventos</h2>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalEvento">
-            <i class="fas fa-plus me-2"></i>Nuevo Evento
-        </button>
-    </div>
-
-    <div class="card">
-        <div class="card-header bg-light">
-            <h5 class="card-title mb-0">Lista de Eventos</h5>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover table-striped">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>ID</th>
-                            <th>Descripción</th>
-                            <th>Ubicación</th>
-                            <th>Fecha Inicio</th>
-                            <th>Fecha Fin</th>
-                            <th>Estado</th>
-                            <th>Relaciones</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for evento in eventos %}
-                        <tr>
-                            <td><strong>#{{ evento.idEvento }}</strong></td>
-                            <td>{{ evento.descriptionEvento }}</td>
-                            <td>{{ evento.descriptionUbicacion }}</td>
-                            <td>
-                                {% if evento.fechalnicio %}
-                                    {{ evento.fechalnicio.strftime('%d/%m/%Y %H:%M') }}
-                                {% else %}
-                                    <span class="text-muted">N/A</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if evento.fechaFin %}
-                                    {{ evento.fechaFin.strftime('%d/%m/%Y %H:%M') }}
-                                {% else %}
-                                    <span class="text-muted">N/A</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span class="badge 
-                                    {% if evento.estado == 'Activo' %}bg-success
-                                    {% elif evento.estado == 'Completado' %}bg-primary
-                                    {% elif evento.estado == 'Cancelado' %}bg-danger
-                                    {% elif evento.estado == 'Pendiente' %}bg-warning
-                                    {% else %}bg-secondary{% endif %}">
-                                    {{ evento.estado or 'Sin estado' }}
-                                </span>
-                            </td>
-                            <td>
-                                <small class="text-muted">
-                                    Lugar: {{ evento.idLugar }}<br>
-                                    Cliente: {{ evento.idCliente }}<br>
-                                    Categoría: {{ evento.idCategoria }}
-                                </small>
-                            </td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <button class="btn btn-outline-primary" title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-outline-info" title="Ver detalles">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-outline-danger" title="Eliminar">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="8" class="text-center text-muted py-4">
-                                <i class="fas fa-calendar-times fa-2x mb-2"></i>
-                                <p>No hay eventos registrados</p>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+<div class="table-responsive">
+    <table class="table table-sm">
+        <thead class="table-active">
+            <tr>
+                <th>ID Evento</th>
+                <th>Nombre</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Lugar</th>
+                <th>Cliente</th>
+                <th>Categoría</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for evento in eventos %}
+            <tr>
+                <td>{{ evento.idEvento }}</td>
+                <td>{{ evento.nombre }}</td>
+                <td>{{ evento.fecha }}</td>
+                <td>{{ evento.hora }}</td>
+                <td>{{ evento.lugar }}</td>
+                <td>{{ evento.cliente }}</td>
+                <td>{{ evento.categoria }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
