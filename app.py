@@ -85,6 +85,7 @@ def clientes():
 
 # Endpoint para obtener categorías en formato JSON
 @app.route("/api/categorias")
+@app.route("/api/categories")
 def api_categorias():
     if not con.is_connected():
         con.reconnect()
@@ -152,6 +153,7 @@ def guardarCliente():
 
 # Endpoint para agregar categorías (API)
 @app.route("/api/categorias/agregar", methods=["POST"])
+@app.route("/api/categories/add", methods=["POST"])
 def api_guardarCategoria():
     if not con.is_connected():
         con.reconnect()
@@ -245,6 +247,7 @@ def buscarCategorias():
 
 # Endpoint para eliminar categorías (API)
 @app.route("/api/categoria/eliminar", methods=["POST"])
+@app.route("/api/category/delete", methods=["POST"])
 def api_eliminarCategoria():
     if not con.is_connected():
         con.reconnect()
@@ -396,6 +399,7 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
 
