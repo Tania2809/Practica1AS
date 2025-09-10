@@ -1,37 +1,45 @@
-<!-- Formulario para nueva categoría -->
-<form ng-submit="guardar(categoria)" novalidate>
-    <div class="row">
-        <div class="col-md-4">
-            <input required type="text" name="nombreCategoria" class="form-control" placeholder="Nombre de la categoría">
+<div class="container py-4">
+    <!-- Formulario para nueva categoría (AngularJS) -->
+    <form ng-submit="guardar(categoria)" class="mb-4" novalidate autocomplete="off">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label mb-1">Nombre de la categoría</label>
+                <input required type="text" ng-model="categoria.nombreCategoria" class="form-control" placeholder="Nombre de la categoría">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label mb-1">Descripción</label>
+                <input required type="text" ng-model="categoria.descripcion" class="form-control" placeholder="Descripción">
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-success w-100" type="submit">Registrar</button>
+            </div>
         </div>
-        <div class="col-md-6">
-            <input required type="text" name="descripcion" class="form-control" placeholder="Descripción">
-        </div>
-        <div class="col-md-2">
-            <button class="btn btn-success w-100" type="submit">Registrar</button>
-        </div>
+    </form>
+
+    <!-- Tabla de categorías -->
+    <div class="table-responsive">
+        <table class="table table-dark table-striped table-bordered align-middle">
+            <thead class="table-active">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th style="width: 100px;">Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="categoria in categorias">
+                    <td>{{ categoria.idCategoria }}</td>
+                    <td>{{ categoria.nombreCategoria }}</td>
+                    <td>{{ categoria.descripcion }}</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" ng-click="eliminar(categoria.idCategoria)">Eliminar</button>
+                    </td>
+                </tr>
+                <tr ng-if="categorias.length === 0">
+                    <td colspan="4" class="text-center">No hay categorías registradas.</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-</form>
-
-<br>
-
-<div class="table-responsive">
-    <table class="table table-sm">
-        <thead class="table-active">
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Descripción</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for categoria in categorias %}
-            <tr>
-                <td>{{ categoria.idCategoria }}</td>
-                <td>{{ categoria.nombreCategoria }}</td>
-                <td>{{ categoria.descripcion }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 </div>
