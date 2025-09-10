@@ -21,21 +21,21 @@ app.config(function ($routeProvider, $locationProvider) {
         templateUrl: "/productos",
         controller: "productosCtrl"
     })
-    .when("/alumnos", {
-        templateUrl: "/alumnos",
-        controller: "alumnosCtrl"
+    .when("/eventos", {
+        templateUrl: "/eventos",
+        controller: "eventosCtrl"
     })
-    .when("/ventas", {
-        templateUrl: "/ventas",
-        controller: "ventasCtrl"
+    .when("/categories", {
+        templateUrl: "/categories",
+        controller: "categoriesCtrl"
     })
-    .when("/reportes", {
-        templateUrl: "/reportes",
-        controller: "reportesCtrl"
+    .when("/clientes", {
+        templateUrl: "/clientes",
+        controller: "clientesCtrl"
     })
-    .when("/notificaciones", {
-        templateUrl: "/notificaciones",
-        controller: "notificacionesCtrl"
+    .when("/lugares", {
+        templateUrl: "/lugares",
+        controller: "lugaresCtrl"
     })
     .otherwise({
         redirectTo: "/"
@@ -95,13 +95,13 @@ app.controller("productosCtrl", function ($scope, $http) {
         })
     })
 })
-app.controller("alumnosCtrl", function ($scope, $http) {
+app.controller("eventosCtrl", function ($scope, $http) {
 })
-app.controller("ventasCtrl", function ($scope, $http) {
+app.controller("categoriesCtrl", function ($scope, $http) {
 })
-app.controller("reportesCtrl", function ($scope, $http) {
+app.controller("clientesCtrl", function ($scope, $http) {
 })
-app.controller("notificacionesCtrl", function ($scope, $http) {
+app.controller("lugaresCtrl", function ($scope, $http) {
 })
 
 const DateTime = luxon.DateTime
@@ -121,3 +121,4 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     activeMenuOption(location.hash)
 })
+
