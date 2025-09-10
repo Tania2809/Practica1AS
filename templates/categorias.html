@@ -1,0 +1,46 @@
+<div ng-controller="categoriasCtrl" class="container mt-4">
+    <h2 class="mb-3">Gestión de Categorías</h2>
+
+    <!-- Formulario nueva categoría -->
+    <form ng-submit="guardar(nuevaCategoria)" class="card p-3 mb-4">
+        <div class="row g-3">
+            <div class="col-md-8">
+                <label class="form-label">Nombre</label>
+                <input type="text" ng-model="nuevaCategoria.nombre" class="form-control" required>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Descripción</label>
+                <input type="text" ng-model="nuevaCategoria.descripcion" class="form-control">
+            </div>
+
+            <div class="col-12 text-end">
+                <button type="submit" class="btn btn-success">Guardar Categoría</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Tabla de categorías -->
+    <table class="table table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="cat in categorias">
+                <td>{{ $index + 1 }}</td>
+                <td>{{ cat.nombre }}</td>
+                <td>{{ cat.descripcion }}</td>
+                <td>
+                    <button class="btn btn-danger btn-sm" ng-click="eliminar(cat.id)">
+                        Eliminar
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
