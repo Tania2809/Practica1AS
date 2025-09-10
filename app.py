@@ -68,9 +68,6 @@ def eventos():
     cursor.execute(sql)
     registros = cursor.fetchall()
     con.close()
-    
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return render_template("partials/eventos_content.html", eventos=registros)
         
     return render_template("eventos.html", eventos=registros)
 
@@ -553,6 +550,7 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
 
