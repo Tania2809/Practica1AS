@@ -13,8 +13,7 @@
         </thead>
         <tbody>
 
-
-            e.*, c.nombreCategoria, l.nombreLugar, l.direccion, cl.nombre AS, {% for evento in eventos %}
+            {% for evento in eventos %}
             <tr>
                 <td>{{ evento.idEvento }}</td>
                 <td>{{ evento.descripcionEvento }}</td>
@@ -22,7 +21,7 @@
                 <td>{{ evento.nombreCategoria }}</td>
                 <td>{{ evento.fechaInicio }}</td>
                 <td>{{ evento.fechaFin }}</td>
-                <td>{{ evento.nombre }}</td>
+                <td>{{ evento.nombreCliente }}</td>
             </tr>
             {% endfor %}
         </tbody>

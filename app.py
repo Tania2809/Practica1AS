@@ -63,7 +63,7 @@ SELECT
     c.nombreCategoria,
     l.nombreLugar,
     l.direccion,
-    cl.nombre AS,
+    cl.nombre AS nombreCliente,
 FROM eventos e
 INNER JOIN categorias c ON e.idCategoria = c.idCategoria
 INNER JOIN lugares l ON e.idLugar = l.idLugar
