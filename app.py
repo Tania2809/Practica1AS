@@ -52,7 +52,7 @@ def eventos():
     if not con.is_connected():
         con.reconnect()
         
-        return "<h5>Me canse son las 3 de la mañana y esto no funciona</h5>"
+return "<h5>Me canse son las 3 de la mañana y esto no funciona</h5>"
 
 
 #lugares
@@ -534,6 +534,7 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
 
