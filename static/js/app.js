@@ -94,7 +94,7 @@ app.controller("categoriasCtrl", function ($scope, $http) {
 
     // Guardar categoría
     $scope.guardar = function (categoria) {
-        $http.post("/categorias/agregar" ", categoria).then(function () {
+        $http.post("/categorias/agregar", categoria).then(function () {
             alert("Categoría guardada")
             location.reload()
         })
@@ -158,5 +158,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     activeMenuOption(location.hash)
 })
+
 
 
