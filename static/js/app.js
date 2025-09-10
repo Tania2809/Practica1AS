@@ -82,28 +82,6 @@ app.controller("appCtrl", function ($scope, $http) {
 
 // Eliminé el controlador productosCtrl ya que no tienes ruta para él
 app.controller("eventosCtrl", function ($scope, $http) {
-    $scope.eventos = []
-    $scope.lugares = []
-    $scope.clientes = []
-    $scope.categorias = []
-
-    function cargarDatos() {
-        // Corregí las URLs para que sean consistentes
-        $http.get("/eventos/json").then(res => $scope.eventos = res.data);
-        $http.get("/lugares/json").then(res => $scope.lugares = res.data);
-        $http.get("/clientes/json").then(res => $scope.clientes = res.data);
-        $http.get("/categorias/json").then(res => $scope.categorias = res.data);
-    }
-
-    cargarDatos();
-
-    // Guardar evento
-    $scope.guardar = function (evento) {
-        $http.post("/evento", evento).then(function () {
-            alert("Evento guardado")
-            location.reload()
-        })
-    }
 })
 
 app.controller("categoriasCtrl", function ($scope, $http) {
@@ -180,3 +158,4 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     activeMenuOption(location.hash)
 })
+
