@@ -122,7 +122,7 @@ def categorias():
     cursor.execute(sql)
     registros = cursor.fetchall()
     cursor.close()
-    return jsonify(registros)
+    return render_template("categorias.html", categorias=registros)
 
 
 @app.route("/categoria/eliminar", methods=["POST"])
