@@ -83,22 +83,65 @@ def clientes():
 
     return render_template("clientes.html", clientes=registros)
 
+
+
 #categorias
-@app.route("/categorias")
-@app.route("/categories")
+@app.route("/categorias/agregar", methods=["POST"])
+def guardarCategoria():
+    if not con.is_connected():
+        con.reconnect()
+
+    if request.is_json:
+        data = request.get_json()
+        nombre = data.get("nombreCategoria")
+        descripcion = data.get("descripcion")
+    else:
+        nombre = request.form.get("nombreCategoria")
+        descripcion = request.form.get("descripcion")
+
+    cursor = con.cursor(dictionary=True)
+    sql = """
+    INSERT INTO categorias (nombreCategoria, descripcion)
+    VALUES (%s, %s)
+    """
+    val = (nombre, descripcion)
+    cursor.execute(sql, val)
+    con.commit()
+    cursor.close()
+    return make_response(jsonify({}))
+
+
+@app.route("/categorias", methods=["GET"])
+@app.route("/categories", methods=["GET"])
 def categorias():
     if not con.is_connected():
         con.reconnect()
 
     cursor = con.cursor(dictionary=True)
-    sql    = """
-    SELECT * FROM categorias
-    """
-
+    sql = "SELECT * FROM categorias"
     cursor.execute(sql)
     registros = cursor.fetchall()
+    cursor.close()
+    return jsonify(registros)
 
-    return render_template("categorias.html", categorias=registros)
+@app.route("/categoria/eliminar", methods=["POST"])
+def eliminarCategoria():
+    if not con.is_connected():
+        con.reconnect()
+
+    if request.is_json:
+        idCategoria = request.get_json().get("idCategoria")
+    else:
+        idCategoria = request.form.get("idCategoria")
+
+    cursor = con.cursor()
+    sql = "DELETE FROM categorias WHERE idCategoria = %s"
+    val = (idCategoria,)
+    cursor.execute(sql, val)
+    con.commit()
+    cursor.close()
+    return make_response(jsonify({}))
+
 
 
 
@@ -153,27 +196,6 @@ def guardarCliente():
     return make_response(jsonify({}))
 
 
-@app.route("/categorias/agregar", methods=["POST"])
-def guardarCategoria():
-    if not con.is_connected():
-        con.reconnect()
-        
-    nombre      = request.form["nombreCategoria"]
-    descripcion = request.form["descripcion"]  
-
-    cursor = con.cursor(dictionary=True)
-    
-    sql = """
-    INSERT INTO categorias (nombreCategoria, descripcion)
-    VALUES (%s, %s)
-    """
-    val = (nombre, descripcion)
-    
-    cursor.execute(sql, val)
-    con.commit()
-    con.close()
-
-    return make_response(jsonify({}))
 
     
 
@@ -242,22 +264,6 @@ def buscarCategorias():
     return make_response(jsonify(registros))
 
 
-@app.route("/categoria/eliminar", methods=["POST"])
-def eliminarCategoria():
-    if not con.is_connected():
-        con.reconnect()
-
-    idCategoria = request.form["idCategoria"]
-
-    cursor = con.cursor()
-    sql = "DELETE FROM categorias WHERE idCategoria = %s"
-    val = (idCategoria,)
-
-    cursor.execute(sql, val)
-    con.commit()
-    con.close()
-
-    return make_response(jsonify({}))
 
 
 
@@ -393,4 +399,5 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
