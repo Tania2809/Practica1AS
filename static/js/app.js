@@ -1,4 +1,3 @@
-static:
 function activeMenuOption(href) {
     $(".app-menu .nav-link")
     .removeClass("active")
@@ -159,3 +158,4 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     activeMenuOption(location.hash)
 })
+
