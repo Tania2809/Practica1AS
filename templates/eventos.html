@@ -1,0 +1,178 @@
+<!-- eventos.html -->
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Gestión de Eventos</h2>
+        <button class="btn btn-primary" ng-click="nuevoEvento()">
+            <i class="bi bi-plus-circle"></i> Nuevo Evento
+        </button>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <input type="text" class="form-control" placeholder="Buscar eventos..." ng-model="filtroEvento">
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" ng-model="filtroCategoria">
+                        <option value="">Todas las categorías</option>
+                        <option ng-repeat="cat in categories" value="{{cat.idCategoría}}">{{cat.nombreCategoría}}</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" ng-model="filtroEstado">
+                        <option value="">Todos los estados</option>
+                        <option value="activo">Activo</option>
+                        <option value="completado">Completado</option>
+                        <option value="cancelado">Cancelado</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-outline-secondary w-100" ng-click="limpiarFiltros()">
+                        <i class="bi bi-x-circle"></i> Limpiar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" ng-if="eventos.length > 0">
+        <div class="col-md-6 col-lg-4 mb-3" ng-repeat="evento in eventos | filter:filtroEvento | filter:filtroCategoriaFn | filter:filtroEstadoFn">
+            <div class="card evento-card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span class="badge bg-{{getEstadoBadge(evento.estado)}}">{{evento.estado}}</span>
+                    <span class="badge bg-secondary categoria-badge">{{evento.nombreCategoría}}</span>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{evento.descriptionEvento}}</h5>
+                    <p class="card-text" ng-if="evento.descriptionUbicacion">
+                        <i class="bi bi-geo-alt"></i> {{evento.descriptionUbicacion}}
+                    </p>
+                    <p class="card-text">
+                        <small class="text-muted">
+                            <i class="bi bi-clock"></i> 
+                            {{evento.fechaInicio | date:'medium'}} 
+                            <span ng-if="evento.fechaFin">- {{evento.fechaFin | date:'medium'}}</span>
+                        </small>
+                    </p>
+                    <p class="card-text" ng-if="evento.nombreCliente">
+                        <i class="bi bi-person"></i> {{evento.nombreCliente}}
+                    </p>
+                    <p class="card-text" ng-if="evento.nombreLugar">
+                        <i class="bi bi-building"></i> {{evento.nombreLugar}}
+                    </p>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="btn-group w-100">
+                        <button class="btn btn-sm btn-outline-primary" ng-click="editarEvento(evento)">
+                            <i class="bi bi-pencil"></i> Editar
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" ng-click="eliminarEvento(evento.idEvento)">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-info" ng-if="eventos.length === 0">
+        <i class="bi bi-info-circle"></i> No hay eventos registrados. 
+        <a href="#" ng-click="nuevoEvento()">Crear el primer evento</a>.
+    </div>
+
+    <!-- Modal para crear/editar evento -->
+    <div class="modal fade" id="eventoModal" tabindex="-1" aria-labelledby="eventoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventoModalLabel">
+                        {{eventoForm.idEvento ? 'Editar Evento' : 'Nuevo Evento'}}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="eventoForm" name="eventoForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="descriptionEvento" class="form-label">Título del Evento *</label>
+                                <input type="text" class="form-control" id="descriptionEvento" 
+                                    ng-model="eventoForm.descriptionEvento" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="idCategoría" class="form-label">Categoría *</label>
+                                <select class="form-select" id="idCategoría" 
+                                    ng-model="eventoForm.idCategoría" required>
+                                    <option value="">Seleccionar categoría</option>
+                                    <option ng-repeat="cat in categories" value="{{cat.idCategoría}}">
+                                        {{cat.nombreCategoría}}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="fechaInicio" class="form-label">Fecha de Inicio *</label>
+                                <input type="datetime-local" class="form-control" id="fechaInicio" 
+                                    ng-model="eventoForm.fechaInicio" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="fechaFin" class="form-label">Fecha de Fin</label>
+                                <input type="datetime-local" class="form-control" id="fechaFin" 
+                                    ng-model="eventoForm.fechaFin">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="idCliente" class="form-label">Cliente</label>
+                                <select class="form-select" id="idCliente" 
+                                    ng-model="eventoForm.idCliente">
+                                    <option value="">Seleccionar cliente</option>
+                                    <option ng-repeat="cliente in clientes" value="{{cliente.idCliente}}">
+                                        {{cliente.nombreCliente}}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="idLugar" class="form-label">Lugar</label>
+                                <select class="form-select" id="idLugar" 
+                                    ng-model="eventoForm.idLugar">
+                                    <option value="">Seleccionar lugar</option>
+                                    <option ng-repeat="lugar in lugares" value="{{lugar.idLugar}}">
+                                        {{lugar.nombreLugar}}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="descriptionUbicacion" class="form-label">Descripción de Ubicación</label>
+                            <textarea class="form-control" id="descriptionUbicacion" 
+                                ng-model="eventoForm.descriptionUbicacion" rows="2"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="estado" class="form-label">Estado *</label>
+                            <select class="form-select" id="estado" 
+                                ng-model="eventoForm.estado" required>
+                                <option value="activo">Activo</option>
+                                <option value="completado">Completado</option>
+                                <option value="cancelado">Cancelado</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" 
+                        ng-click="guardarEvento()" 
+                        ng-disabled="eventoForm.$invalid">
+                        Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
