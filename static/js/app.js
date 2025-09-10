@@ -87,7 +87,7 @@ app.controller("eventosCtrl", function ($scope, $http) {
 app.controller("categoriasCtrl", function ($scope, $http) {
     $scope.categorias = []
 
-    // Obtener lista de categorías - corregí para usar $http en lugar de $
+    // Obtener lista de categorías
     $http.get("/categorias").then(function (res) {
         $scope.categorias = res.data
     })
@@ -96,15 +96,25 @@ app.controller("categoriasCtrl", function ($scope, $http) {
     $scope.guardar = function (categoria) {
         $http.post("/categorias/agregar", categoria).then(function () {
             alert("Categoría guardada")
-            location.reload()
+            // Recargar lista sin recargar toda la página
+            $http.get("/categorias").then(function (res) {
+                $scope.categorias = res.data
+            })
+            $scope.categoria = {} // Limpiar formulario
+        }, function (err) {
+            alert("Error al guardar: " + (err.data?.message || ""))
         })
     }
 
     // Eliminar categoría
-    $scope.eliminar = function (id) {
-        $http.post("/categoria/eliminar", {id: id}).then(function () {
+    $scope.eliminar = function (idCategoria) {
+        $http.post("/categoria/eliminar", { idCategoria: idCategoria }).then(function () {
             alert("Categoría eliminada")
-            location.reload()
+            $http.get("/categorias").then(function (res) {
+                $scope.categorias = res.data
+            })
+        }, function (err) {
+            alert("Error al eliminar: " + (err.data?.message || ""))
         })
     }
 })
@@ -158,4 +168,5 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     activeMenuOption(location.hash)
 })
+
 
