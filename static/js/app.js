@@ -85,31 +85,54 @@ app.controller("eventosCtrl", function ($scope, $http) {
 })
 
 app.controller("categoriasCtrl", function ($scope, $http) {
-    $scope.categorias = []
-
-    // Obtener lista de categorías
-    $scope.cargarCategorias = function() {
-        $http.get("/categorias").then(function (res) {
-            console.log("Datos recibidos:", res.data);
-        }).catch(function(error) {
-            console.error("Error al cargar categorías:", error);
-        })
-    }
+  $scope.categorias = [];
+    $scope.nuevaCategoria = {};
     
-    // Cargar categorías al inicializar
-    $scope.cargarCategorias();
+    $scope.init = function() {
+        $scope.cargarCategorias();
+    };
+
+    // Cargar categorías desde API
+    $scope.cargarCategorias = function() {
+        $http.get("/api/categorias")
+        .then(function(response) {
+            $scope.categorias = response.data;
+        })
+        .catch(function(error) {
+            console.error("Error al cargar categorías:", error);
+            alert("Error al cargar las categorías");
+        });
+    };
+
+    // Guardar categoría
+    $scope.guardar = function() {
+        $http.post("/api/categorias/agregar", $scope.nuevaCategoria)
+        .then(function(response) {
+            alert(response.data.message);
+            $scope.nuevaCategoria = {}; // Limpiar formulario
+            $scope.cargarCategorias(); // Recargar lista
+        })
+        .catch(function(error) {
+            console.error("Error:", error);
+            alert("Error al guardar la categoría");
+        });
+    };
 
     // Eliminar categoría
-    $scope.eliminar = function (id) {
-        $http.post("/categoria/eliminar", {idCategoria: id}).then(function () {
-            alert("Categoría eliminada")
-            location.reload(); // Recargar la página para ver los cambios
-        }).catch(function(error) {
-            console.error("Error al eliminar:", error);
-            alert("Error al eliminar la categoría");
-        })
-    }
-})
+    $scope.eliminar = function(id) {
+        if (confirm('¿Estás seguro de que quieres eliminar esta categoría?')) {
+            $http.post("/api/categoria/eliminar", {idCategoria: id})
+            .then(function(response) {
+                alert(response.data.message);
+                $scope.cargarCategorias(); // Recargar lista
+            })
+            .catch(function(error) {
+                console.error("Error:", error);
+                alert("Error al eliminar la categoría");
+            });
+        }
+    };
+});
 
 app.controller("clientesCtrl", function ($scope, $http) {
     $scope.clientes = []
@@ -160,6 +183,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     activeMenuOption(location.hash)
 })
+
 
 
 
