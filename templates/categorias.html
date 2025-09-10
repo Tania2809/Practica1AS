@@ -22,6 +22,7 @@
                 <th>ID</th>
                 <th>Nombre</th>
                 <th>Descripción</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -30,8 +31,25 @@
                 <td>{{ categoria.idCategoria }}</td>
                 <td>{{ categoria.nombreCategoria }}</td>
                 <td>{{ categoria.descripcion }}</td>
+                <td>
+                    <button class="btn btn-danger btn-sm" onclick="eliminarCategoria({{ categoria.idCategoria }})">
+                        Eliminar
+                    </button>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<script>
+function eliminarCategoria(id) {
+    if (confirm('¿Estás seguro de que quieres eliminar esta categoría?')) {
+        // Usando AngularJS para eliminar
+        const scope = angular.element(document.querySelector('[ng-controller="categoriasCtrl"]')).scope();
+        scope.$apply(function() {
+            scope.eliminar(id);
+        });
+    }
+}
+</script>
