@@ -158,15 +158,15 @@ def api_guardarCategoria():
         
     data = request.get_json()
     nombreCategoria = data["nombreCategoria"]
-    description = data["description"]
+    descripcion = data["descripcion"]
 
     cursor = con.cursor(dictionary=True)
     
     sql = """
-    INSERT INTO categorias (nombreCategoria, description)
+    INSERT INTO categorias (nombreCategoria, descripcion)
     VALUES (%s, %s)
     """
-    val = (nombreCategoria, description)
+    val = (nombreCategoria, descripcion)
     
     cursor.execute(sql, val)
     con.commit()
@@ -396,6 +396,7 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
 
