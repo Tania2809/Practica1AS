@@ -1,10 +1,32 @@
-<div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">Clientes</h2>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCliente">
-            <i class="fas fa-plus me-2"></i>Nuevo Cliente
-        </button>
-    </div>
+<!-- Modal para agregar cliente -->
+<div class="modal fade" id="modalCliente" tabindex="-1" aria-labelledby="modalClienteLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="POST" action="/clientes/agregar" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalClienteLabel">Registrar Nuevo Cliente</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="nombreCliente" class="form-label">Nombre</label>
+          <input required type="text" class="form-control" id="nombreCliente" name="nombreCliente">
+        </div>
+        <div class="mb-3">
+          <label for="telefono" class="form-label">Teléfono</label>
+          <input type="text" class="form-control" id="telefono" name="telefono">
+        </div>
+        <div class="mb-3">
+          <label for="correoElectronico" class="form-label">Correo Electrónico</label>
+          <input type="email" class="form-control" id="correoElectronico" name="correoElectronico">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Registrar</button>
+      </div>
+    </form>
+  </div>
+</div>
 
     <div class="card">
         <div class="card-header bg-light">
