@@ -51,38 +51,9 @@ def app2():
 def eventos():
     if not con.is_connected():
         con.reconnect()
+        
+        return "<h5>Me canse son las 3 de la mañana y esto no funciona</h5>"
 
-    cursor = con.cursor(dictionary=True)
-
-    # Consulta principal de eventos
-    cursor.execute("""
-        SELECT idEvento, descripcionEvento, fechaInicio
-        FROM eventos
-    """)
-    eventos = cursor.fetchall()
-
-    # Consulta de lugares
-    cursor.execute("SELECT idLugar, descripcionUbicacion FROM lugares")
-    lugares = {l['idLugar']: l['descripcionUbicacion'] for l in cursor.fetchall()}
-
-    # Consulta de clientes
-    cursor.execute("SELECT idCliente, nombreCliente FROM clientes")
-    clientes = {c['idCliente']: c['nombreCliente'] for c in cursor.fetchall()}
-
-    # Consulta de categorías
-    cursor.execute("SELECT idCategoria, nombreCategoria FROM categorias")
-    categorias = {cat['idCategoria']: cat['nombreCategoria'] for cat in cursor.fetchall()}
-
-    # Enriquecer eventos con datos relacionados
-    for e in eventos:
-        e['fecha'] = str(e['fechaInicio'].date())
-        e['hora'] = str(e['fechaInicio'].time())
-        e['lugar'] = lugares.get(e.get('idLugar'), 'Sin lugar')
-        e['cliente'] = clientes.get(e.get('idCliente'), 'Sin cliente')
-        e['categoria'] = categorias.get(e.get('idCategoria'), 'Sin categoría')
-
-    con.close()
-    return render_template("eventos.html", eventos=eventos)
 
 #lugares
 @app.route("/lugares")
@@ -92,7 +63,7 @@ def lugares():
 
     cursor = con.cursor(dictionary=True)
     sql    = """
-    SELECT idLugar, nombre FROM lugares
+    SELECT * FROM lugares
     """
 
     cursor.execute(sql)
@@ -563,6 +534,7 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
 
