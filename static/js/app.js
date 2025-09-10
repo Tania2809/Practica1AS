@@ -17,25 +17,21 @@ app.config(function ($routeProvider, $locationProvider) {
         templateUrl: "/app",
         controller: "appCtrl"
     })
-    .when("/productos", {
-        templateUrl: "/productos",
-        controller: "productosCtrl"
+     .when("/categorias", {
+        templateUrl: "/categorias",
+        controller: "categoriasCtrl"
     })
-    .when("/eventos", {
-        templateUrl: "/eventos",
-        controller: "eventosCtrl"
-    })
-    .when("/categories", {
-        templateUrl: "/categories",
-        controller: "categoriesCtrl"
+    .when("/lugares", {
+        templateUrl: "/lugares",
+        controller: "lugaresCtrl"
     })
     .when("/clientes", {
         templateUrl: "/clientes",
         controller: "clientesCtrl"
     })
-    .when("/lugares", {
-        templateUrl: "/lugares",
-        controller: "lugaresCtrl"
+    .when("/eventos", {
+        templateUrl: "/eventos",
+        controller: "eventosCtrl"
     })
     .otherwise({
         redirectTo: "/"
@@ -96,13 +92,119 @@ app.controller("productosCtrl", function ($scope, $http) {
     })
 })
 app.controller("eventosCtrl", function ($scope, $http) {
+    $scope.eventos = []
+    $scope.lugares = []
+    $scope.clientes = []
+    $scope.categorias = []
+
+    // Obtener lista de eventos
+    $http.get("/eventos").then(function (res) {
+        $scope.eventos = res.data
+    })
+
+    // Cargar datos relacionados (para selects)
+    $http.get("/lugares").then(function (res) {
+        $scope.lugares = res.data
+    })
+    $http.get("/clientes").then(function (res) {
+        $scope.clientes = res.data
+    })
+    $http.get("/categorias").then(function (res) {
+        $scope.categorias = res.data
+    })
+
+    // Guardar evento
+    $scope.guardar = function (evento) {
+        $http.post("/evento", evento).then(function () {
+            alert("Evento guardado")
+            location.reload()
+        })
+    }
+
+    // Eliminar evento
+    $scope.eliminar = function (id) {
+        $http.post("/evento/eliminar", {id: id}).then(function () {
+            alert("Evento eliminado")
+            location.reload()
+        })
+    }
 })
-app.controller("categoriesCtrl", function ($scope, $http) {
+
+app.controller("categoriasCtrl", function ($scope, $http) {
+    $scope.categorias = []
+
+    // Obtener lista de categorías
+    $http.get("/categorias").then(function (res) {
+        $scope.categorias = res.data
+    })
+
+    // Guardar categoría
+    $scope.guardar = function (categoria) {
+        $http.post("/categoria", categoria).then(function () {
+            alert("Categoría guardada")
+            location.reload()
+        })
+    }
+
+    // Eliminar categoría
+    $scope.eliminar = function (id) {
+        $http.post("/categoria/eliminar", {id: id}).then(function () {
+            alert("Categoría eliminada")
+            location.reload()
+        })
+    }
 })
+
 app.controller("clientesCtrl", function ($scope, $http) {
+    $scope.clientes = []
+
+    // Obtener lista de clientes
+    $http.get("/clientes").then(function (res) {
+        $scope.clientes = res.data
+    })
+
+    // Guardar cliente
+    $scope.guardar = function (cliente) {
+        $http.post("/cliente", cliente).then(function () {
+            alert("Cliente guardado")
+            location.reload()
+        })
+    }
+
+    // Eliminar cliente
+    $scope.eliminar = function (id) {
+        $http.post("/cliente/eliminar", {id: id}).then(function () {
+            alert("Cliente eliminado")
+            location.reload()
+        })
+    }
 })
+
 app.controller("lugaresCtrl", function ($scope, $http) {
+    $scope.lugares = []
+
+    // Obtener lista de lugares
+    $http.get("/lugares").then(function (res) {
+        $scope.lugares = res.data
+    })
+
+    // Guardar lugar
+    $scope.guardar = function (lugar) {
+        $http.post("/lugar", lugar).then(function () {
+            alert("Lugar guardado")
+            location.reload()
+        })
+    }
+
+    // Eliminar lugar
+    $scope.eliminar = function (id) {
+        $http.post("/lugar/eliminar", {id: id}).then(function () {
+            alert("Lugar eliminado")
+            location.reload()
+        })
+    }
 })
+
 
 const DateTime = luxon.DateTime
 let lxFechaHora
@@ -121,4 +223,5 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     activeMenuOption(location.hash)
 })
+
 
