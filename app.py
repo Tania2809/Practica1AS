@@ -47,15 +47,10 @@ def app2():
 
 
 # EVENTOS
-
-
-
-#lugares
-@app.route("/lugares")
-def lugares():
+@app.route("/eventos")
+def eventos():
     if not con.is_connected():
         con.reconnect()
-
     cursor = con.cursor(dictionary=True)
     sql    = """
 SELECT 
@@ -68,6 +63,24 @@ FROM eventos e
 INNER JOIN categorias c ON e.idCategoria = c.idCategoria
 INNER JOIN lugares l ON e.idLugar = l.idLugar
 INNER JOIN clientes cl ON e.idCliente = cl.idCliente;
+    """
+    cursor.execute(sql)
+    eventos = cursor.fetchall()
+    return render_template("eventos.html", eventos=eventos)
+
+
+
+
+
+#lugares
+@app.route("/lugares")
+def lugares():
+    if not con.is_connected():
+        con.reconnect()
+
+    cursor = con.cursor(dictionary=True)
+    sql    = """
+    SELECT * FROM lugares
     """
 
     cursor.execute(sql)
