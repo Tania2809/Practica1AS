@@ -1,83 +1,41 @@
-<div ng-controller="eventosCtrl" class="container mt-4">
-    <h2 class="mb-3">Gestión de Eventos</h2>
-
-    <!-- Formulario nuevo evento -->
-    <form ng-submit="guardar(nuevoEvento)" class="card p-3 mb-4">
-        <div class="row g-3">
-            <div class="col-md-4">
-                <label class="form-label">Nombre</label>
-                <input type="text" ng-model="nuevoEvento.nombre" class="form-control" required>
-            </div>
-
-            <div class="col-md-4">
-                <label class="form-label">Fecha</label>
-                <input type="date" ng-model="nuevoEvento.fecha" class="form-control" required>
-            </div>
-
-            <div class="col-md-4">
-                <label class="form-label">Hora</label>
-                <input type="time" ng-model="nuevoEvento.hora" class="form-control" required>
-            </div>
-
-            <div class="col-md-4">
-                <label class="form-label">Lugar</label>
-                <select ng-model="nuevoEvento.lugar_id" class="form-select" 
-                        ng-options="l.id as l.nombre for l in lugares" required>
-                    <option value="">Seleccione un lugar</option>
-                </select>
-            </div>
-
-            <div class="col-md-4">
-                <label class="form-label">Cliente</label>
-                <select ng-model="nuevoEvento.cliente_id" class="form-select" 
-                        ng-options="c.id as c.nombre for c in clientes" required>
-                    <option value="">Seleccione un cliente</option>
-                </select>
-            </div>
-
-            <div class="col-md-4">
-                <label class="form-label">Categoría</label>
-                <select ng-model="nuevoEvento.categoria_id" class="form-select" 
-                        ng-options="cat.id as cat.nombre for cat in categorias" required>
-                    <option value="">Seleccione una categoría</option>
-                </select>
-            </div>
-
-            <div class="col-12 text-end">
-                <button type="submit" class="btn btn-success">Guardar Evento</button>
-            </div>
+<div class="container-fluid">
+    <h2>Eventos</h2>
+    
+    <div class="card">
+        <div class="card-body">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalEvento">
+                Nuevo Evento
+            </button>
+            
+            <table class="table table-striped mt-3">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Lugar</th>
+                        <th>Cliente</th>
+                        <th>Categoría</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for evento in eventos %}
+                    <tr>
+                        <td>{{ evento.nombre }}</td>
+                        <td>{{ evento.fecha }}</td>
+                        <td>{{ evento.hora }}</td>
+                        <td>{{ evento.lugar }}</td>
+                        <td>{{ evento.cliente }}</td>
+                        <td>{{ evento.categoria }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning">Editar</button>
+                            <button class="btn btn-sm btn-danger">Eliminar</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-    </form>
-
-    <!-- Tabla de eventos -->
-    <table class="table table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>#</th>
-                <th>Nombre</th>
-                <th>Fecha</th>
-                <th>Hora</th>
-                <th>Lugar</th>
-                <th>Cliente</th>
-                <th>Categoría</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="e in eventos">
-                <td>{{ $index + 1 }}</td>
-                <td>{{ e.nombre }}</td>
-                <td>{{ e.fecha }}</td>
-                <td>{{ e.hora }}</td>
-                <td>{{ e.lugar }}</td>
-                <td>{{ e.cliente }}</td>
-                <td>{{ e.categoria }}</td>
-                <td>
-                    <button class="btn btn-danger btn-sm" ng-click="eliminar(e.id)">
-                        Eliminar
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    </div>
 </div>
