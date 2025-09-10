@@ -1,53 +1,75 @@
-<div ng-controller="clientesCtrl" class="container mt-4">
-    <h2 class="mb-3">Gestión de Clientes</h2>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Clientes</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCliente">
+            <i class="fas fa-plus me-2"></i>Nuevo Cliente
+        </button>
+    </div>
 
-    <!-- Formulario nuevo cliente -->
-    <form ng-submit="guardar(nuevoCliente)" class="card p-3 mb-4">
-        <div class="row g-3">
-            <div class="col-md-6">
-                <label class="form-label">Nombre</label>
-                <input type="text" ng-model="nuevoCliente.nombre" class="form-control" required>
-            </div>
-
-            <div class="col-md-6">
-                <label class="form-label">Teléfono</label>
-                <input type="text" ng-model="nuevoCliente.telefono" class="form-control" required>
-            </div>
-
-            <div class="col-md-12">
-                <label class="form-label">Email</label>
-                <input type="email" ng-model="nuevoCliente.email" class="form-control" required>
-            </div>
-
-            <div class="col-12 text-end">
-                <button type="submit" class="btn btn-success">Guardar Cliente</button>
+    <div class="card">
+        <div class="card-header bg-light">
+            <h5 class="card-title mb-0">Lista de Clientes</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Teléfono</th>
+                            <th>Correo Electrónico</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cliente in clientes %}
+                        <tr>
+                            <td><strong>#{{ cliente.idCliente }}</strong></td>
+                            <td>
+                                <strong>{{ cliente.nombreCliente }}</strong>
+                            </td>
+                            <td>
+                                {% if cliente.telefono %}
+                                    {{ cliente.telefono }}
+                                {% else %}
+                                    <span class="text-muted">No especificado</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if cliente.correoElectronico %}
+                                    <a href="mailto:{{ cliente.correoElectronico }}" class="text-decoration-none">
+                                        {{ cliente.correoElectronico }}
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">No especificado</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-outline-info" title="Ver eventos">
+                                        <i class="fas fa-calendar"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger" title="Eliminar">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                <i class="fas fa-users fa-2x mb-2"></i>
+                                <p>No hay clientes registrados</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
-    </form>
-
-    <!-- Tabla de clientes -->
-    <table class="table table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>#</th>
-                <th>Nombre</th>
-                <th>Teléfono</th>
-                <th>Email</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="c in clientes">
-                <td>{{ $index + 1 }}</td>
-                <td>{{ c.nombre }}</td>
-                <td>{{ c.telefono }}</td>
-                <td>{{ c.email }}</td>
-                <td>
-                    <button class="btn btn-danger btn-sm" ng-click="eliminar(c.id)">
-                        Eliminar
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    </div>
 </div>
