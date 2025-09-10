@@ -58,7 +58,16 @@ def lugares():
 
     cursor = con.cursor(dictionary=True)
     sql    = """
-    SELECT * FROM lugares
+SELECT 
+    e.*,
+    c.nombreCategoria,
+    l.nombreLugar,
+    l.direccion,
+    cl.nombre AS,
+FROM eventos e
+INNER JOIN categorias c ON e.idCategoria = c.idCategoria
+INNER JOIN lugares l ON e.idLugar = l.idLugar
+INNER JOIN clientes cl ON e.idCliente = cl.idCliente;
     """
 
     cursor.execute(sql)
@@ -82,8 +91,6 @@ def clientes():
     registros = cursor.fetchall()
 
     return render_template("clientes.html", clientes=registros)
-
-
 
 #categorias
 @app.route("/categorias/agregar", methods=["POST"])
@@ -110,7 +117,6 @@ def guardarCategoria():
     cursor.close()
     return make_response(jsonify({}))
     
-
 @app.route("/categorias", methods=["GET"])
 def categorias():
     if not con.is_connected():
@@ -122,7 +128,6 @@ def categorias():
     registros = cursor.fetchall()
     cursor.close()
     return render_template("categorias.html", categorias=registros)
-
 
 @app.route("/categoria/eliminar", methods=["POST"])
 def eliminarCategoria():
@@ -141,11 +146,6 @@ def eliminarCategoria():
     con.commit()
     cursor.close()
     return make_response(jsonify({}))
-
-
-
-
-
 
 @app.route("/lugar", methods=["POST"])
 def guardarLugar():
@@ -171,7 +171,6 @@ def guardarLugar():
 
     return make_response(jsonify({}))
 
-
 @app.route("/cliente", methods=["POST"])
 def guardarCliente():
     if not con.is_connected():
@@ -194,10 +193,6 @@ def guardarCliente():
     con.close()
 
     return make_response(jsonify({}))
-
-
-
-    
 
 @app.route("/clientes/buscar", methods=["GET"])
 def buscarClientes():
@@ -231,8 +226,6 @@ def buscarClientes():
 
     return make_response(jsonify(registros))
 
-
-
 @app.route("/categorias/buscar", methods=["GET"])
 def buscarCategorias():
     if not con.is_connected():
@@ -262,12 +255,6 @@ def buscarCategorias():
         con.close()
 
     return make_response(jsonify(registros))
-
-
-
-
-
-
 
 @app.route("/productos/buscar", methods=["GET"])
 def buscarProductos():
