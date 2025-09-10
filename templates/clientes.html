@@ -1,10 +1,8 @@
 <!-- Modal para agregar cliente -->
-<div class="modal fade" id="modalCliente" tabindex="-1" aria-labelledby="modalClienteLabel" aria-hidden="true">
-  <div class="modal-dialog">
+<div>
     <form method="POST" action="/clientes/agregar" class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modalClienteLabel">Registrar Nuevo Cliente</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
         <div class="mb-3">
@@ -26,7 +24,7 @@
       </div>
     </form>
   </div>
-</div>
+
 
     <div class="card">
         <div class="card-header bg-light">
@@ -69,12 +67,6 @@
                             </td>
                             <td>
                                 <div class="btn-group btn-group-sm">
-                                    <button class="btn btn-outline-primary" title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-outline-info" title="Ver eventos">
-                                        <i class="fas fa-calendar"></i>
-                                    </button>
                                     <button class="btn btn-outline-danger" title="Eliminar">
                                         <i class="fas fa-trash"></i>
                                     </button>
