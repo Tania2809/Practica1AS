@@ -87,24 +87,26 @@ app.controller("eventosCtrl", function ($scope, $http) {
 app.controller("categoriasCtrl", function ($scope, $http) {
     $scope.categorias = []
 
-    // Obtener lista de categorías - corregí para usar $http en lugar de $
-    $http.get("/categorias").then(function (res) {
-        $scope.categorias = res.data
-    })
-
-    // Guardar categoría
-    $scope.guardar = function (categoria) {
-        $http.post("/categorias/agregar", categoria).then(function () {
-            alert("Categoría guardada")
-            location.reload()
+    // Obtener lista de categorías
+    $scope.cargarCategorias = function() {
+        $http.get("/categorias").then(function (res) {
+            console.log("Datos recibidos:", res.data);
+        }).catch(function(error) {
+            console.error("Error al cargar categorías:", error);
         })
     }
+    
+    // Cargar categorías al inicializar
+    $scope.cargarCategorias();
 
     // Eliminar categoría
     $scope.eliminar = function (id) {
-        $http.post("/categoria/eliminar", {id: id}).then(function () {
+        $http.post("/categoria/eliminar", {idCategoria: id}).then(function () {
             alert("Categoría eliminada")
-            location.reload()
+            location.reload(); // Recargar la página para ver los cambios
+        }).catch(function(error) {
+            console.error("Error al eliminar:", error);
+            alert("Error al eliminar la categoría");
         })
     }
 })
@@ -158,6 +160,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     activeMenuOption(location.hash)
 })
+
 
 
 
