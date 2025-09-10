@@ -158,7 +158,7 @@ def guardarCategoria():
     if not con.is_connected():
         con.reconnect()
         
-        nombre      = request.form["nombre"]
+        nombre      = request.form["nombreCategoria"]
         descripcion = request.form["descripcion"]  
 
         cursor = con.cursor(dictionary=True)
@@ -395,6 +395,7 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
 
