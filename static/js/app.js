@@ -97,21 +97,14 @@ app.controller("eventosCtrl", function ($scope, $http) {
     $scope.clientes = []
     $scope.categorias = []
 
-    // Obtener lista de eventos
-    $http.get("/eventos").then(function (res) {
-        $scope.eventos = res.data
-    })
+    function cargarDatos() {
+        $http.get("/eventos/json").then(res => $scope.eventos = res.data);
+        $http.get("/lugares/json").then(res => $scope.lugares = res.data);
+        $http.get("/clientes/json").then(res => $scope.clientes = res.data);
+        $http.get("/categorias/json").then(res => $scope.categorias = res.data);
+    }
 
-    // Cargar datos relacionados (para selects)
-    $http.get("/lugares").then(function (res) {
-        $scope.lugares = res.data
-    })
-    $http.get("/clientes").then(function (res) {
-        $scope.clientes = res.data
-    })
-    $http.get("/categorias").then(function (res) {
-        $scope.categorias = res.data
-    })
+    cargarDatos();
 
     // Guardar evento
     $scope.guardar = function (evento) {
@@ -121,20 +114,13 @@ app.controller("eventosCtrl", function ($scope, $http) {
         })
     }
 
-    // Eliminar evento
-    $scope.eliminar = function (id) {
-        $http.post("/evento/eliminar", {id: id}).then(function () {
-            alert("Evento eliminado")
-            location.reload()
-        })
-    }
 })
 
 app.controller("categoriasCtrl", function ($scope, $http) {
     $scope.categorias = []
 
     // Obtener lista de categorías
-    $http.get("/categorias").then(function (res) {
+    $.get("/categorias").then(function (res) {
         $scope.categorias = res.data
     })
 
@@ -159,7 +145,7 @@ app.controller("clientesCtrl", function ($scope, $http) {
     $scope.clientes = []
 
     // Obtener lista de clientes
-    $http.get("/clientes").then(function (res) {
+    $.get("/clientes").then(function (res) {
         $scope.clientes = res.data
     })
 
@@ -170,21 +156,13 @@ app.controller("clientesCtrl", function ($scope, $http) {
             location.reload()
         })
     }
-
-    // Eliminar cliente
-    $scope.eliminar = function (id) {
-        $http.post("/cliente/eliminar", {id: id}).then(function () {
-            alert("Cliente eliminado")
-            location.reload()
-        })
-    }
 })
 
 app.controller("lugaresCtrl", function ($scope, $http) {
     $scope.lugares = []
 
     // Obtener lista de lugares
-    $http.get("/lugares").then(function (res) {
+    $.get("/lugares").then(function (res) {
         $scope.lugares = res.data
     })
 
@@ -196,13 +174,6 @@ app.controller("lugaresCtrl", function ($scope, $http) {
         })
     }
 
-    // Eliminar lugar
-    $scope.eliminar = function (id) {
-        $http.post("/lugar/eliminar", {id: id}).then(function () {
-            alert("Lugar eliminado")
-            location.reload()
-        })
-    }
 })
 
 
@@ -223,5 +194,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     activeMenuOption(location.hash)
 })
+
 
 
