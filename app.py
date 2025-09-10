@@ -124,14 +124,12 @@ def categorias_lista():
         con.reconnect()
 
     cursor = con.cursor(dictionary=True)
-    sql    = """
-    SELECT * FROM categorias
-    """
-
+    sql = "SELECT * FROM categorias"
     cursor.execute(sql)
     registros = cursor.fetchall()
     cursor.close()
     return jsonify(registros)
+
 
 @app.route("/categoria/eliminar", methods=["POST"])
 def eliminarCategoria():
@@ -408,6 +406,7 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
 
