@@ -108,25 +108,19 @@ def categorias():
 def guardarLugar():
     if not con.is_connected():
         con.reconnect()
-
-    idLugar = request.form.get("idLugar")
-    nombre  = request.form["nombre"]
-
-    cursor = con.cursor()
-
-    if idLugar:
+        
+        nombre    = request.form["nombre"]
+        direccion = request.form["direccion"]
+        ubicacion = request.form["ubicacion"]
+        
+        cursor = con.cursor(dictionary=True)
+        
         sql = """
-        UPDATE lugares
-        SET nombre = %s
-        WHERE idLugar = %s
+        INSERT INTO lugares (nombre, direccion, ubicacion)
+        VALUES (%s, %s, %s)
         """
-        val = (nombre, idLugar)
-    else:
-        sql = """
-        INSERT INTO lugares (nombre)
-        VALUES (%s)
-        """
-        val = (nombre,)
+        
+        val = (nombre, direccion, ubicacion)
 
     cursor.execute(sql, val)
     con.commit()
@@ -140,28 +134,17 @@ def guardarCliente():
     if not con.is_connected():
         con.reconnect()
 
-    idCliente = request.form.get("idCliente")
     nombre    = request.form["nombre"]
     correo    = request.form.get("correo")  # si tienes este campo
     telefono  = request.form.get("telefono") # si existe
-
-    cursor = con.cursor()
-
-    if idCliente:
-        sql = """
-        UPDATE clientes
-        SET nombre = %s,
-            correo = %s,
-            telefono = %s
-        WHERE idCliente = %s
-        """
-        val = (nombre, correo, telefono, idCliente)
-    else:
-        sql = """
-        INSERT INTO clientes (nombre, correo, telefono)
-        VALUES (%s, %s, %s)
-        """
-        val = (nombre, correo, telefono)
+    
+    cursor = con.cursor(dictionary=True)
+    
+    sql = """
+    INSERT INTO clientes (nombre, correo, telefono)
+    VALUES (%s, %s, %s)
+    """
+    val = (nombre, correo, telefono)
 
     cursor.execute(sql, val)
     con.commit()
@@ -412,6 +395,7 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
 
