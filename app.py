@@ -123,7 +123,11 @@ def categorias_lista():
         con.reconnect()
 
     cursor = con.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM categorias")
+    sql    = """
+    SELECT * FROM categorias
+    """
+
+    cursor.execute(sql)
     registros = cursor.fetchall()
     cursor.close()
     return jsonify(registros)
@@ -403,6 +407,7 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
 
