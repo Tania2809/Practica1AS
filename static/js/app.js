@@ -172,7 +172,7 @@ app.controller("clientesCtrl", function ($scope, $http) {
     $scope.allData = function () {
         $http.get("/clientes/all").then(function (res) {
             console.log("resultado", res.data)
-            $("#tablaClientes").html(res)
+            $("#tablaClientes").html(res.data)
         })
     }
 
