@@ -140,8 +140,8 @@ app.controller("clientesCtrl", function($scope, $http) {
     $scope.guardar = function(cliente) {
         $http.post("/clientes/agregar", cliente).then(function() {
             console.log("cliente guardada")
-                // Recargar lista sin recargar toda la página
-            $http.get("/clientes").then(function(res) {
+            // Recargar lista sin recargar toda la página
+            $http.get("/clientes/buscar").then(function (res) {
                 $scope.clientes = res.data
             })
             $scope.cliente = {} // Limpiar formulario
