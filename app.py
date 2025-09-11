@@ -122,7 +122,7 @@ def lugares():
     SELECT * FROM lugares
     """
 
-    cursor.execute(sql)
+    cursor.execute(sql,)
     registros = cursor.fetchall()
 
     return render_template("lugares.html", lugares=registros)
