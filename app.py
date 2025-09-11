@@ -222,9 +222,16 @@ def guardarCliente():
     if not con.is_connected():
         con.reconnect()
 
-    nombre    = request.form["nombre"]
-    correo    = request.form.get("correo")  
-    telefono  = request.form.get("telefono") # si existe
+    if request.is_json:
+        data = request.get_json()
+        nombre = data.get("nombre")
+        telefono = data.get("telefono")
+        correo = data.get("correo")
+    else:
+        nombre = request.form.get("nombre")
+        telefono = request.form.get("telefono")
+        correo = request.form.get("correo")
+
     
     cursor = con.cursor(dictionary=True)
     
