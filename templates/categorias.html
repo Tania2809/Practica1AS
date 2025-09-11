@@ -1,4 +1,10 @@
 <div class="container py-4">
+    <!-- Barra de búsqueda -->
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <input type="text" ng-model="busqueda" class="form-control" placeholder="Buscar categoría...">
+        </div>
+    </div>
     <!-- Formulario para nueva categoría (AngularJS) -->
     <form ng-submit="guardar(categoria)" class="mb-4" novalidate autocomplete="off">
         <div class="row g-2 align-items-end">
@@ -24,23 +30,15 @@
                     <th>ID</th>
                     <th>Nombre</th>
                     <th>Descripción</th>
-                    <th style="width: 100px;">Acción</th>
                 </tr>
             </thead>
             <tbody>
-                {% for categoria in categorias %}
-                <tr>
+                <!-- Filtrado del lado del cliente usando AngularJS -->
+                <tr ng-repeat="categoria in categorias | filter:busqueda">
                     <td>{{ categoria.idCategoria }}</td>
                     <td>{{ categoria.nombreCategoria }}</td>
                     <td>{{ categoria.descripcion }}</td>
-                    <td>
-                        <button class="btn btn-danger btn-sm" ng-click="eliminar(categoria.idCategoria)">Eliminar</button>
-                    </td>
                 </tr>
-                {% endfor %}
-
-
-
             </tbody>
         </table>
     </div>

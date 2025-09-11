@@ -95,7 +95,6 @@ app.controller("categoriasCtrl", function($scope, $http) {
     $scope.categorias = []
 
     // Obtener lista de categorías
-    // Obtener lista de categorías
     $http.get("/categorias").then(function(res) {
         $scope.categorias = res.data
     })
@@ -114,17 +113,15 @@ app.controller("categoriasCtrl", function($scope, $http) {
         })
     }
 
-    // Eliminar categoría
-    $scope.eliminar = function(idCategoria) {
-        $http.post("/categoria/eliminar", { idCategoria: idCategoria }).then(function() {
-            alert("Categoría eliminada")
-            $http.get("/categorias").then(function(res) {
-                $scope.categorias = res.data
-            })
-        }, function(err) {
-            alert("Error al eliminar: " + (err.data ? err.message : ""))
+    function buscarCategorias() {
+        $.get("/categorias/buscar", function(trsHTML) {
+            $("#tbodyCategorias").html(trsHTML)
         })
     }
+
+    buscarCategorias()
+
+
 })
 
 app.controller("clientesCtrl", function($scope, $http) {
@@ -133,6 +130,17 @@ app.controller("clientesCtrl", function($scope, $http) {
     // Obtener lista de clientes - corregí para usar $http
     $http.get("/clientes").then(function(res) {
         $scope.clientes = res.data
+    })
+    $(document).on("submit", "#frmCliente", function(event) {
+        event.preventDefault()
+
+        $.post("/clientes/agregar", {
+            id: "",
+            nombre: $("#nombreCliente").val(),
+            telefono: $("#telefono").val(),
+            correo: $("#correoElectronico").val()
+        })
+
     })
 
     // Guardar cliente

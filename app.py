@@ -68,10 +68,6 @@ INNER JOIN clientes cl ON e.idCliente = cl.idCliente;
     eventos = cursor.fetchall()
     return render_template("eventos.html", eventos=eventos)
 
-
-
-
-
 #lugares
 @app.route("/lugares")
 def lugares():
@@ -142,47 +138,57 @@ def categorias():
     cursor.close()
     return render_template("categorias.html", categorias=registros)
 
-@app.route("/categoria/eliminar", methods=["POST"])
-def eliminarCategoria():
+@app.route("/categorias/buscar", methods=["GET"])
+def buscarCategorias():
     if not con.is_connected():
         con.reconnect()
 
-    if request.is_json:
-        idCategoria = request.get_json().get("idCategoria")
-    else:
-        idCategoria = request.form.get("idCategoria")
+    args = request.args
+    busqueda = args["busqueda"]
+    busqueda = f"%{busqueda}%"
+    
+    cursor = con.cursor(dictionary=True)
+    sql = """
+    SELECT idCategoria,
+           nombreCategoria,
+           description
+    FROM categorias
+    WHERE nombreCategoria LIKE %s
+    OR    description LIKE %s
+    ORDER BY idCategoria DESC
+    LIMIT 10 OFFSET 0
+    """
+    val = (busqueda, busqueda)
 
-    # Validar que idCategoria no sea None y convertir a int
-    if not idCategoria:
-        return make_response(jsonify({"error": "idCategoria es requerido"}), 400)
     try:
-        idCategoria = int(idCategoria)
-    except ValueError:
-        return make_response(jsonify({"error": "idCategoria inválido"}), 400)
+        cursor.execute(sql, val)
+        registros = cursor.fetchall()
 
-    cursor = con.cursor()
-    sql = "DELETE FROM categorias WHERE idCategoria = %s"
-    val = (idCategoria,)
-    cursor.execute(sql, val)
-    con.commit()
-    cursor.close()
-    # Cerrar la conexión después de la operación
-    con.close()
-    return make_response(jsonify({}))
 
-@app.route("/lugar", methods=["POST"])
+    except mysql.connector.errors.ProgrammingError as error:
+        print(f"Ocurrió un error de programación en MySQL: {error}")
+        registros = []
+
+    finally:
+        cursor.close()
+
+    return make_response(jsonify(registros))
+
+
+
+@app.route("/lugares/agregar", methods=["POST"])
 def guardarLugar():
     if not con.is_connected():
         con.reconnect()
         
-        nombre    = request.form["nombre"]
+        nombre    = request.form["nombreLugar"]
         direccion = request.form["direccion"]
         ubicacion = request.form["ubicacion"]
         
         cursor = con.cursor(dictionary=True)
         
         sql = """
-        INSERT INTO lugares (nombre, direccion, ubicacion)
+        INSERT INTO lugares (nombreLugar, direccion, ubicacion)
         VALUES (%s, %s, %s)
         """
         
@@ -194,7 +200,7 @@ def guardarLugar():
 
     return make_response(jsonify({}))
 
-@app.route("/cliente", methods=["POST"])
+@app.route("/clientes/agregar", methods=["POST"])
 def guardarCliente():
     if not con.is_connected():
         con.reconnect()
@@ -249,35 +255,6 @@ def buscarClientes():
 
     return make_response(jsonify(registros))
 
-@app.route("/categorias/buscar", methods=["GET"])
-def buscarCategorias():
-    if not con.is_connected():
-        con.reconnect()
-        
-    args     = request.args
-    busqueda = args["busqueda"]
-    busqueda = f"%{busqueda}%"
-
-    cursor = con.cursor(dictionary=True)
-    sql = """
-    SELECT idCategoria, nombreCategoria, descripcion
-    FROM categorias
-    WHERE nombreCategoria LIKE %s
-    ORDER BY idCategoria DESC
-    LIMIT 10 OFFSET 0
-    """
-    val = (busqueda,)
-
-    try:
-        cursor.execute(sql, val)
-        registros = cursor.fetchall()
-    except mysql.connector.errors.ProgrammingError as error:
-        print(f"Ocurrió un error en MySQL: {error}")
-        registros = []
-    finally:
-        con.close()
-
-    return make_response(jsonify(registros))
 
 @app.route("/productos/buscar", methods=["GET"])
 def buscarProductos():
@@ -409,6 +386,8 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
+
 
 
 
