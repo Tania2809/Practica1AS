@@ -168,16 +168,21 @@ app.controller("categoriasCtrl", function ($scope, $http) {
 
 app.controller("clientesCtrl", function ($scope, $http) {
     $scope.clientes = []
-
-    //inizializa el template
-    $http.get("/clientes").then(function (res) { console.log("resultado", res.data) })
-
+    
     $scope.allData = function () {
         $http.get("/clientes/buscar").then(function (res) {
             console.log("resultado", res.data)
             $("#tablaClientes").html(res)
         })
     }
+
+    //inizializa el template
+    $http.get("/clientes").then(function (res) { 
+        console.log("resultado", res.data)
+        $scope.allData()
+     })
+
+
     // Guardar cliente
     $scope.guardar = function (cliente) {
         $http.post("/clientes/agregar", cliente).then(function () {
