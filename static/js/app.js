@@ -55,7 +55,7 @@ app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, 
     $rootScope.$on("$routeChangeSuccess", function(event, current, previous) {
         $("html").css("overflow-x", "hidden")
 
-        
+
         const path = current.$$route.originalPath
 
         if (path.indexOf("splash") == -1) {
@@ -80,7 +80,7 @@ app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, 
 
 app.controller("appCtrl", function($scope, $http) {})
 
-// Eliminé el controlador productosCtrl ya que no tienes ruta para él
+
 app.controller("eventosCtrl", function($scope, $http) {
 
     $scope.eventos = []
@@ -93,52 +93,72 @@ app.controller("eventosCtrl", function($scope, $http) {
 })
 
 app.controller("categoriasCtrl", function($scope, $http) {
-    $scope.categorias = []
+    $scope.categorias = [];
+    $scope.terminoBusqueda = ''; // Variable para almacenar el término de búsqueda
 
-    // Obtener lista de categorías
-  //  $http.get("/categorias").then(function(response) {
-    //    $scope.categorias = response.data
-   // })
+    // Función para cargar categorías (con o sin búsqueda)
+    $scope.cargarCategorias = function() {
+        if ($scope.terminoBusqueda) {
+            // Si hay término de búsqueda, usar el endpoint de búsqueda
+            $http.get("/categorias/buscar", {
+                params: {
+                    busqueda: $scope.terminoBusqueda
+                }
+            }).then(function(response) {
+                $scope.categorias = response.data;
+            }, function(error) {
+                console.error("Error en búsqueda:", error);
+                alert("Error al buscar categorías");
+            });
+        } else {
+            // Si no hay búsqueda, cargar todas las categorías
+            $http.get("/categorias").then(function(response) {
+                $scope.categorias = response.data;
+            }, function(error) {
+                console.error("Error al cargar categorías:", error);
+                alert("Error al cargar categorías");
+            });
+        }
+    };
+
+    // Cargar categorías al inicializar
+    $scope.cargarCategorias();
 
     // Guardar categoría
     $scope.guardar = function(categoria) {
         $http.post("/categorias/agregar", categoria).then(function() {
-            alert("Categoría guardada")
-                // Recargar lista sin recargar toda la página
-            $http.get("/categorias").then(function(response) {
-                $scope.categorias = response.data
-            })
-            $scope.categoria = {} // Limpiar formulario
+            alert("Categoría guardada");
+            $scope.cargarCategorias(); // Recargar lista usando la función centralizada
+            $scope.categoria = {}; // Limpiar formulario
         }, function(err) {
-            alert("Error al guardar: " + (err.data ? err.message : ""))
-        })
-    }
+            alert("Error al guardar: " + (err.data ? err.message : ""));
+        });
+    };
 
-    $scope.buscar = function(nombre) {
-        $http.get("/categorias/buscar", {
-            params: {
-                busqueda: nombre
-            }
-        }).then(function(response) {
-            $scope.categorias = response.data
-        }, function(error) {
-            console.error("Error en búsqueda:", error);
-            alert("Error al buscar categorías");
-        })
-    }
-            // Enable pusher logging - don't include this in production
-            Pusher.logToConsole = true
-            
-            var pusher = new Pusher("db840e3e13b1c007269e", {
-                cluster: 'us2'
-            })
+    // Función de búsqueda
+    $scope.buscar = function() {
+        $scope.cargarCategorias(); // Usar la función centralizada
+    };
 
-            var channel = pusher.subscribe("canalCategorias");
-            channel.bind("eventoCategorias", function(data) {
-                alert(JSON.stringify(data));
-            })
-    
-    
+    // Limpiar búsqueda
+    $scope.limpiarBusqueda = function() {
+        $scope.terminoBusqueda = '';
+        $scope.cargarCategorias(); // Recargar todas las categorías
+    };
+
+    // Enable pusher logging - don't include this in production
+    Pusher.logToConsole = true
+
+    var pusher = new Pusher("db840e3e13b1c007269e", {
+        cluster: 'us2'
+    })
+
+    var channel = pusher.subscribe("canalCategorias");
+    channel.bind("eventoCategorias", function(data) {
+        alert(JSON.stringify(data));
+    })
+
+
 })
 
 app.controller("clientesCtrl", function($scope, $http) {
@@ -154,10 +174,10 @@ app.controller("clientesCtrl", function($scope, $http) {
     $scope.guardar = function(cliente) {
         $http.post("/clientes/agregar", cliente).then(function() {
             console.log("cliente guardada")
-            // Recargar lista sin recargar toda la página
-            $http.get("/clientes/buscar").then(function (res) {
-                console.log("resultado",res.data)
-              //  $scope.clientes = res.data
+                // Recargar lista sin recargar toda la página
+            $http.get("/clientes/buscar").then(function(res) {
+                console.log("resultado", res.data)
+                    //  $scope.clientes = res.data
             })
             $scope.cliente = {} // Limpiar formulario
         }, function(err) {
@@ -200,6 +220,3 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 
 })
-
-
-
