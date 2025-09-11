@@ -91,7 +91,7 @@ def guardarEvento():
         data = request.get_json()
         descripcionUbicacion = data.get("descripcionUbicacion")
         descripcionEvento = data.get("descripcionEvento")
-        fechainicio = data.get("fechainicio")
+        fechainicio = data.get("fechaInicio")
         fechaFin = data.get("fechaFin")
         idCategoria = data.get("idCategoria")
         idLugar = data.get("idLugar")
@@ -99,7 +99,7 @@ def guardarEvento():
     else:
         descripcionUbicacion = request.form.get("descripcionUbicacion")
         descripcionEvento = request.form.get("descripcionEvento")
-        fechainicio = request.form.get("fechainicio")
+        fechainicio = request.form.get("fechaInicio")
         fechaFin = request.form.get("fechaFin")
         idCategoria = request.form.get("idCategoria")
         idLugar = request.form.get("idLugar")
@@ -107,10 +107,10 @@ def guardarEvento():
 
     cursor = con.cursor(dictionary=True)
     sql = """
-    INSERT INTO eventos (descripcionUbicacion, descripcionEvento, fechainicio, fechaFin, idCategoria, idLugar, idCliente)
+    INSERT INTO eventos (descripcionUbicacion, descripcionEvento, fechaInicio, fechaFin, idCategoria, idLugar, idCliente)
     VALUES (%s, %s, %s, %s, %s, %s, %s)
     """
-    val = (descripcionUbicacion, descripcionEvento, fechainicio, fechaFin, idCategoria, idLugar, idCliente)
+    val = ("", descripcionEvento, fechainicio, fechaFin, idCategoria, idLugar, idCliente)
     cursor.execute(sql, val)
     con.commit()
     cursor.close()
