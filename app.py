@@ -127,7 +127,11 @@ def buscarCategorias():
         con.reconnect()
 
     args = request.args
-    busqueda = args["busqueda"]
+    busqueda = args.get("busqueda", "")  # ✅ Usa get() para evitar KeyError
+    
+    if not busqueda:
+        return make_response(jsonify({"error": "Parámetro 'busqueda' requerido"}), 400)
+    
     busqueda = f"%{busqueda}%"
     
     cursor = con.cursor(dictionary=True)
@@ -146,36 +150,16 @@ def buscarCategorias():
     try:
         cursor.execute(sql, val)
         registros = cursor.fetchall()
-
+        return make_response(jsonify(registros))
 
     except mysql.connector.errors.ProgrammingError as error:
         print(f"Ocurrió un error de programación en MySQL: {error}")
-        registros = []
+        return make_response(jsonify({"error": "Error en la consulta"}), 500)
 
     finally:
-        cursor.close()
+        cursor.close()          
+        
 
-    return make_response(jsonify(registros))
-
-@app.route("/tbodyCategorias")
-def tbodyCategorias():
-    if not con.is_connected():
-        con.reconnect()
-
-    cursor = con.cursor(dictionary=True)
-    sql = """
-    SELECT idCategoria,
-           nombreCategoria,
-           description
-    FROM categorias
-    ORDER BY idCategoria DESC
-    LIMIT 10 OFFSET 0
-    """
-
-    cursor.execute(sql)
-    registros = cursor.fetchall()
-
-    return render_template("tbodyCategorias.html", categorias=registros)
 
 @app.route("/lugar", methods=["POST"])
 def guardarLugar():

@@ -95,8 +95,8 @@ app.controller("categoriasCtrl", function($scope, $http) {
     $scope.categorias = []
 
     // Obtener lista de categorías
-    $http.get("/categorias").then(function(res) {
-        $scope.categorias = res.data
+    $http.get("/categorias").then(function(response) {
+        $scope.categorias = response.data
     })
 
     // Guardar categoría
@@ -104,8 +104,8 @@ app.controller("categoriasCtrl", function($scope, $http) {
         $http.post("/categorias/agregar", categoria).then(function() {
             alert("Categoría guardada")
                 // Recargar lista sin recargar toda la página
-            $http.get("/categorias").then(function(res) {
-                $scope.categorias = res.data
+            $http.get("/categorias").then(function(response) {
+                $scope.categorias = response.data
             })
             $scope.categoria = {} // Limpiar formulario
         }, function(err) {
@@ -114,12 +114,17 @@ app.controller("categoriasCtrl", function($scope, $http) {
     }
 
     $scope.buscar = function(nombre) {
-        $http.get("/categorias/buscar", nombre).then(function() {
-            $scope.categorias = res.data
+        $http.get("/categorias/buscar", {
+            params: {
+                busqueda: nombre
+            }
+        }).then(function(response) {
+            $scope.categorias = response.data
+        }, function(error) {
+            console.error("Error en búsqueda:", error);
+            alert("Error al buscar categorías");
         })
     }
-
-
 })
 
 app.controller("clientesCtrl", function($scope, $http) {
