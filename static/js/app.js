@@ -82,7 +82,27 @@ app.controller("appCtrl", function($scope, $http) {})
 // Eliminé el controlador productosCtrl ya que no tienes ruta para él
 app.controller("eventosCtrl", function($scope, $http) {
 
-    $scope.eventos = []
+      $scope.eventos = []
+
+    // Obtener lista de categorías
+    $http.get("/eventos").then(function(res) {
+        $scope.categorias = res.data
+    })
+
+    // Guardar evento
+    $scope.guardar = function(categoria) {
+        $http.post("/eventos/agregar", categoria).then(function() {
+            alert("evento guardado")
+                // Recargar lista sin recargar toda la página
+            $http.get("/eventos").then(function(res) {
+                $scope.eventos = res.data
+            })
+            $scope.eventos = {} // Limpiar formulario
+        }, function(err) {
+            alert("Error al guardar: " + (err.data ? err.message : ""))
+        })
+    }
+
 
     // Obtener lista de eventos
     $http.get("/eventos").then(function(res) {

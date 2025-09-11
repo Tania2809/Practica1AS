@@ -68,6 +68,35 @@ INNER JOIN clientes cl ON e.idCliente = cl.idCliente;
     eventos = cursor.fetchall()
     return render_template("eventos.html", eventos=eventos)
 
+@app.route("/eventos/agregar", methods=["POST"])
+def guardarEvento():
+    if not con.is_connected():
+        con.reconnect()
+
+    if request.is_json:
+        data = request.get_json()
+        descripcionUbicacion = data.get("descripcionUbicacion")
+        descripcionEvento = data.get("descripcionEvento")
+        fechainicio = data.get("fechainicio")
+        fechaFin = data.get("fechaFin")
+        
+    else:
+        descripcionUbicacion = request.form.get("descripcionUbicacion")
+        descripcionEvento = request.form.get("descripcionEvento")
+        fechainicio = request.form.get("fechainicio")
+        fechaFin = request.form.gett("fechaFin")
+
+    cursor = con.cursor(dictionary=True)
+    sql = """
+    INSERT INTO eventos (descripcionUbicacion", descripcionEvento, fechainicio, fechaFin)
+    VALUES (%s, %s, %s, %s)
+    """
+    val = (descripcionUbicacion, descripcionEvento, fechainicio, fechaFin)
+    cursor.execute(sql, val)
+    con.commit()
+    cursor.close()
+    return make_response(jsonify({}))
+
 #lugares
 @app.route("/lugares")
 def lugares():
