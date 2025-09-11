@@ -194,7 +194,7 @@ def tbodyCategorias():
 
     return render_template("tbodyCategorias.html", categorias=registros)
 
-@app.route("/lugar", methods=["POST"])
+@app.route("/lugares/agregar", methods=["POST"])
 def guardarLugar():
     if not con.is_connected():
         con.reconnect()
@@ -404,6 +404,7 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
 
