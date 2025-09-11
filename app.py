@@ -86,31 +86,35 @@ INNER JOIN clientes cl ON e.idCliente = cl.idCliente;
 def guardarEvento():
     if not con.is_connected():
         con.reconnect()
-        try:
-            if request.is_json:
-                data = request.get_json()
-                descripcionUbicacion = data.get("descripcionUbicacion")
-                descripcionEvento = data.get("descripcionEvento")
-                fechainicio = data.get("fechainicio")
-                fechaFin = data.get("fechaFin")
-            else:
-                descripcionUbicacion = request.form.get("descripcionUbicacion")
-                descripcionEvento = request.form.get("descripcionEvento")
-                fechainicio = request.form.get("fechainicio")
-                fechaFin = request.form.get("fechaFin")
 
-            cursor = con.cursor(dictionary=True)
-            sql = """
-            INSERT INTO eventos (descripcionUbicacion, descripcionEvento, fechainicio, fechaFin)
-            VALUES (%s, %s, %s, %s)
-            """
-            val = (descripcionUbicacion, descripcionEvento, fechainicio, fechaFin)
-            cursor.execute(sql, val)
-            con.commit()
-            cursor.close()
-            return make_response(jsonify({}))
-        except Exception as e:
-            return make_response(jsonify({"error": str(e)}))
+    if request.is_json:
+        data = request.get_json()
+        descripcionUbicacion = data.get("descripcionUbicacion")
+        descripcionEvento = data.get("descripcionEvento")
+        fechainicio = data.get("fechainicio")
+        fechaFin = data.get("fechaFin")
+        idCategoria = data.get("idCategoria")
+        idLugar = data.get("idLugar")
+        idCliente = data.get("idCliente")
+    else:
+        descripcionUbicacion = request.form.get("descripcionUbicacion")
+        descripcionEvento = request.form.get("descripcionEvento")
+        fechainicio = request.form.get("fechainicio")
+        fechaFin = request.form.get("fechaFin")
+        idCategoria = request.form.get("idCategoria")
+        idLugar = request.form.get("idLugar")
+        idCliente = request.form.get("idCliente")
+
+    cursor = con.cursor(dictionary=True)
+    sql = """
+    INSERT INTO eventos (descripcionUbicacion, descripcionEvento, fechainicio, fechaFin, idCategoria, idLugar, idCliente)
+    VALUES (%s, %s, %s, %s, %s, %s, %s)
+    """
+    val = (descripcionUbicacion, descripcionEvento, fechainicio, fechaFin, idCategoria, idLugar, idCliente)
+    cursor.execute(sql, val)
+    con.commit()
+    cursor.close()
+    return make_response(jsonify({}))
 
 #lugares
 @app.route("/lugares")
