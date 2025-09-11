@@ -114,7 +114,7 @@ app.controller("categoriasCtrl", function($scope, $http) {
     }
 
     function buscarCategorias() {
-        $.get("/tbodyCategorias", function(trsHTML) {
+        $.get("/categorias/buscar", function(trsHTML) {
             $("#tbodyCategorias").html(trsHTML)
         })
     }
@@ -131,7 +131,7 @@ app.controller("clientesCtrl", function($scope, $http) {
     $http.get("/clientes").then(function(res) {
         $scope.clientes = res.data
     })
-    $(document).on("submit", "#frmCliente", function (event) {
+    $(document).on("submit", "#frmCliente", function(event) {
         event.preventDefault()
 
         $.post("/clientes/agregar", {
@@ -140,7 +140,7 @@ app.controller("clientesCtrl", function($scope, $http) {
             telefono: $("#telefono").val(),
             correo: $("#correoElectronico").val()
         })
-        
+
     })
 
     // Guardar cliente
