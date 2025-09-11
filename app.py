@@ -112,12 +112,16 @@ def guardarEvento():
         VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
         val = ("", descripcionEvento, fechainicio, fechaFin, idCategoria, idLugar, idCliente)
-        cursor.execute(sql, val)
-        con.commit()
-        cursor.close()
-        return make_response(jsonify({}))
+        try:
+            cursor.execute(sql, val)
+            con.commit()
+            cursor.close()
+            return make_response(jsonify({}))
+        except mysql.connector.Error as sql_error:
+            cursor.close()
+            return make_response(jsonify({"error": str(sql_error)}))
     except Exception as e:
-        return make_response(jsonify({"error": str(e)})), 500
+        return make_response(jsonify({"error": str(e)}))
 
 #lugares
 @app.route("/lugares")
