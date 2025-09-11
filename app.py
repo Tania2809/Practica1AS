@@ -184,7 +184,7 @@ def clientes():
     cursor.execute(sql)
     registros = cursor.fetchall()
 
-    return render_template("clientes.html", clientes=registros)
+    return render_template("tablaClientes.html", clientes=registros)
 
 @app.route("/clientes/buscar", methods=["GET"])
 def clientesBuscar():
@@ -202,7 +202,7 @@ def clientesBuscar():
         registros = cursor.fetchall()
     except Exception as e:
         return make_response(jsonify({"error": str(e)}))
-    return make_response(jsonify(registros))
+    return render_template("tablaClientes.html", clientes=registros)
 
 
 @app.route("/clientes/agregar", methods=["POST"])
