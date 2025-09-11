@@ -9,7 +9,7 @@ function activeMenuOption(href) {
 }
 
 const app = angular.module("angularjsApp", ["ngRoute"])
-app.config(function($routeProvider, $locationProvider) {
+app.config(function ($routeProvider, $locationProvider) {
     $locationProvider.hashPrefix("")
 
     $routeProvider
@@ -38,7 +38,7 @@ app.config(function($routeProvider, $locationProvider) {
             redirectTo: "/"
         })
 })
-app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, $timeout) {
+app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location, $timeout) {
     function actualizarFechaHora() {
         lxFechaHora = DateTime
             .now()
@@ -52,7 +52,7 @@ app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, 
 
     actualizarFechaHora()
 
-    $rootScope.$on("$routeChangeSuccess", function(event, current, previous) {
+    $rootScope.$on("$routeChangeSuccess", function (event, current, previous) {
         $("html").css("overflow-x", "hidden")
 
         const path = current.$$route.originalPath
@@ -66,7 +66,7 @@ app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, 
                 $rootScope.slide += ((active > click) ? "Left" : "Right")
             }
 
-            $timeout(function() {
+            $timeout(function () {
                 $("html").css("overflow-x", "auto")
 
                 $rootScope.slide = ""
@@ -77,86 +77,81 @@ app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, 
     })
 }])
 
-app.controller("appCtrl", function($scope, $http) {})
+app.controller("appCtrl", function ($scope, $http) { })
 
 // Eliminé el controlador productosCtrl ya que no tienes ruta para él
-app.controller("eventosCtrl", function($scope, $http) {
+app.controller("eventosCtrl", function ($scope, $http) {
 
     $scope.eventos = []
 
     // Obtener lista de eventos
-    $http.get("/eventos").then(function(res) {
+    $http.get("/eventos").then(function (res) {
         $scope.eventos = res.data
     })
 
 })
 
-app.controller("categoriasCtrl", function($scope, $http) {
+app.controller("categoriasCtrl", function ($scope, $http) {
     $scope.categorias = []
 
     // Obtener lista de categorías
-    $http.get("/categorias").then(function(res) {
+    $http.get("/categorias").then(function (res) {
         $scope.categorias = res.data
     })
 
     // Guardar categoría
-    $scope.guardar = function(categoria) {
-        $http.post("/categorias/agregar", categoria).then(function() {
+    $scope.guardar = function (categoria) {
+        $http.post("/categorias/agregar", categoria).then(function () {
             alert("Categoría guardada")
-                // Recargar lista sin recargar toda la página
-            $http.get("/categorias").then(function(res) {
+            // Recargar lista sin recargar toda la página
+            $http.get("/categorias").then(function (res) {
                 $scope.categorias = res.data
             })
             $scope.categoria = {} // Limpiar formulario
-        }, function(err) {
+        }, function (err) {
             alert("Error al guardar: " + (err.data ? err.message : ""))
         })
     }
 
     function buscarCategorias() {
-        $.get("/tbodyCategorias", function(trsHTML) {
+        $.get("/categorias/buscar", function (trsHTML) {
             $("#tbodyCategorias").html(trsHTML)
         })
     }
 
     buscarCategorias()
 
-
 })
 
-app.controller("clientesCtrl", function($scope, $http) {
+app.controller("clientesCtrl", function ($scope, $http) {
     $scope.clientes = []
 
     // Obtener lista de clientes - corregí para usar $http
-    $http.get("/clientes").then(function(res) {
+    $http.get("/clientes").then(function (res) {
         $scope.clientes = res.data
     })
-    $(document).on("submit", "#frmCliente", function (event) {
-        event.preventDefault()
 
-        $.post("/clientes/agregar", {
-            id: "",
-            nombre: $("#nombreCliente").val(),
-            telefono: $("#telefono").val(),
-            correo: $("#correoElectronico").val()
-        })
-        
-    })
 
     // Guardar cliente
-    $scope.guardar = function(cliente) {
-        $http.post("/cliente", cliente).then(function() {
-            alert("Cliente guardado")
-            location.reload()
+    $scope.guardar = function (cliente) {
+        $http.post("/clientes/agregar", categoria).then(function () {
+            console.log("cliente guardada")
+            // Recargar lista sin recargar toda la página
+            $http.get("/clientes").then(function (res) {
+                $scope.clientes = res.data
+            })
+            $scope.cliente = {} // Limpiar formulario
+        }, function (err) {
+            console.log("Error al guardar: " + (err.data ? err.message : ""))
         })
     }
 })
 
-app.controller("lugaresCtrl", function($scope, $http) {
+app.controller("lugaresCtrl", function ($scope, $http) {
     $scope.lugares = []
 
     // Obtener lista de lugares - corregí para usar $http
-    $http.get("/lugares").then(function(res) {
+    $http.get("/lugares").then(function (res) {
         $scope.lugares = res.data
     })
 
@@ -177,6 +172,7 @@ app.controller("lugaresCtrl", function($scope, $http) {
     /*
     $scope.guardar = function(lugar) {
         $http.post("/lugar", lugar).then(function() {
+
             alert("Lugar guardado")
             location.reload()
         })
@@ -188,7 +184,7 @@ app.controller("lugaresCtrl", function($scope, $http) {
 const DateTime = luxon.DateTime
 let lxFechaHora
 
-document.addEventListener("DOMContentLoaded", function(event) {
+document.addEventListener("DOMContentLoaded", function (event) {
     const configFechaHora = {
         locale: "es",
         weekNumbers: true,

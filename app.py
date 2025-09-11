@@ -84,23 +84,6 @@ def lugares():
 
     return render_template("lugares.html", lugares=registros)
 
-
-#clientes
-@app.route("/clientes")
-def clientes():
-    if not con.is_connected():
-        con.reconnect()
-
-    cursor = con.cursor(dictionary=True)
-    sql    = """
-    SELECT * FROM clientes
-    """
-
-    cursor.execute(sql)
-    registros = cursor.fetchall()
-
-    return render_template("clientes.html", clientes=registros)
-
 #categorias
 @app.route("/categorias/agregar", methods=["POST"])
 def guardarCategoria():
@@ -199,14 +182,14 @@ def guardarLugar():
     if not con.is_connected():
         con.reconnect()
         
-        nombre    = request.form["nombreLugar"]
+        nombre    = request.form["nombre"]
         direccion = request.form["direccion"]
         ubicacion = request.form["ubicacion"]
         
         cursor = con.cursor(dictionary=True)
         
         sql = """
-        INSERT INTO lugares (nombreLugar, direccion, ubicacion)
+        INSERT INTO lugares (nombre, direccion, ubicacion)
         VALUES (%s, %s, %s)
         """
         
@@ -218,19 +201,35 @@ def guardarLugar():
 
     return make_response(jsonify({}))
 
+#clientes
+@app.route("/clientes")
+def clientes():
+    if not con.is_connected():
+        con.reconnect()
+
+    cursor = con.cursor(dictionary=True)
+    sql    = """
+    SELECT * FROM clientes
+    """
+
+    cursor.execute(sql)
+    registros = cursor.fetchall()
+
+    return render_template("clientes.html", clientes=registros)
+
 @app.route("/clientes/agregar", methods=["POST"])
 def guardarCliente():
     if not con.is_connected():
         con.reconnect()
 
     nombre    = request.form["nombre"]
-    correo    = request.form.get("correo")  # si tienes este campo
+    correo    = request.form.get("correo")  
     telefono  = request.form.get("telefono") # si existe
     
     cursor = con.cursor(dictionary=True)
     
     sql = """
-    INSERT INTO clientes (nombre, correo, telefono)
+    INSERT INTO clientes (nombreCliente, correoElectronico, telefono)
     VALUES (%s, %s, %s)
     """
     val = (nombre, correo, telefono)
@@ -240,6 +239,7 @@ def guardarCliente():
     con.close()
 
     return make_response(jsonify({}))
+
 
 @app.route("/clientes/buscar", methods=["GET"])
 def buscarClientes():
@@ -404,6 +404,8 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
+
 
 
 
