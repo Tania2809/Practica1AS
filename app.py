@@ -127,11 +127,7 @@ def buscarCategorias():
         con.reconnect()
 
     args = request.args
-    busqueda = args.get("busqueda", "")  # ✅ Usa get() para evitar KeyError
-    
-    if not busqueda:
-        return make_response(jsonify({"error": "Parámetro 'busqueda' requerido"}), 400)
-    
+    busqueda = args["busqueda"]
     busqueda = f"%{busqueda}%"
     
     cursor = con.cursor(dictionary=True)
@@ -150,14 +146,16 @@ def buscarCategorias():
     try:
         cursor.execute(sql, val)
         registros = cursor.fetchall()
-        return make_response(jsonify(registros))
+
 
     except mysql.connector.errors.ProgrammingError as error:
         print(f"Ocurrió un error de programación en MySQL: {error}")
-        return make_response(jsonify({"error": "Error en la consulta"}), 500)
+        registros = []
 
     finally:
-        cursor.close()          
+        cursor.close()
+
+    return make_response(jsonify(registros))
         
 
 
