@@ -168,9 +168,9 @@ app.controller("categoriasCtrl", function ($scope, $http) {
 
 app.controller("clientesCtrl", function ($scope, $http) {
     $scope.clientes = []
-    
+
     $scope.allData = function () {
-        $http.get("/clientes/buscar").then(function (res) {
+        $http.get("/clientes/all").then(function (res) {
             console.log("resultado", res.data)
             $("#tablaClientes").html(res)
         })
