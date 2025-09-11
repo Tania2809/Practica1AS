@@ -221,7 +221,7 @@ def clientesLista():
         registros = cursor.fetchall()
     except Exception as e:
         return make_response(jsonify({"error": str(e)}))
-    return make_response(jsonify(registros))
+    return render_template("tablaClientes.html", clientes=registros)
 
 
 @app.route("/clientes/agregar", methods=["POST"])
