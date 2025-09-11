@@ -199,14 +199,14 @@ def guardarLugar():
     if not con.is_connected():
         con.reconnect()
         
-        nombre    = request.form["nombre"]
+        nombre    = request.form["nombreLugar"]
         direccion = request.form["direccion"]
         ubicacion = request.form["ubicacion"]
         
         cursor = con.cursor(dictionary=True)
         
         sql = """
-        INSERT INTO lugares (nombre, direccion, ubicacion)
+        INSERT INTO lugares (nombreLugar, direccion, ubicacion)
         VALUES (%s, %s, %s)
         """
         
@@ -404,6 +404,7 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
 
