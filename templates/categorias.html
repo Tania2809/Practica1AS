@@ -16,44 +16,34 @@
         </div>
     </form>
 
-    <form ng-submit="buscar(nombre)" class="mb-4" novalidate autocomplete="off">
-        <div class="row mb-3">
-            <div class="input-group">
-                <span class="input-group-text"><i class="fas fa-search"></i></span>
-                <input type="text" ng-model="nombre" class="form-control" placeholder="Buscar categorías..." aria-label="Buscar categorías">
-            </div>
-        </div>
-        <div class="col-md-4">
-            <button type="submit" class="btn btn-search w-100">
-                            <i class="fas fa-search me-2"></i>Buscar
-                        </button>
-        </div>
-</div>
-</div>
-</form>
-
-<!-- Tabla de categorías -->
-<div class="table-responsive">
-    <table class="table table-dark table-striped table-bordered align-middle">
-        <thead class="table-active">
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Descripción</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for categoria in categorias %}
-            <tr>
-                <td>{{ categoria.idCategoria }}</td>
-                <td>{{ categoria.nombreCategoria }}</td>
-                <td>{{ categoria.descripcion }}</td>
-            </tr>
-            {% endfor %}
+    <input type="text" ng-model="terminoBusqueda" placeholder="Buscar categorías...">
+    <button ng-click="buscar()">Buscar</button>
+    <button ng-click="limpiarBusqueda()" ng-if="terminoBusqueda">Limpiar</button>
 
 
 
-        </tbody>
-    </table>
-</div>
+    <!-- Tabla de categorías -->
+    <div class="table-responsive">
+        <table class="table table-dark table-striped table-bordered align-middle">
+            <thead class="table-active">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for categoria in categorias %}
+                <tr>
+                    <td>{{ categoria.idCategoria }}</td>
+                    <td>{{ categoria.nombreCategoria }}</td>
+                    <td>{{ categoria.descripcion }}</td>
+                </tr>
+                {% endfor %}
+
+
+
+            </tbody>
+        </table>
+    </div>
 </div>
