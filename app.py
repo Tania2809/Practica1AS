@@ -98,11 +98,11 @@ def guardarEvento():
         descripcionUbicacion = request.form.get("descripcionUbicacion")
         descripcionEvento = request.form.get("descripcionEvento")
         fechainicio = request.form.get("fechainicio")
-        fechaFin = request.form.gett("fechaFin")
+        fechaFin = request.form.get("fechaFin")
 
     cursor = con.cursor(dictionary=True)
     sql = """
-    INSERT INTO eventos (descripcionUbicacion", descripcionEvento, fechainicio, fechaFin)
+    INSERT INTO eventos (descripcionUbicacion, descripcionEvento, fechainicio, fechaFin)
     VALUES (%s, %s, %s, %s)
     """
     val = (descripcionUbicacion, descripcionEvento, fechainicio, fechaFin)
