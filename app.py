@@ -27,20 +27,6 @@ con = mysql.connector.connect(
 app = Flask(__name__)
 CORS(app)
 
-@app.route("/pusherCategorias")
-def pusherCategorias():
-    import pusher
-    
-    pusher_client = pusher.Pusher(
-        app_id="2046019",
-        key="db840e3e13b1c007269e",
-        secret="0f06a16c943fdf4bbc11",
-        cluster="us2",
-        ssl=True
-    )
-    
-    pusher_client.trigger("canalCategorias", "eventoCategorias", {"message": "Hola Mundo"})
-    return make_response(jsonify({}))
 
 @app.route("/")
 def index():
@@ -98,79 +84,66 @@ def lugares():
 
     return render_template("lugares.html", lugares=registros)
 
-#categorias
+@app.route("/categorias")
+def categorias():
+    # Solo renderizar la plantilla, sin datos
+    return render_template("categorias.html")
+
+# Nueva ruta para obtener categorías en JSON
+@app.route("/categorias/json", methods=["GET"])
+def categorias_json():
+    if not con.is_connected():
+        con.reconnect()
+
+    cursor = con.cursor(dictionary=True)
+    sql = "SELECT * FROM categorias ORDER BY idCategoria DESC"
+    cursor.execute(sql)
+    registros = cursor.fetchall()
+    cursor.close()
+    return jsonify(registros)
+
 @app.route("/categorias/agregar", methods=["POST"])
 def guardarCategoria():
     if not con.is_connected():
         con.reconnect()
 
-    if request.is_json:
+    try:
         data = request.get_json()
         nombre = data.get("nombreCategoria")
         descripcion = data.get("descripcion")
-    else:
-        nombre = request.form.get("nombreCategoria")
-        descripcion = request.form.get("descripcion")
 
-    cursor = con.cursor(dictionary=True)
-    sql = """
-    INSERT INTO categorias (nombreCategoria, descripcion)
-    VALUES (%s, %s)
-    """
-    val = (nombre, descripcion)
-    cursor.execute(sql, val)
-    con.commit()
-    cursor.close()
-    return make_response(jsonify({}))
-    
-@app.route("/categorias", methods=["GET"])
-def categorias():
-    if not con.is_connected():
-        con.reconnect()
-
-    cursor = con.cursor(dictionary=True)
-    sql = "SELECT * FROM categorias"
-    cursor.execute(sql)
-    registros = cursor.fetchall()
-    cursor.close()
-    return render_template("categorias.html", categorias=registros)
-
-@app.route("/categorias/buscar", methods=["GET"])
-def buscarCategorias():
-    if not con.is_connected():
-        con.reconnect()
-
-    args = request.args
-    busqueda = args["busqueda"]
-    busqueda = f"%{busqueda}%"
-    
-    cursor = con.cursor(dictionary=True)
-    sql = """
-    SELECT idCategoria,
-           nombreCategoria,
-           description
-    FROM categorias
-    WHERE nombreCategoria LIKE %s
-    OR    description LIKE %s
-    ORDER BY idCategoria DESC
-    LIMIT 10 OFFSET 0
-    """
-    val = (busqueda, busqueda)
-
-    try:
+        cursor = con.cursor(dictionary=True)
+        sql = """
+        INSERT INTO categorias (nombreCategoria, descripcion)
+        VALUES (%s, %s)
+        """
+        val = (nombre, descripcion)
         cursor.execute(sql, val)
-        registros = cursor.fetchall()
-
-
-    except mysql.connector.errors.ProgrammingError as error:
-        print(f"Ocurrió un error de programación en MySQL: {error}")
-        registros = []
-
-    finally:
+        con.commit()
         cursor.close()
-
-    return make_response(jsonify(registros))
         
+        return jsonify({"success": True, "message": "Categoría guardada"})
+        
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route("/pusherCategorias")
+def pusherCategorias():
+    import pusher
+    
+    pusher_client = pusher.Pusher(
+        app_id="2046019",
+        key="db840e3e13b1c007269e",
+        secret="0f06a16c943fdf4bbc11",
+        cluster="us2",
+        ssl=True
+    )
+    
+    pusher_client.trigger("canalCategorias", "eventoCategorias", {
+        "message": "Nueva categoría agregada",
+        "action": "refresh"
+    })
+    return jsonify({"status": "ok"}) 
 
 
 @app.route("/lugar", methods=["POST"])
