@@ -40,7 +40,7 @@ def pusherCategorias():
     )
     
     pusher_client.trigger("canalCategorias", "eventoCategorias", {"message": "Hola Mundo"})
-     return make_response(jsonify({}))
+    return make_response(jsonify({}))
 
 @app.route("/")
 def index():
@@ -393,6 +393,7 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
 
 
 
