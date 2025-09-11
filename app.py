@@ -198,6 +198,21 @@ def guardarLugar():
     return make_response(jsonify({}))
 
 #clientes
+def triggerUpdateCliente():
+    import pusher
+    
+    pusher_client = pusher.Pusher(
+        app_id="2046019",
+        key="db840e3e13b1c007269e",
+        secret="0f06a16c943fdf4bbc11",
+        cluster="us2",
+        ssl=True
+    )
+    
+    pusher_client.trigger("canalClientes", "newDataInserted", {"message": "triggered"})
+    return make_response(jsonify({}))
+
+
 @app.route("/clientes")
 def clientes():
     if not con.is_connected():
@@ -251,9 +266,8 @@ def guardarCliente():
     cursor.execute(sql, val)
     con.commit()
     con.close()
-
+    triggerUpdateCliente()
     return make_response(jsonify({}))
-
 
 
 

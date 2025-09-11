@@ -155,6 +155,17 @@ app.controller("clientesCtrl", function($scope, $http) {
         console.log("resultado", res.data)
         $scope.allData()
     })
+     Pusher.logToConsole = true
+
+    var pusher = new Pusher("db840e3e13b1c007269e", {
+        cluster: 'us2'
+    })
+
+    var channel = pusher.subscribe("canalClientes");
+    channel.bind("newDataInserted", function(data) {
+        console.log(JSON.stringify(data));
+        $scope.allData();
+    })
 
 
     // Guardar cliente
