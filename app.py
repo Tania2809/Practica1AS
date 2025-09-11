@@ -212,7 +212,7 @@ def clientesBuscar():
     cursor.execute(sql)
     registros = cursor.fetchall()
 
-    return make_response(jsonify({registros}))
+    return make_response(jsonify({registros:registros}))
 
 
 @app.route("/clientes/agregar", methods=["POST"])

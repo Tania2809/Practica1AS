@@ -1,5 +1,5 @@
 <!-- Modal para agregar cliente -->
-<p>version 1.0</p>
+<p>version 1.1</p>
 <div>
     <form   ng-submit="guardar(cliente)"   id="frmCliente"  class="modal-content">
       <div class="modal-header">
@@ -12,7 +12,7 @@
         </div>
         <div class="mb-3">
           <label for="telefono" class="form-label">Teléfono</label>
-          <input type="text" class="form-control"  ng-model="cliente.telefono" id="telefono" name="telefono">
+          <input type="number" class="form-control"  ng-model="cliente.telefono" id="telefono" name="telefono">
         </div>
         <div class="mb-3">
           <label for="correoElectronico" class="form-label">Correo Electrónico</label>
