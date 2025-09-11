@@ -190,7 +190,7 @@ def guardarLugar():
 
     return make_response(jsonify({}))
 
-@app.route("/cliente/agregar", methods=["POST"])
+@app.route("/clientes/agregar", methods=["POST"])
 def guardarCliente():
     if not con.is_connected():
         con.reconnect()
