@@ -202,19 +202,11 @@ def guardarLugar():
 def clientes():
     if not con.is_connected():
         con.reconnect()
+        
+    return render_template("clientes.html")
 
-    cursor = con.cursor(dictionary=True)
-    sql    = """
-    SELECT * FROM clientes
-    """
-
-    cursor.execute(sql)
-    registros = cursor.fetchall()
-
-    return render_template("clientes.html", clientes=registros)
-
-@app.route("/clientes/buscar", methods=["GET"])
-def clientesBuscar():
+@app.route("/clientes/all", methods=["GET"])
+def clientesLista():
     if not con.is_connected():
         con.reconnect()
     registros = []
