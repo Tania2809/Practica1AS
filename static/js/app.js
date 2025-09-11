@@ -160,13 +160,29 @@ app.controller("lugaresCtrl", function($scope, $http) {
         $scope.lugares = res.data
     })
 
-    // Guardar lugar
+     // Guardar Lugares
+    $scope.guardar = function(lugares) {
+        $http.post("/lugares/agregar", lugares).then(function() {
+            alert("Lugar guardada")
+                // Recargar lista sin recargar toda la página
+            $http.get("/lugares").then(function(res) {
+                $scope.lugar = res.data
+            })
+            $scope.lugar = {} // Limpiar formulario
+        }, function(err) {
+            alert("Error el lugar: " + (err.data ? err.message : ""))
+        })
+    }
+    // Guardar lugar 
+    /*
     $scope.guardar = function(lugar) {
         $http.post("/lugar", lugar).then(function() {
             alert("Lugar guardado")
             location.reload()
         })
     }
+    */
+    
 })
 
 const DateTime = luxon.DateTime
@@ -183,4 +199,5 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 
     activeMenuOption(location.hash)
+
 })
