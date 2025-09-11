@@ -114,7 +114,7 @@ app.controller("categoriasCtrl", function($scope, $http) {
     }
 
     $scope.buscar = function(nombre) {
-        $http.post("/categorias/buscar", nombre).then(function() {
+        $http.get("/categorias/buscar", nombre).then(function() {
             $scope.categorias = res.data
         })
     }
