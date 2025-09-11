@@ -203,7 +203,7 @@ def clientes():
 def clientesBuscar():
     if not con.is_connected():
         con.reconnect()
-
+    
     cursor = con.cursor(dictionary=True)
     sql    = """
     SELECT * FROM clientes
@@ -246,37 +246,6 @@ def guardarCliente():
     return make_response(jsonify({}))
 
 
-@app.route("/clientes/buscar", methods=["GET"])
-def buscarClientes():
-    if not con.is_connected():
-        con.reconnect()
-
-    args     = request.args
-    busqueda = args["busqueda"]
-    busqueda = f"%{busqueda}%"
-
-    cursor = con.cursor(dictionary=True)
-    sql = """
-    SELECT idCliente, nombre, correo, telefono
-    FROM clientes
-    WHERE nombre LIKE %s
-       OR correo LIKE %s
-       OR telefono LIKE %s
-    ORDER BY idCliente DESC
-    LIMIT 10 OFFSET 0
-    """
-    val = (busqueda, busqueda, busqueda)
-
-    try:
-        cursor.execute(sql, val)
-        registros = cursor.fetchall()
-    except mysql.connector.errors.ProgrammingError as error:
-        print(f"Ocurrió un error en MySQL: {error}")
-        registros = []
-    finally:
-        con.close()
-
-    return make_response(jsonify(registros))
 
 
 @app.route("/productos/buscar", methods=["GET"])
