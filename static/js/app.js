@@ -166,7 +166,8 @@ app.controller("clientesCtrl", function($scope, $http) {
 
     // Obtener lista de clientes - corregí para usar $http
     $http.get("/clientes").then(function(res) {
-        $scope.clientes = res.data
+        console.log(res);
+        
     })
 
     $scope.allData = function(){
