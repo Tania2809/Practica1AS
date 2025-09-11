@@ -55,6 +55,7 @@ app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, 
     $rootScope.$on("$routeChangeSuccess", function(event, current, previous) {
         $("html").css("overflow-x", "hidden")
 
+
         const path = current.$$route.originalPath
 
         if (path.indexOf("splash") == -1) {
@@ -79,7 +80,7 @@ app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, 
 
 app.controller("appCtrl", function($scope, $http) {})
 
-// Eliminé el controlador productosCtrl ya que no tienes ruta para él
+
 app.controller("eventosCtrl", function($scope, $http) {
 
       $scope.eventos = []
@@ -115,17 +116,17 @@ app.controller("categoriasCtrl", function($scope, $http) {
     $scope.categorias = []
 
     // Obtener lista de categorías
-    $http.get("/categorias").then(function(res) {
-        $scope.categorias = res.data
-    })
+    //  $http.get("/categorias").then(function(response) {
+    //    $scope.categorias = response.data
+    // })
 
     // Guardar categoría
     $scope.guardar = function(categoria) {
         $http.post("/categorias/agregar", categoria).then(function() {
             alert("Categoría guardada")
                 // Recargar lista sin recargar toda la página
-            $http.get("/categorias").then(function(res) {
-                $scope.categorias = res.data
+            $http.get("/categorias").then(function(response) {
+                $scope.categorias = response.data
             })
             $scope.categoria = {} // Limpiar formulario
         }, function(err) {
@@ -133,44 +134,73 @@ app.controller("categoriasCtrl", function($scope, $http) {
         })
     }
 
-    function buscarCategorias() {
-        $.get("/categorias/buscar", function(trsHTML) {
-            $("#tbodyCategorias").html(trsHTML)
-        })
-    }
+    $scope.buscar = function(nombre) {
+            $http.get("/categorias/buscar", {
+                params: {
+                    busqueda: nombre
+                }
+            }).then(function(response) {
+                $scope.categorias = response.data
+            }, function(error) {
+                console.error("Error en búsqueda:", error);
+                alert("Error al buscar categorías");
+            })
+        }
+        // Enable pusher logging - don't include this in production
+    Pusher.logToConsole = true
 
-    buscarCategorias()
+    var pusher = new Pusher("db840e3e13b1c007269e", {
+        cluster: 'us2'
+    })
 
+    var channel = pusher.subscribe("canalCategorias");
+    channel.bind("eventoCategorias", function(data) {
+        alert(JSON.stringify(data));
+    })
 
 })
 
 app.controller("clientesCtrl", function($scope, $http) {
     $scope.clientes = []
 
-    // Obtener lista de clientes - corregí para usar $http
-    $http.get("/clientes").then(function(res) {
-        $scope.clientes = res.data
-    })
-    $(document).on("submit", "#frmCliente", function(event) {
-        event.preventDefault()
-
-        $.post("/clientes/agregar", {
-            id: "",
-            nombre: $("#nombreCliente").val(),
-            telefono: $("#telefono").val(),
-            correo: $("#correoElectronico").val()
+    $scope.allData = function() {
+        $http.get("/clientes/all").then(function(res) {
+            console.log("resultado", res.data)
+            $("#tablaClientes").html(res.data)
         })
+    }
 
+    //inizializa el template
+    $http.get("/clientes").then(function(res) {
+        console.log("resultado", res.data)
+        $scope.allData()
     })
+     Pusher.logToConsole = true
+
+    var pusher = new Pusher("db840e3e13b1c007269e", {
+        cluster: 'us2'
+    })
+
+    var channel = pusher.subscribe("canalClientes");
+    channel.bind("newDataInserted", function(data) {
+        console.log(JSON.stringify(data));
+        $scope.allData();
+    })
+
 
     // Guardar cliente
     $scope.guardar = function(cliente) {
-        $http.post("/cliente", cliente).then(function() {
-            alert("Cliente guardado")
-            location.reload()
+        $http.post("/clientes/agregar", cliente).then(function() {
+            console.log("cliente guardada")
+                // Recargar lista sin recargar toda la página
+            //$scope.allData()
+            $scope.cliente = {} // Limpiar formulario
+        }, function(err) {
+            console.log("Error al guardar: " + (err.data ? err.message : ""))
         })
     }
 })
+
 
 app.controller("lugaresCtrl", function($scope, $http) {
     $scope.lugares = []
@@ -189,6 +219,8 @@ app.controller("lugaresCtrl", function($scope, $http) {
     }
 })
 
+
+
 const DateTime = luxon.DateTime
 let lxFechaHora
 
@@ -203,4 +235,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
     }
 
     activeMenuOption(location.hash)
+
+
 })

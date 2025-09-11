@@ -27,6 +27,21 @@ con = mysql.connector.connect(
 app = Flask(__name__)
 CORS(app)
 
+@app.route("/pusherCategorias")
+def pusherCategorias():
+    import pusher
+    
+    pusher_client = pusher.Pusher(
+        app_id="2046019",
+        key="db840e3e13b1c007269e",
+        secret="0f06a16c943fdf4bbc11",
+        cluster="us2",
+        ssl=True
+    )
+    
+    pusher_client.trigger("canalCategorias", "eventoCategorias", {"message": "Hola Mundo"})
+    return make_response(jsonify({}))
+
 @app.route("/")
 def index():
     if not con.is_connected():
@@ -44,7 +59,6 @@ def app2():
     con.close()
 
     return "<h5>Hola, soy la view app</h5>"
-
 
 # EVENTOS
 @app.route("/eventos")
@@ -112,23 +126,6 @@ def lugares():
     registros = cursor.fetchall()
 
     return render_template("lugares.html", lugares=registros)
-
-
-#clientes
-@app.route("/clientes")
-def clientes():
-    if not con.is_connected():
-        con.reconnect()
-
-    cursor = con.cursor(dictionary=True)
-    sql    = """
-    SELECT * FROM clientes
-    """
-
-    cursor.execute(sql)
-    registros = cursor.fetchall()
-
-    return render_template("clientes.html", clientes=registros)
 
 #categorias
 @app.route("/categorias/agregar", methods=["POST"])
@@ -202,22 +199,22 @@ def buscarCategorias():
         cursor.close()
 
     return make_response(jsonify(registros))
+        
 
 
-
-@app.route("/lugares/agregar", methods=["POST"])
+@app.route("/lugar", methods=["POST"])
 def guardarLugar():
     if not con.is_connected():
         con.reconnect()
         
-        nombre    = request.form["nombreLugar"]
+        nombre    = request.form["nombre"]
         direccion = request.form["direccion"]
         ubicacion = request.form["ubicacion"]
         
         cursor = con.cursor(dictionary=True)
         
         sql = """
-        INSERT INTO lugares (nombreLugar, direccion, ubicacion)
+        INSERT INTO lugares (nombre, direccion, ubicacion)
         VALUES (%s, %s, %s)
         """
         
@@ -229,19 +226,68 @@ def guardarLugar():
 
     return make_response(jsonify({}))
 
+#clientes
+def triggerUpdateCliente():
+    import pusher
+    
+    pusher_client = pusher.Pusher(
+        app_id="2046019",
+        key="db840e3e13b1c007269e",
+        secret="0f06a16c943fdf4bbc11",
+        cluster="us2",
+        ssl=True
+    )
+    
+    pusher_client.trigger("canalClientes", "newDataInserted", {"message": "triggered"})
+    return make_response(jsonify({}))
+
+
+@app.route("/clientes")
+def clientes():
+    if not con.is_connected():
+        con.reconnect()
+        
+    return render_template("clientes.html")
+
+@app.route("/clientes/all", methods=["GET"])
+def clientesLista():
+    if not con.is_connected():
+        con.reconnect()
+    registros = []
+    try:
+        
+        cursor = con.cursor(dictionary=True)
+        sql    = """
+        SELECT * FROM clientes
+        """
+
+        cursor.execute(sql)
+        registros = cursor.fetchall()
+    except Exception as e:
+        return make_response(jsonify({"error": str(e)}))
+    return render_template("tablaClientes.html", clientes=registros)
+
+
 @app.route("/clientes/agregar", methods=["POST"])
 def guardarCliente():
     if not con.is_connected():
         con.reconnect()
 
-    nombre    = request.form["nombre"]
-    correo    = request.form.get("correo")  # si tienes este campo
-    telefono  = request.form.get("telefono") # si existe
+    if request.is_json:
+        data = request.get_json()
+        nombre = data.get("nombre")
+        telefono = data.get("telefono")
+        correo = data.get("correo")
+    else:
+        nombre = request.form.get("nombre")
+        telefono = request.form.get("telefono")
+        correo = request.form.get("correo")
+
     
     cursor = con.cursor(dictionary=True)
     
     sql = """
-    INSERT INTO clientes (nombre, correo, telefono)
+    INSERT INTO clientes (nombreCliente, correoElectronico, telefono)
     VALUES (%s, %s, %s)
     """
     val = (nombre, correo, telefono)
@@ -249,40 +295,9 @@ def guardarCliente():
     cursor.execute(sql, val)
     con.commit()
     con.close()
-
+    triggerUpdateCliente()
     return make_response(jsonify({}))
 
-@app.route("/clientes/buscar", methods=["GET"])
-def buscarClientes():
-    if not con.is_connected():
-        con.reconnect()
-
-    args     = request.args
-    busqueda = args["busqueda"]
-    busqueda = f"%{busqueda}%"
-
-    cursor = con.cursor(dictionary=True)
-    sql = """
-    SELECT idCliente, nombre, correo, telefono
-    FROM clientes
-    WHERE nombre LIKE %s
-       OR correo LIKE %s
-       OR telefono LIKE %s
-    ORDER BY idCliente DESC
-    LIMIT 10 OFFSET 0
-    """
-    val = (busqueda, busqueda, busqueda)
-
-    try:
-        cursor.execute(sql, val)
-        registros = cursor.fetchall()
-    except mysql.connector.errors.ProgrammingError as error:
-        print(f"Ocurrió un error en MySQL: {error}")
-        registros = []
-    finally:
-        con.close()
-
-    return make_response(jsonify(registros))
 
 
 @app.route("/productos/buscar", methods=["GET"])
@@ -415,6 +430,9 @@ def eliminarProducto():
     con.close()
 
     return make_response(jsonify({}))
+
+
+
 
 
 
