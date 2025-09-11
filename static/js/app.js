@@ -96,9 +96,9 @@ app.controller("categoriasCtrl", function($scope, $http) {
     $scope.categorias = []
 
     // Obtener lista de categorías
-    $http.get("/categorias").then(function(response) {
-        $scope.categorias = response.data
-    })
+  //  $http.get("/categorias").then(function(response) {
+    //    $scope.categorias = response.data
+   // })
 
     // Guardar categoría
     $scope.guardar = function(categoria) {
@@ -199,5 +199,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 
 })
+
 
 
