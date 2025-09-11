@@ -56,8 +56,9 @@ app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, 
         $("html").css("overflow-x", "hidden")
 
         document.addEventListener("DOMContentLoaded", function() {
+            console.log("Ya cargo.")
             // Enable pusher logging - don't include this in production
-            Pusher.logToConsole = true;
+            Pusher.logToConsole = true
             
             var pusher = new Pusher("db840e3e13b1c007269e", {
                 cluster: 'us2'
@@ -199,3 +200,4 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 
 })
+
