@@ -165,14 +165,12 @@ app.controller("clientesCtrl", function($scope, $http) {
 
     $scope.allData = function() {
         $http.get("/clientes/all").then(function(res) {
-            console.log("resultado", res.data)
             $("#tablaClientes").html(res.data)
         })
     }
 
     //inizializa el template
     $http.get("/clientes").then(function(res) {
-        console.log("resultado", res.data)
         $scope.allData()
     })
      Pusher.logToConsole = true
@@ -183,7 +181,6 @@ app.controller("clientesCtrl", function($scope, $http) {
 
     var channel = pusher.subscribe("canalClientes");
     channel.bind("newDataInserted", function(data) {
-        console.log(JSON.stringify(data));
         $scope.allData();
     })
 
@@ -191,7 +188,6 @@ app.controller("clientesCtrl", function($scope, $http) {
     // Guardar cliente
     $scope.guardar = function(cliente) {
         $http.post("/clientes/agregar", cliente).then(function() {
-            console.log("cliente guardada")
                 // Recargar lista sin recargar toda la página
             //$scope.allData()
             $scope.cliente = {} // Limpiar formulario
