@@ -55,7 +55,7 @@ app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, 
     $rootScope.$on("$routeChangeSuccess", function(event, current, previous) {
         $("html").css("overflow-x", "hidden")
 
-
+        
         const path = current.$$route.originalPath
 
         if (path.indexOf("splash") == -1) {
@@ -146,19 +146,19 @@ app.controller("categoriasCtrl", function($scope, $http) {
         $scope.cargarCategorias(); // Recargar todas las categorías
     };
 
-    // Enable pusher logging - don't include this in production
-    Pusher.logToConsole = true
+            // Enable pusher logging - don't include this in production
+            Pusher.logToConsole = true
+            
+            var pusher = new Pusher("db840e3e13b1c007269e", {
+                cluster: 'us2'
+            })
 
-    var pusher = new Pusher("db840e3e13b1c007269e", {
-        cluster: 'us2'
-    })
-
-    var channel = pusher.subscribe("canalCategorias");
-    channel.bind("eventoCategorias", function(data) {
-        alert(JSON.stringify(data));
-    })
-
-
+            var channel = pusher.subscribe("canalCategorias");
+            channel.bind("eventoCategorias", function(data) {
+                alert(JSON.stringify(data));
+            })
+    
+    
 })
 
 app.controller("clientesCtrl", function($scope, $http) {
@@ -169,44 +169,40 @@ app.controller("clientesCtrl", function($scope, $http) {
         $scope.clientes = res.data
     })
 
-
+    $scope.allData = function(){
+         $http.get("/clientes/buscar").then(function (res) {
+                console.log("resultado",res.data)
+                $scope.clientes = res.data
+            })
+    }
     // Guardar cliente
     $scope.guardar = function(cliente) {
         $http.post("/clientes/agregar", cliente).then(function() {
             console.log("cliente guardada")
-                // Recargar lista sin recargar toda la página
-            $http.get("/clientes/buscar").then(function(res) {
-                console.log("resultado", res.data)
-                    //  $scope.clientes = res.data
-                    // Recargar lista sin recargar toda la página
-                $http.get("/clientes/buscar").then(function(res) {
-                    console.log("resultado", res.data)
-                    $scope.clientes = res.data
-                })
-                $scope.cliente = {} // Limpiar formulario
-            }, function(err) {
-                console.log("Error al guardar: " + (err.data ? err.message : ""))
-            })
+            // Recargar lista sin recargar toda la página
+            $scope.allData()
+            $scope.cliente = {} // Limpiar formulario
+        }, function(err) {
+            console.log("Error al guardar: " + (err.data ? err.message : ""))
         })
     }
+})
 
-    app.controller("lugaresCtrl", function($scope, $http) {
-        $scope.lugares = []
+app.controller("lugaresCtrl", function($scope, $http) {
+    $scope.lugares = []
 
-        // Obtener lista de lugares - corregí para usar $http
-        $http.get("/lugares").then(function(res) {
-            $scope.lugares = res.data
-        })
-
-        // Guardar lugar
-        $scope.guardar = function(lugar) {
-            $http.post("/lugar", lugar).then(function() {
-                alert("Lugar guardado")
-                location.reload()
-            })
-        }
+    // Obtener lista de lugares - corregí para usar $http
+    $http.get("/lugares").then(function(res) {
+        $scope.lugares = res.data
     })
 
+    // Guardar lugar
+    $scope.guardar = function(lugar) {
+        $http.post("/lugar", lugar).then(function() {
+            alert("Lugar guardado")
+            location.reload()
+        })
+    }
 })
 
 const DateTime = luxon.DateTime
