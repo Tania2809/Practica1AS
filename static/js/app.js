@@ -113,13 +113,11 @@ app.controller("categoriasCtrl", function($scope, $http) {
         })
     }
 
-    function buscarCategorias() {
-        $.get("/categorias/buscar", function(trsHTML) {
-            $("#tbodyCategorias").html(trsHTML)
+    $scope.buscar = function(nombre) {
+        $http.post("/categorias/buscar", nombre).then(function() {
+            $scope.categorias = res.data
         })
     }
-
-    buscarCategorias()
 
 
 })
