@@ -1,5 +1,5 @@
-<div class="container py-4" ng-controller="categoriasCtrl">
-    <!-- Formulario para nueva categoría -->
+<div class="container py-4">
+    <!-- Formulario para nueva categoría (AngularJS) -->
     <form ng-submit="guardar(categoria)" class="mb-4" novalidate autocomplete="off">
         <div class="row g-2 align-items-end">
             <div class="col-md-4">
@@ -16,18 +16,21 @@
         </div>
     </form>
 
-    <!-- Búsqueda -->
-    <div class="row mb-3">
-        <div class="col-md-6">
+    <form ng-submit="buscar(nombre)" class="mb-4" novalidate autocomplete="off">
+        <div class="row mb-3">
             <div class="input-group">
-                <input type="text" ng-model="terminoBusqueda" class="form-control" placeholder="Buscar categorías...">
-                <button class="btn btn-primary" ng-click="buscar()">Buscar</button>
-                <button class="btn btn-secondary" ng-click="limpiarBusqueda()" ng-if="terminoBusqueda">Limpiar</button>
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                <input type="text" ng-model="nombre" class="form-control" placeholder="Buscar categorías..." aria-label="Buscar categorías">
             </div>
         </div>
-    </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-search w-100">
+                            <i class="fas fa-search me-2"></i>Buscar
+                        </button>
+        </div>
+    </form>
 
-    <!-- Tabla de categorías (AngularJS) -->
+    <!-- Tabla de categorías -->
     <div class="table-responsive">
         <table class="table table-dark table-striped table-bordered align-middle">
             <thead class="table-active">
@@ -38,14 +41,13 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="categoria in categorias">
+                {% for categoria in categorias %}
+                <tr>
                     <td>{{ categoria.idCategoria }}</td>
                     <td>{{ categoria.nombreCategoria }}</td>
                     <td>{{ categoria.descripcion }}</td>
                 </tr>
-                <tr ng-if="categorias.length === 0">
-                    <td colspan="3" class="text-center">No hay categorías</td>
-                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
