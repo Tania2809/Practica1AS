@@ -83,7 +83,27 @@ app.controller("appCtrl", function($scope, $http) {})
 
 app.controller("eventosCtrl", function($scope, $http) {
 
-    $scope.eventos = []
+      $scope.eventos = []
+
+    // Obtener lista de categorías
+    $http.get("/eventos").then(function(res) {
+        $scope.categorias = res.data
+    })
+
+    // Guardar evento
+    $scope.guardar = function(eventos) {
+        $http.post("/eventos/agregar", eventos).then(function() {
+            alert("evento guardado")
+                // Recargar lista sin recargar toda la página
+            $http.get("/eventos").then(function(res) {
+                $scope.eventos = res.data
+            })
+            $scope.eventos = {} // Limpiar formulario
+        }, function(err) {
+            alert("Error al guardar: " + (err.data ? err.message : ""))
+        })
+    }
+
 
     // Obtener lista de eventos
     $http.get("/eventos").then(function(res) {
