@@ -1,14 +1,17 @@
 <!-- Formulario para nuevo lugar -->
-<form id="frmLugares "method="POST" class="mb-4">
+<form ng-submit="guardar(lugares)" id="frmLugares "method="POST" class="mb-4">
     <div class="row">
         <div class="col-md-3">
-            <input required type="text" name="nombreLugar" class="form-control" placeholder="Nombre del lugar">
+            <label class="form-label mb-1">Nombre del Lugar</label>
+            <input required type="text" ng-model="lugares.nombreLugar" class="form-control" placeholder="Nombre del lugar">
         </div>
         <div class="col-md-4">
-            <input required type="text" name="direccion" class="form-control" placeholder="Dirección">
+            <label class="form-label mb-1">Direccion</label>
+            <input required type="text" ng-model="lugares.direccion" class="form-control" placeholder="Dirección">
         </div>
         <div class="col-md-3">
-            <input required type="text" name="ubicacion" class="form-control" placeholder="Ubicación">
+            <label class="form-label mb-1">Ubicacion</label>
+            <input required type="text" ng-model="lugares.ubicacion" class="form-control" placeholder="Ubicación">
         </div>
         <div class="col-md-2">
             <button class="btn btn-success w-100" type="submit">Registrar</button>
