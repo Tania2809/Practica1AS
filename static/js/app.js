@@ -168,69 +168,72 @@ app.controller("categoriasCtrl", function($scope, $http) {
 
 
 app.controller("clientesCtrl", function($scope, $http) {
-            $scope.clientes = []
+    $scope.clientes = []
 
-            // Obtener lista de clientes - corregí para usar $http
-            $http.get("/clientes").then(function(res) {
-                console.log(res);
-                $("#tablaClientes").html(res)
+    // Obtener lista de clientes - corregí para usar $http
+    $http.get("/clientes").then(function(res) {
+        console.log(res);
+        $("#tablaClientes").html(res)
 
-            })
+    })
 
+    $scope.allData = function() {
+        $http.get("/clientes/buscar").then(function(res) {
+            console.log("resultado", res.data)
+            $scope.clientes = res.data
             $scope.allData = function() {
                     $http.get("/clientes/buscar").then(function(res) {
                         console.log("resultado", res.data)
-                        $scope.clientes = res.data
-                        $scope.allData = function() {
-                                $http.get("/clientes/buscar").then(function(res) {
-                                    console.log("resultado", res.data)
-                                    $("#tablaClientes").html(res)
-                                })
-                            }
-                            // Guardar cliente
-                        $scope.guardar = function(cliente) {
-                            $http.post("/clientes/agregar", cliente).then(function() {
-                                console.log("cliente guardada")
-                                    // Recargar lista sin recargar toda la página
-                                $scope.allData()
-                                $scope.cliente = {} // Limpiar formulario
-                            }, function(err) {
-                                console.log("Error al guardar: " + (err.data ? err.message : ""))
-                            })
-                        }
+                        $("#tablaClientes").html(res)
                     })
+                }
+                // Guardar cliente
+            $scope.guardar = function(cliente) {
+                $http.post("/clientes/agregar", cliente).then(function() {
+                    console.log("cliente guardada")
+                        // Recargar lista sin recargar toda la página
+                    $scope.allData()
+                    $scope.cliente = {} // Limpiar formulario
+                }, function(err) {
+                    console.log("Error al guardar: " + (err.data ? err.message : ""))
+                })
+            }
+        })
+    }
 
-                    app.controller("lugaresCtrl", function($scope, $http) {
-                        $scope.lugares = []
+    app.controller("lugaresCtrl", function($scope, $http) {
+        $scope.lugares = []
 
-                        // Obtener lista de lugares - corregí para usar $http
-                        $http.get("/lugares").then(function(res) {
-                            $scope.lugares = res.data
-                        })
+        // Obtener lista de lugares - corregí para usar $http
+        $http.get("/lugares").then(function(res) {
+            $scope.lugares = res.data
+        })
 
-                        // Guardar lugar
-                        $scope.guardar = function(lugar) {
-                            $http.post("/lugar", lugar).then(function() {
-                                alert("Lugar guardado")
-                                location.reload()
-                            })
-                        }
-                    })
+        // Guardar lugar
+        $scope.guardar = function(lugar) {
+            $http.post("/lugar", lugar).then(function() {
+                alert("Lugar guardado")
+                location.reload()
+            })
+        }
+    })
 
-                    const DateTime = luxon.DateTime
-                    let lxFechaHora
+})
 
-                    document.addEventListener("DOMContentLoaded", function(event) {
-                        const configFechaHora = {
-                            locale: "es",
-                            weekNumbers: true,
-                            minuteIncrement: 15,
-                            altInput: true,
-                            altFormat: "d/F/Y",
-                            dateFormat: "Y-m-d",
-                        }
+const DateTime = luxon.DateTime
+let lxFechaHora
 
-                        activeMenuOption(location.hash)
+document.addEventListener("DOMContentLoaded", function(event) {
+    const configFechaHora = {
+        locale: "es",
+        weekNumbers: true,
+        minuteIncrement: 15,
+        altInput: true,
+        altFormat: "d/F/Y",
+        dateFormat: "Y-m-d",
+    }
+
+    activeMenuOption(location.hash)
 
 
-                    })
+})
