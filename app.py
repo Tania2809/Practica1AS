@@ -60,7 +60,6 @@ def app2():
 
     return "<h5>Hola, soy la view app</h5>"
 
-
 # EVENTOS
 @app.route("/eventos")
 def eventos():
@@ -214,20 +213,23 @@ def clientes():
 
     return render_template("clientes.html", clientes=registros)
 
-@app.route("/clientes/buscar")
+@app.route("/clientes/buscar", methods=["GET"])
 def clientesBuscar():
     if not con.is_connected():
         con.reconnect()
-    
-    cursor = con.cursor(dictionary=True)
-    sql    = """
-    SELECT * FROM clientes
-    """
+    registros = []
+    try:
+        
+        cursor = con.cursor(dictionary=True)
+        sql    = """
+        SELECT * FROM clientes
+        """
 
-    cursor.execute(sql)
-    registros = cursor.fetchall()
-
-    return make_response(jsonify({registros:registros}))
+        cursor.execute(sql)
+        registros = cursor.fetchall()
+    except Exception as e:
+        return make_response(jsonify({"error": str(e)}))
+    return make_response(jsonify(registros))
 
 
 @app.route("/clientes/agregar", methods=["POST"])
