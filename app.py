@@ -217,6 +217,22 @@ def clientes():
 
     return render_template("clientes.html", clientes=registros)
 
+@app.route("/clientes/buscar")
+def clientesBuscar():
+    if not con.is_connected():
+        con.reconnect()
+
+    cursor = con.cursor(dictionary=True)
+    sql    = """
+    SELECT * FROM clientes
+    """
+
+    cursor.execute(sql)
+    registros = cursor.fetchall()
+
+    return make_response(jsonify({registros}))
+
+
 @app.route("/clientes/agregar", methods=["POST"])
 def guardarCliente():
     if not con.is_connected():
