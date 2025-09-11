@@ -209,7 +209,7 @@ app.controller("lugaresCtrl", function ($scope, $http) {
     }
 })
 
-})
+
 
 const DateTime = luxon.DateTime
 let lxFechaHora
