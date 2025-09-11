@@ -55,7 +55,7 @@ app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, 
     $rootScope.$on("$routeChangeSuccess", function(event, current, previous) {
         $("html").css("overflow-x", "hidden")
 
-        
+
         const path = current.$$route.originalPath
 
         if (path.indexOf("splash") == -1) {
@@ -94,16 +94,14 @@ app.controller("eventosCtrl", function($scope, $http) {
 
 app.controller("categoriasCtrl", function($scope, $http) {
     $scope.categorias = [];
-    $scope.terminoBusqueda = ''; // Variable para almacenar el término de búsqueda
+    $scope.terminoBusqueda = '';
+    $scope.categoria = {}; // Objeto para el formulario
 
-    // Función para cargar categorías (con o sin búsqueda)
+    // Función para cargar categorías
     $scope.cargarCategorias = function() {
         if ($scope.terminoBusqueda) {
-            // Si hay término de búsqueda, usar el endpoint de búsqueda
             $http.get("/categorias/buscar", {
-                params: {
-                    busqueda: $scope.terminoBusqueda
-                }
+                params: { busqueda: $scope.terminoBusqueda }
             }).then(function(response) {
                 $scope.categorias = response.data;
             }, function(error) {
@@ -111,8 +109,7 @@ app.controller("categoriasCtrl", function($scope, $http) {
                 alert("Error al buscar categorías");
             });
         } else {
-            // Si no hay búsqueda, cargar todas las categorías
-            $http.get("/categorias").then(function(response) {
+            $http.get("/categorias/json").then(function(response) {
                 $scope.categorias = response.data;
             }, function(error) {
                 console.error("Error al cargar categorías:", error);
@@ -126,9 +123,14 @@ app.controller("categoriasCtrl", function($scope, $http) {
 
     // Guardar categoría
     $scope.guardar = function(categoria) {
-        $http.post("/categorias/agregar", categoria).then(function() {
+        $http.post("/categorias/agregar", categoria).then(function(response) {
             alert("Categoría guardada");
-            $scope.cargarCategorias(); // Recargar lista usando la función centralizada
+
+            // Disparar evento Pusher después de guardar
+            $http.get("/pusherCategorias").then(function() {
+                console.log("Evento Pusher disparado");
+            });
+
             $scope.categoria = {}; // Limpiar formulario
         }, function(err) {
             alert("Error al guardar: " + (err.data ? err.message : ""));
@@ -137,29 +139,33 @@ app.controller("categoriasCtrl", function($scope, $http) {
 
     // Función de búsqueda
     $scope.buscar = function() {
-        $scope.cargarCategorias(); // Usar la función centralizada
+        $scope.cargarCategorias();
     };
 
     // Limpiar búsqueda
     $scope.limpiarBusqueda = function() {
         $scope.terminoBusqueda = '';
-        $scope.cargarCategorias(); // Recargar todas las categorías
+        $scope.cargarCategorias();
     };
 
-            // Enable pusher logging - don't include this in production
-            Pusher.logToConsole = true
-            
-            var pusher = new Pusher("db840e3e13b1c007269e", {
-                cluster: 'us2'
-            })
+    // Configuración de Pusher
+    Pusher.logToConsole = true;
 
-            var channel = pusher.subscribe("canalCategorias");
-            channel.bind("eventoCategorias", function(data) {
-                alert(JSON.stringify(data));
-            })
-    
-    
-})
+    var pusher = new Pusher("db840e3e13b1c007269e", {
+        cluster: 'us2'
+    });
+
+    var channel = pusher.subscribe("canalCategorias");
+    channel.bind("eventoCategorias", function(data) {
+        // Actualizar la tabla cuando llegue evento de Pusher
+        $scope.$apply(function() {
+            $scope.cargarCategorias();
+        });
+        console.log("Tabla actualizada por Pusher", data);
+    });
+});
+
+
 
 app.controller("clientesCtrl", function($scope, $http) {
     $scope.clientes = []
@@ -169,17 +175,17 @@ app.controller("clientesCtrl", function($scope, $http) {
         $scope.clientes = res.data
     })
 
-    $scope.allData = function(){
-         $http.get("/clientes/buscar").then(function (res) {
-                console.log("resultado",res.data)
+    $scope.allData = function() {
+            $http.get("/clientes/buscar").then(function(res) {
+                console.log("resultado", res.data)
                 $scope.clientes = res.data
             })
-    }
-    // Guardar cliente
+        }
+        // Guardar cliente
     $scope.guardar = function(cliente) {
         $http.post("/clientes/agregar", cliente).then(function() {
             console.log("cliente guardada")
-            // Recargar lista sin recargar toda la página
+                // Recargar lista sin recargar toda la página
             $scope.allData()
             $scope.cliente = {} // Limpiar formulario
         }, function(err) {
