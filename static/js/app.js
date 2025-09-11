@@ -92,7 +92,9 @@ app.controller("eventosCtrl", function($scope, $http) {
 
     // Guardar evento
     $scope.guardar = function(eventos) {
-        $http.post("/eventos/agregar", eventos).then(function() {
+        $http.post("/eventos/agregar", eventos).then(function(res) {
+            console.log(res);
+            
             alert("evento guardado")
                 // Recargar lista sin recargar toda la página
             $http.get("/eventos").then(function(res) {
