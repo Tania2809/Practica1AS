@@ -68,10 +68,6 @@ INNER JOIN clientes cl ON e.idCliente = cl.idCliente;
     eventos = cursor.fetchall()
     return render_template("eventos.html", eventos=eventos)
 
-
-
-
-
 #lugares
 @app.route("/lugares")
 def lugares():
@@ -194,7 +190,7 @@ def guardarLugar():
 
     return make_response(jsonify({}))
 
-@app.route("/cliente", methods=["POST"])
+@app.route("/cliente/agregar", methods=["POST"])
 def guardarCliente():
     if not con.is_connected():
         con.reconnect()
