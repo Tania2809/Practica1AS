@@ -131,6 +131,17 @@ app.controller("clientesCtrl", function($scope, $http) {
     $http.get("/clientes").then(function(res) {
         $scope.clientes = res.data
     })
+    $(document).on("submit", "#frmCliente", function (event) {
+        event.preventDefault()
+
+        $.post("/clientes/agregar", {
+            id: "",
+            nombre: $("#nombreCliente").val(),
+            telefono: $("#telefono").val(),
+            correo: $("#correoElectronico").val()
+        })
+        
+    })
 
     // Guardar cliente
     $scope.guardar = function(cliente) {
