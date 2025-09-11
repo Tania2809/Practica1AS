@@ -1,21 +1,21 @@
 <!-- Modal para agregar cliente -->
 <div>
-    <form method="POST"  id="frmCliente"  class="modal-content">
+    <form   ng-submit="guardar(cliente)"   id="frmCliente"  class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modalClienteLabel">Registrar Nuevo Cliente</h5>
       </div>
       <div class="modal-body">
         <div class="mb-3">
           <label for="nombreCliente" class="form-label">Nombre</label>
-          <input required type="text" class="form-control" id="nombreCliente" name="nombreCliente">
+          <input required type="text" class="form-control"  ng-model="cliente.nombre" id="nombreCliente" name="nombreCliente">
         </div>
         <div class="mb-3">
           <label for="telefono" class="form-label">Teléfono</label>
-          <input type="text" class="form-control" id="telefono" name="telefono">
+          <input type="text" class="form-control"  ng-model="cliente.telefono" id="telefono" name="telefono">
         </div>
         <div class="mb-3">
           <label for="correoElectronico" class="form-label">Correo Electrónico</label>
-          <input type="email" class="form-control" id="correoElectronico" name="correoElectronico">
+          <input type="email"  ng-model="cliente.correo" class="form-control" id="correoElectronico" name="correoElectronico">
         </div>
       </div>
       <div class="modal-footer">
