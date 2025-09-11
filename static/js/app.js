@@ -173,7 +173,7 @@ app.controller("clientesCtrl", function($scope, $http) {
         $http.post("/clientes/agregar", cliente).then(function() {
             console.log("cliente guardada")
                 // Recargar lista sin recargar toda la página
-            $scope.allData()
+            //$scope.allData()
             $scope.cliente = {} // Limpiar formulario
         }, function(err) {
             console.log("Error al guardar: " + (err.data ? err.message : ""))
