@@ -24,7 +24,6 @@
                     <th>ID</th>
                     <th>Nombre</th>
                     <th>Descripción</th>
-                    <th style="width: 100px;">Acción</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,9 +32,6 @@
                     <td>{{ categoria.idCategoria }}</td>
                     <td>{{ categoria.nombreCategoria }}</td>
                     <td>{{ categoria.descripcion }}</td>
-                    <td>
-                        <button class="btn btn-danger btn-sm" ng-click="eliminar(categoria.idCategoria)">Eliminar</button>
-                    </td>
                 </tr>
                 {% endfor %}
 
