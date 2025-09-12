@@ -218,6 +218,8 @@ app.controller("categoriasCtrl", function($scope, $http) {
     var channel = pusher.subscribe("canalCategorias");
 
     channel.bind("eventoCategorias", function(data) {
+        console.log("Evento recibido:", data);
+
         if ($scope.mostrarTodos) {
             eventBus.publish('evento_externo', data);
             categoriaService.cargarTodas();
