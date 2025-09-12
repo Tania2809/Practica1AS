@@ -121,10 +121,18 @@ def eliminarEvento():
         if not con.is_connected():
             con.reconnect()
 
+        id = ""
+
         if request.is_json:
             data = request.get_json()
-            id = str(data.get("idEvento", "")).strip()
+            if isinstance(data, dict):
+                # Caso JSON con objeto
+                id = str(data.get("idEvento", "")).strip()
+            else:
+                # Caso JSON con número suelto
+                id = str(data).strip()
         else:
+            # Caso enviado por form
             id = str(request.form.get("idEvento", "")).strip()
 
         if not id.isdigit():
