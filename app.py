@@ -201,7 +201,7 @@ def guardarLugar():
     sql = """
     INSERT INTO lugares (nombreLugar, direccion, ubicacion)
     VALUES (%s, %s, %s)
-        """
+    """
 
     val = (nombreL, direccion, ubicacion)
 
