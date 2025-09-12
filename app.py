@@ -123,11 +123,11 @@ def eliminarEvento():
 
         if request.is_json:
             data = request.get_json()
-            id = data.get("idEvento", "").strip()
+            id = str(data.get("idEvento", "")).strip()
         else:
-            id = request.form.get("idEvento", "").strip()
+            id = str(request.form.get("idEvento", "")).strip()
 
-        if not id or not id.isdigit():
+        if not id.isdigit():
             return make_response(jsonify({"error": "ID de evento no válido"}), 400)
 
         cursor = con.cursor(dictionary=True)
@@ -144,11 +144,14 @@ def eliminarEvento():
         return make_response(jsonify({"ultimo error": str(e)}), 500)
 
 
+
 # lugares
 @app.route("/lugares")
 def lugares():
     if not con.is_connected():
         con.reconnect()
+        
+        con.close()
         
     return render_template("lugares.html")
 
@@ -157,6 +160,7 @@ def lugares():
 def ListarLugares():
     if not con.is_connected():
         con.reconnect()
+        
         
     lugares = []
     try:
@@ -170,8 +174,7 @@ def ListarLugares():
         lugares = cursor.fetchall()
     except:
         pass
-    #finally:
-        con.close()
+    con.close()
     return render_template("tablalugares.html", lugares=lugares)
 
 
@@ -201,7 +204,7 @@ def guardarLugar():
 
     cursor.execute(sql, val)
     con.commit()
-    
+    con.close()
 
     return make_response(jsonify({}))
 
