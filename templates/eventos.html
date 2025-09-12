@@ -73,9 +73,12 @@
         <td>
           <!-- Botón eliminar -->
           <button class="btn btn-danger btn-sm" 
-                  ng-click="eliminar(evento.idEvento)">
-            Eliminar
+          ng-click="eliminar('{{ evento.idEvento }}')">
+        Eliminar
           </button>
+        </td>
+      </tr>
+      {% endfor %}
         </td>
       </tr>
       {% endfor %}

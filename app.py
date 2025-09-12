@@ -119,8 +119,12 @@ def guardarEvento():
 def eliminarEvento():
     if not con.is_connected():
         con.reconnect()
-
-    id = request.form["idEvento"]
+    if request.is_json:
+        data = request.get_json()
+        id = data.get("idEvento", "").strip()
+    else:
+        id = request.form.get("idEvento", "").strip()
+        
 
     cursor = con.cursor(dictionary=True)
     sql = """
