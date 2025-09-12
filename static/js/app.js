@@ -135,16 +135,8 @@ app.controller("categoriasCtrl", function($scope, $http) {
     $scope.categorias = [];
     $scope.mostrarTodos = true;
 
-    // 1. Configurar Pusher CORRECTAMENTE
-    Pusher.logToConsole = true; // Ver logs en consola
 
-    var pusher = new Pusher("db840e3e13b1c007269e", {
-        cluster: 'us2',
-        forceTLS: true // Important: usar conexión segura
-    });
 
-    // 2. Suscribirse al canal
-    var channel = pusher.subscribe("canalCategorias");
 
     // 3. ESCUCHAR eventos de Pusher (¡ESTO ES LO QUE FALTABA!)
     channel.bind("categoria_guardada", function(data) {
@@ -230,6 +222,22 @@ app.controller("categoriasCtrl", function($scope, $http) {
                 }
             });
     };
+
+    $http.get("/categorias").then(function(res) {
+        $scope.allData()
+    })
+
+    Pusher.logToConsole = true
+    var pusher = new Pusher("db840e3e13b1c007269e", {
+        cluster: 'us2'
+    })
+    var channel = pusher.subscribe("canalCategorias");
+    channel.bind("newDataInserted", function(data) {
+        if (!$scope.searching)
+            $scope.allData();
+    })
+
+
 
     // 7. Buscar categorías
     $scope.buscar = function(nombre) {

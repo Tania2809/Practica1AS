@@ -210,6 +210,8 @@ def categorias():
         con.reconnect()
     return render_template("categorias.html")
 
+
+
 # Obtener todas las categorías
 @app.route("/categorias/all", methods=["GET"])
 def ListarCategorias():
@@ -229,10 +231,24 @@ def ListarCategorias():
     
     return render_template("tablaCategorias.html", categorias=registros)
 
+# clientes
+def pusherCategoria():
+    import pusher
+    
+    pusher_client = pusher.Pusher(
+        app_id="2046019",
+        key="db840e3e13b1c007269e",
+        secret="0f06a16c943fdf4bbc11",
+        cluster="us2",
+        ssl=True
+    )
+    
+    pusher_client.trigger("canalCategorias", "newDataInserted", {"message": "triggered"})
+    return make_response(jsonify({}))
+
 # Guardar nueva categoría
 @app.route("/categorias/agregar", methods=["POST"])
 def guardarCategoria():
-    try:
         # Verificar conexión
         if not con.is_connected():
             con.reconnect()
@@ -275,33 +291,14 @@ def guardarCategoria():
         
         categoria_id = cursor.lastrowid
         cursor.close()
-        
-        # Publicar evento
-        publicar_evento_categoria("categoria_guardada", {
-            "id": categoria_id,
-            "nombre": nombre,
-            "descripcion": descripcion
-        })
-        
+        pusherCategoria()
+
         return make_response(jsonify({
             "status": "success", 
-            "id": categoria_id,
-            "message": "Categoría guardada correctamente"
-        }))
-        
-    except mysql.connector.Error as err:
-        print("Error de MySQL:", err)
-        return make_response(jsonify({
-            "status": "error", 
-            "message": f"Error de base de datos: {err}"
-        }), 500)
-        
-    except Exception as e:
-        print("Error general:", e)
-        return make_response(jsonify({
-            "status": "error", 
-            "message": f"Error interno del servidor: {str(e)}"
-        }), 500)
+            "message": "Categoría guardada exitosamente",
+            "idCategoria": categoria_id
+        }), 201)
+
     
 
 # Buscar categorías
@@ -365,23 +362,7 @@ def buscarCategorias():
         }), 500)
     
 
-# Función para publicar eventos de categoría
-def publicar_evento_categoria(evento, datos):
-    try:
-        pusher_client = pusher.Pusher(
-            app_id="2046019",
-            key="db840e3e13b1c007269e",
-            secret="0f06a16c943fdf4bbc11",
-            cluster="us2",
-            ssl=True
-        )
-        
-        pusher_client.trigger("canalCategorias", evento, datos)
-        print(f"✅ Evento publicado: {evento} - {datos}")
-        
-    except Exception as e:
-        print(f"❌ Error al publicar evento: {e}")
-        # Fallback: puedes agregar otras notificaciones aquí
+    
 
 # clientes
 def triggerUpdateCliente():
