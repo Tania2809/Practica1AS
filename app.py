@@ -228,40 +228,78 @@ def ListarCategorias():
 # Guardar nueva categoría
 @app.route("/categorias/agregar", methods=["POST"])
 def guardarCategoria():
-    if not con.is_connected():
-        con.reconnect()
-
     try:
+        # Verificar conexión
+        if not con.is_connected():
+            con.reconnect()
+            
+        if not con.is_connected():
+            return make_response(jsonify({
+                "status": "error", 
+                "message": "Error de conexión a la base de datos"
+            }), 500)
+        
+        # Obtener datos
         if request.is_json:
             data = request.get_json()
-            nombre = data.get("nombreCategoria")
-            descripcion = data.get("descripcion")
+            nombre = data.get("nombreCategoria", "").strip()
+            descripcion = data.get("descripcion", "").strip()
         else:
-            nombre = request.form.get("nombreCategoria")
-            descripcion = request.form.get("descripcion")
-
+            nombre = request.form.get("nombreCategoria", "").strip()
+            descripcion = request.form.get("descripcion", "").strip()
+        
+        # Validaciones
+        if not nombre:
+            return make_response(jsonify({
+                "status": "error", 
+                "message": "El nombre de categoría es requerido"
+            }), 400)
+            
+        if len(nombre) > 100:
+            return make_response(jsonify({
+                "status": "error", 
+                "message": "El nombre no puede exceder 100 caracteres"
+            }), 400)
+        
+        # Insertar en base de datos
         cursor = con.cursor(dictionary=True)
-        sql = """
-        INSERT INTO categorias (nombreCategoria, descripcion)
-        VALUES (%s, %s)
-        """
+        sql = "INSERT INTO categorias (nombreCategoria, descripcion) VALUES (%s, %s)"
         val = (nombre, descripcion)
+        
         cursor.execute(sql, val)
         con.commit()
         
-        # Publicar evento a Pusher
+        categoria_id = cursor.lastrowid
+        cursor.close()
+        
+        # Publicar evento
         publicar_evento_categoria("categoria_guardada", {
-            "id": cursor.lastrowid,
+            "id": categoria_id,
             "nombre": nombre,
-            "descripcion": descripcion,
-            "timestamp": datetime.now().isoformat()
+            "descripcion": descripcion
         })
         
-        cursor.close()
-        return make_response(jsonify({"status": "success", "id": cursor.lastrowid}))
+        return make_response(jsonify({
+            "status": "success", 
+            "id": categoria_id,
+            "message": "Categoría guardada correctamente"
+        }))
+        
+    except mysql.connector.Error as err:
+        print("Error de MySQL:", err)
+        return make_response(jsonify({
+            "status": "error", 
+            "message": f"Error de base de datos: {err}"
+        }), 500)
+        
     except Exception as e:
-        return make_response(jsonify({"status": "error", "message": str(e)}), 500)
-
+        print("Error general:", e)
+        return make_response(jsonify({
+            "status": "error", 
+            "message": f"Error interno del servidor: {str(e)}"
+        }), 500)
+    
+    
 # Buscar categorías
 @app.route("/categorias/buscar", methods=["GET"])
 def buscarCategorias():

@@ -167,12 +167,29 @@ app.controller("categoriasCtrl", function($scope, $http, eventBus) {
 
     // Guardar categoría - Publica evento después de guardar
     $scope.guardar = function(categoria) {
-        $http.post("/categorias/agregar", categoria).then(function(response) {
-            $scope.categoria = {}; // Limpiar formulario
-            eventBus.publish('categoriaGuardada', response.data);
-        }, function(err) {
-            alert("Error al guardar: " + (err.data ? err.message : ""));
-        });
+        if (!categoria.nombreCategoria || !categoria.nombreCategoria.trim()) {
+            alert("El nombre de la categoría es requerido");
+            return;
+        }
+
+        $http.post("/categorias/agregar", categoria)
+            .then(function(response) {
+                if (response.data.status === "success") {
+                    $scope.categoria = {};
+                    alert("Categoría guardada correctamente");
+                    eventBus.publish('categoriaGuardada', response.data);
+                } else {
+                    alert("Error: " + response.data.message);
+                }
+            })
+            .catch(function(error) {
+                console.error("Error:", error);
+                if (error.data && error.data.message) {
+                    alert("Error: " + error.data.message);
+                } else {
+                    alert("Error desconocido al guardar la categoría");
+                }
+            });
     };
 
     // Buscar categorías - Publica evento con resultados
