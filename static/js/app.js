@@ -350,7 +350,7 @@ app.controller("lugaresCtrl", function($scope, $http) {
             })
         }
         //inizializa el template
-    $http.get("/").then(function(res) {
+    $http.get("/lugares").then(function(res) {
             $scope.allData()
             $http.get("/lugares/all").then(function(res) {
                 $("#tablaLugares").html(res.data)

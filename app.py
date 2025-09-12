@@ -192,10 +192,10 @@ def ListarLugares():
         """
         
         cursor.execute(sql)
-        lugares = cursor.fetchall()
+        l = cursor.fetchall()
     except Exception as e:
         return make_response(jsonify({"error": str(e)}))
-    return render_template("tablalugares.html", lugares=lugares)
+    return render_template("tablalugares.html", lugares=l)
 
 
 @app.route("/lugar/guardar", methods=["POST"])
