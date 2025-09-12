@@ -203,13 +203,13 @@ app.controller("lugaresCtrl", function($scope, $http) {
     $scope.lugares = []
 
     $scope.allData = function() {
-    $scope.get("/lugares/all").then(function(res) {
+    $http.get("/lugares/all").then(function(res) {
         $("#tablaLugares").html(res.data)
     })
 }
      //inizializa el template
-    $http.get("/").then(function(res) {
-        $scope.allData()
+    $http.get("/lugares").then(function(res) {
+        $http.allData()
     })
      Pusher.logToConsole = true
 
