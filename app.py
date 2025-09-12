@@ -170,7 +170,7 @@ def ListarLugares():
         lugares = cursor.fetchall()
     except:
         pass
-    finally:
+    #finally:
         con.close()
     return render_template("tablalugares.html", lugares=lugares)
 
