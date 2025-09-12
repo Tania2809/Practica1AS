@@ -23,9 +23,9 @@ con = mysql.connector.connect(
     user="u760464709_23005102_usr",
     password="*Q~ic:$9XVr2")
 
-
 app = Flask(__name__)
 CORS(app)
+
 
 @app.route("/pusherCategorias")
 def pusherCategorias():
@@ -42,6 +42,7 @@ def pusherCategorias():
     pusher_client.trigger("canalCategorias", "eventoCategorias", {"message": "Hola Mundo"})
     return make_response(jsonify({}))
 
+
 @app.route("/")
 def index():
     if not con.is_connected():
@@ -50,6 +51,7 @@ def index():
     con.close()
 
     return render_template("index.html")
+
 
 @app.route("/app")
 def app2():
@@ -60,13 +62,14 @@ def app2():
 
     return "<h5>Hola, soy la view app</h5>"
 
+
 # EVENTOS
 @app.route("/eventos")
 def eventos():
     if not con.is_connected():
         con.reconnect()
     cursor = con.cursor(dictionary=True)
-    sql    = """
+    sql = """
 SELECT 
     e.*,
     c.nombreCategoria,
@@ -81,6 +84,7 @@ INNER JOIN clientes cl ON e.idCliente = cl.idCliente;
     cursor.execute(sql)
     eventos = cursor.fetchall()
     return render_template("eventos.html", eventos=eventos)
+
 
 @app.route("/eventos/agregar", methods=["POST"])
 def guardarEvento():
@@ -123,23 +127,70 @@ def guardarEvento():
     except Exception as e:
         return make_response(jsonify({"error": str(e)}))
 
-#lugares
+
+# lugares
 @app.route("/lugares")
 def lugares():
     if not con.is_connected():
         con.reconnect()
+        
+    return render_template("lugares.html")
 
+
+@app.route("/lugares/all", methods=["GET"])
+def ListarLugares():
+    if not con.is_connected():
+        con.reconnect()
+    con.reconnect()
+    lugares = []
+    try:
+        
+        cursor = con.cursor(dictionary=True)
+        sql = """
+        SELECT * FROM lugares
+        """
+        
+        cursor.execute(sql)
+        lugares = cursor.fetchall()
+    except:
+        pass
+    finally:
+        con.close()
+    return render_template("tabla_lugares.html", lugares=lugares)
+
+
+@app.route("/lugar/guardar", methods=["POST"])
+def guardarLugar():
+    if not con.is_connected():
+        con.reconnect()
+        
+    if request.is_json:
+        data = request.get_json()
+        nombreL = data.get("nombreLugar")
+        direccion = data.get("direccion")
+        ubicacion = data.get("ubicacion")
+    else:
+        nombreL = request.form.get("nombreLugar")
+        direccion = request.form.get("direccion")
+        ubicacion = request.form.get("ubicacion")
+        
     cursor = con.cursor(dictionary=True)
-    sql    = """
-    SELECT * FROM lugares
-    """
+        
+    sql = """
+    INSERT INTO lugares (nombre, direccion, ubicacion)
+    VALUES (%s, %s, %s)
+        """
+        
+    val = (nombreL, direccion, ubicacion)
 
-    cursor.execute(sql,)
-    registros = cursor.fetchall()
+    cursor.execute(sql, val)
+    con.commit()
+    con.close()
 
-    return render_template("lugares.html", lugares=registros)
+    return make_response(jsonify({}))
 
-#categorias
+
+# categorias
 @app.route("/categorias/agregar", methods=["POST"])
 def guardarCategoria():
     if not con.is_connected():
@@ -163,6 +214,7 @@ def guardarCategoria():
     con.commit()
     cursor.close()
     return make_response(jsonify({}))
+
     
 @app.route("/categorias", methods=["GET"])
 def categorias():
@@ -175,6 +227,7 @@ def categorias():
     registros = cursor.fetchall()
     cursor.close()
     return render_template("categorias.html", categorias=registros)
+
 
 @app.route("/categorias/buscar", methods=["GET"])
 def buscarCategorias():
@@ -202,7 +255,6 @@ def buscarCategorias():
         cursor.execute(sql, val)
         registros = cursor.fetchall()
 
-
     except mysql.connector.errors.ProgrammingError as error:
         print(f"Ocurrió un error de programación en MySQL: {error}")
         registros = []
@@ -211,34 +263,9 @@ def buscarCategorias():
         cursor.close()
 
     return make_response(jsonify(registros))
-        
 
 
-@app.route("/lugar", methods=["POST"])
-def guardarLugar():
-    if not con.is_connected():
-        con.reconnect()
-        
-        nombre    = request.form["nombre"]
-        direccion = request.form["direccion"]
-        ubicacion = request.form["ubicacion"]
-        
-        cursor = con.cursor(dictionary=True)
-        
-        sql = """
-        INSERT INTO lugares (nombre, direccion, ubicacion)
-        VALUES (%s, %s, %s)
-        """
-        
-        val = (nombre, direccion, ubicacion)
-
-    cursor.execute(sql, val)
-    con.commit()
-    con.close()
-
-    return make_response(jsonify({}))
-
-#clientes
+# clientes
 def triggerUpdateCliente():
     import pusher
     
@@ -261,6 +288,7 @@ def clientes():
         
     return render_template("clientes.html")
 
+
 @app.route("/clientes/all", methods=["GET"])
 def clientesLista():
     if not con.is_connected():
@@ -269,7 +297,7 @@ def clientesLista():
     try:
         
         cursor = con.cursor(dictionary=True)
-        sql    = """
+        sql = """
         SELECT * FROM clientes
         """
 
@@ -294,7 +322,6 @@ def guardarCliente():
         nombre = request.form.get("nombre")
         telefono = request.form.get("telefono")
         correo = request.form.get("correo")
-
     
     cursor = con.cursor(dictionary=True)
     
@@ -311,18 +338,17 @@ def guardarCliente():
     return make_response(jsonify({}))
 
 
-
 @app.route("/productos/buscar", methods=["GET"])
 def buscarProductos():
     if not con.is_connected():
         con.reconnect()
 
-    args     = request.args
+    args = request.args
     busqueda = args["busqueda"]
     busqueda = f"%{busqueda}%"
     
     cursor = con.cursor(dictionary=True)
-    sql    = """
+    sql = """
     SELECT Id_Producto,
            Nombre_Producto,
            Precio,
@@ -338,7 +364,7 @@ def buscarProductos():
 
     LIMIT 10 OFFSET 0
     """
-    val    = (busqueda, busqueda, busqueda)
+    val = (busqueda, busqueda, busqueda)
 
     try:
         cursor.execute(sql, val)
@@ -363,6 +389,7 @@ def buscarProductos():
 
     return make_response(jsonify(registros))
 
+
 @app.route("/producto", methods=["POST"])
 # Usar cuando solo se quiera usar CORS en rutas específicas
 # @cross_origin()
@@ -370,9 +397,9 @@ def guardarProducto():
     if not con.is_connected():
         con.reconnect()
 
-    id          = request.form["id"]
-    nombre      = request.form["nombre"]
-    precio      = request.form["precio"]
+    id = request.form["id"]
+    nombre = request.form["nombre"]
+    precio = request.form["precio"]
     existencias = request.form["existencias"]
     # fechahora   = datetime.datetime.now(pytz.timezone("America/Matamoros"))
     
@@ -394,7 +421,7 @@ def guardarProducto():
         INSERT INTO productos (Nombre_Producto, Precio, Existencias)
                     VALUES    (%s,          %s,      %s)
         """
-        val =                 (nombre, precio, existencias)
+        val = (nombre, precio, existencias)
     
     cursor.execute(sql, val)
     con.commit()
@@ -402,26 +429,28 @@ def guardarProducto():
 
     return make_response(jsonify({}))
 
+
 @app.route("/producto/<int:id>")
 def editarProducto(id):
     if not con.is_connected():
         con.reconnect()
 
     cursor = con.cursor(dictionary=True)
-    sql    = """
+    sql = """
     SELECT Id_Producto, Nombre_Producto, Precio, Existencias
 
     FROM productos
 
     WHERE Id_Producto = %s
     """
-    val    = (id,)
+    val = (id,)
 
     cursor.execute(sql, val)
     registros = cursor.fetchall()
     con.close()
 
     return make_response(jsonify(registros))
+
 
 @app.route("/producto/eliminar", methods=["POST"])
 def eliminarProducto():
@@ -431,27 +460,15 @@ def eliminarProducto():
     id = request.form["id"]
 
     cursor = con.cursor(dictionary=True)
-    sql    = """
+    sql = """
     DELETE FROM productos
     WHERE Id_Producto = %s
     """
-    val    = (id,)
+    val = (id,)
 
     cursor.execute(sql, val)
     con.commit()
     con.close()
 
     return make_response(jsonify({}))
-
-
-
-
-
-
-
-
-
-
-
-
 
