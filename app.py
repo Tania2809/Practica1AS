@@ -110,22 +110,6 @@ def guardarEvento():
             idLugar = request.form.get("idLugar")
             idCliente = request.form.get("idCliente")
 
-
-        response_data = {
-    "status": "success",
-    "data": {
-        "descripcionUbicacion": descripcionUbicacion,
-        "descripcionEvento": descripcionEvento,
-        "fechaInicio": fechainicio,
-        "fechaFin": fechaFin,
-        "idCategoria": idCategoria,
-        "idLugar": idLugar,
-        "idCliente": idCliente
-    },
-    "message": "Datos recibidos correctamente"  
-    }
-
-        return make_response(jsonify(response_data), 200)
     
         cursor = con.cursor(dictionary=True)
         sql = """
