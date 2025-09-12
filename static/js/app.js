@@ -104,7 +104,9 @@ app.controller("eventosCtrl", function($scope, $http) {
             console.log("Error al guardar: " + (err.data ? err.message : ""));
         })
     }
-    
+
+
+
     // Guardar evento
     $scope.eliminar = function(evento) {
         $http.post("/eventos/eliminar", evento).then(function(res) {
@@ -119,7 +121,7 @@ app.controller("eventosCtrl", function($scope, $http) {
             console.log("Error al guardar: " + (err.data ? err.message : ""));
         })
     }
-     
+
 
 
     // Obtener lista de eventos
@@ -134,38 +136,40 @@ app.controller("eventosCtrl", function($scope, $http) {
 app.controller("categoriasCtrl", function($scope, $http) {
     $scope.categorias = [];
     $scope.mostrarTodos = true;
+    $scope.nombre = '';
 
+    // Inicializar Pusher
+    Pusher.logToConsole = true;
+    var pusher = new Pusher("db840e3e13b1c007269e", {
+        cluster: 'us2'
+    });
 
+    var channel = pusher.subscribe("canalCategorias");
 
-
-    // 3. ESCUCHAR eventos de Pusher (¡ESTO ES LO QUE FALTABA!)
-    channel.bind("categoria_guardada", function(data) {
-        console.log('🎯 Evento Pusher RECIBIDO: categoria_guardada', data);
-
-        // Actualizar la tabla inmediatamente
-        if ($scope.mostrarTodos) {
+    // Escuchar eventos de Pusher
+    channel.bind("newDataInserted", function(data) {
+        console.log('📢 Evento Pusher recibido: newDataInserted', data);
+        if (!$scope.searching) {
             $scope.allData();
         }
-
-        // Forzar actualización de AngularJS
         if (!$scope.$$phase) {
             $scope.$apply();
         }
     });
 
-    // 4. Obtener todas las categorías (función mejorada)
+    // Obtener todas las categorías
     $scope.allData = function() {
-        console.log('🔄 Cargando datos de categorías...');
+        console.log('🔄 Cargando todas las categorías...');
         $http.get("/categorias/all")
             .then(function(res) {
                 $("#tablaCategorias").html(res.data);
-                console.log('✅ Tabla actualizada con', $(".table tbody tr").length - 1, 'categorías');
+                console.log('✅ Tabla actualizada correctamente');
             })
             .catch(function(error) {
                 console.error('❌ Error al cargar categorías:', error);
                 $("#tablaCategorias").html(`
                     <tr>
-                        <td colspan="4" class="text-center text-danger py-3">
+                        <td colspan="3" class="text-center text-danger py-3">
                             <i class="fas fa-exclamation-triangle me-2"></i> 
                             Error al cargar categorías
                         </td>
@@ -174,21 +178,15 @@ app.controller("categoriasCtrl", function($scope, $http) {
             });
     };
 
-    // 5. Inicializar
+    // Inicializar
     $scope.inicializar = function() {
-        $http.get("/categorias")
-            .then(function(res) {
-                $scope.allData();
-            })
-            .catch(function(error) {
-                console.error('❌ Error al inicializar:', error);
-            });
+        $scope.allData();
     };
 
     // Iniciar
     $scope.inicializar();
 
-    // 6. Guardar categoría (versión mejorada)
+    // Guardar categoría
     $scope.guardar = function(categoria) {
         if (!categoria || !categoria.nombreCategoria || !categoria.nombreCategoria.trim()) {
             alert("❌ El nombre de la categoría es requerido");
@@ -200,15 +198,10 @@ app.controller("categoriasCtrl", function($scope, $http) {
         $http.post("/categorias/agregar", categoria)
             .then(function(response) {
                 console.log('✅ Respuesta del servidor:', response.data);
-
                 if (response.data.status === "success") {
                     $scope.categoria = {}; // Limpiar formulario
                     alert("✅ Categoría guardada correctamente");
-
-                    // ¡NO necesitamos recargar manualmente aquí!
-                    // Pusher se encargará de la actualización automática
-                    // cuando el backend publique el evento
-
+                    // Pusher se encargará de actualizar la tabla automáticamente
                 } else {
                     alert("❌ Error: " + response.data.message);
                 }
@@ -223,28 +216,14 @@ app.controller("categoriasCtrl", function($scope, $http) {
             });
     };
 
-    $http.get("/categorias").then(function(res) {
-        $scope.allData()
-    })
-
-    Pusher.logToConsole = true
-    var pusher = new Pusher("db840e3e13b1c007269e", {
-        cluster: 'us2'
-    })
-    var channel = pusher.subscribe("canalCategorias");
-    channel.bind("newDataInserted", function(data) {
-        if (!$scope.searching)
-            $scope.allData();
-    })
-
-
-
-    // 7. Buscar categorías
+    // Buscar categorías
     $scope.buscar = function(nombre) {
         console.log("🔍 Buscando:", nombre);
+        $scope.searching = true;
 
         if (!nombre || nombre.trim() === '') {
             $scope.mostrarTodos = true;
+            $scope.searching = false;
             $scope.allData();
             return;
         }
@@ -262,20 +241,23 @@ app.controller("categoriasCtrl", function($scope, $http) {
             });
     };
 
-    // 8. Limpiar búsqueda
+    // Limpiar búsqueda
     $scope.limpiarBusqueda = function() {
         $scope.nombre = '';
         $scope.mostrarTodos = true;
+        $scope.searching = false;
         $scope.allData();
     };
 
-    // 9. Limpiar cuando se destruye el controlador
+    // Limpiar cuando se destruye el controlador
     $scope.$on('$destroy', function() {
         console.log('🧹 Desconectando Pusher...');
         pusher.unsubscribe("canalCategorias");
         pusher.disconnect();
     });
 });
+
+
 
 app.controller("clientesCtrl", function($scope, $http) {
     $scope.clientes = []
