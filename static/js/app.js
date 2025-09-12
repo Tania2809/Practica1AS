@@ -224,7 +224,7 @@ app.controller("clientesCtrl", function ($scope, $http) {
                 busqueda: nombre
             }
         }).then(function (response) {
-            console.log();
+            console.log(response);
             
             $("#tablaClientes").html(response.data);
             $scope.searching = true;

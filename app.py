@@ -363,7 +363,7 @@ def buscarCliente():
     FROM clientes
     WHERE nombreCliente LIKE %s
     """
-    val = (busqueda)
+    val = (busqueda,)
 
     try:
         cursor.execute(sql, val)
