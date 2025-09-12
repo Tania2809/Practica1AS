@@ -371,6 +371,7 @@ def buscarCliente():
 
     except mysql.connector.errors.ProgrammingError as error:
         print(f"Ocurrió un error de programación en MySQL: {error}")
+        return error
         registros = []
 
     finally:
