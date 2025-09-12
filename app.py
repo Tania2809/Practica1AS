@@ -123,11 +123,11 @@ def eliminarEvento():
 
         if request.is_json:
             data = request.get_json()
-            id = data.get("idEvento", "").strip()
+            id = str(data.get("idEvento", "")).strip()
         else:
-            id = request.form.get("idEvento", "").strip()
+            id = str(request.form.get("idEvento", "")).strip()
 
-        if not id or not id.isdigit():
+        if not id.isdigit():
             return make_response(jsonify({"error": "ID de evento no válido"}), 400)
 
         cursor = con.cursor(dictionary=True)
@@ -141,7 +141,8 @@ def eliminarEvento():
     except Exception as e:
         import traceback
         print("ERROR en eliminarEvento:", traceback.format_exc())
-        return make_response(jsonify({"error": str(e)}), 500)
+        return make_response(jsonify({"ultimo error": str(e)}), 500)
+
 
 
 # lugares
