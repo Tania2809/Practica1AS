@@ -1,45 +1,53 @@
-<!-- Formulario para nuevo lugar -->
-<form ng-submit="guardar(lugares)" id="frmLugares "method="POST" class="mb-4">
-    <div class="row">
-        <div class="col-md-3">
-            <label class="form-label mb-1">Nombre del Lugar</label>
-            <input required type="text" ng-model="lugares.nombreLugar" class="form-control" placeholder="Nombre del lugar">
+<div>
+    <form ng-sumbit="guardar(lugar) id=" frmlugares" class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="modalLugaresLabel">Registrar Nuevo Lugar</h5>
         </div>
-        <div class="col-md-4">
-            <label class="form-label mb-1">Direccion</label>
-            <input required type="text" ng-model="lugares.direccion" class="form-control" placeholder="Dirección">
+        <div class="modal-body">
+            <div class="mb-3">
+                <label for="nombreLugar" class="form-label">Nombre del Lugar</label>
+                <input required type="text" class="form-control" ng-model="lugar.nombreLugar" id="nombreLugar"
+                    name="nombreLugar">
+            </div>
+            <div class="mb-3">
+                <label for="direccion" class="form-label">Direccion</label>
+                <input type="text" class="form-control" ng-model="lugar.direccion" id="direccion" name="direccion">
+            </div>
+            <div class="mb-3">
+                <label for="ubicacion" class="form-label">Ubicacion</label>
+                <input type="text" ng-model="lugar.ubicacion" class="form-control" id="ubicacion" name="ubicacion">
+            </div>
         </div>
-        <div class="col-md-3">
-            <label class="form-label mb-1">Ubicacion</label>
-            <input required type="text" ng-model="lugares.ubicacion" class="form-control" placeholder="Ubicación">
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Registrar</button>
         </div>
-        <div class="col-md-2">
-            <button class="btn btn-success w-100" type="submit">Registrar</button>
+
+    </form>
+</div>
+
+
+
+<div class="card">
+    <div class="card-header ">
+        <h5 class="card-title mb-0">Lista de Lugares</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre del Lugar</th>
+                        <th>Direccion</th>
+                        <th>Ubicacion</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaLugares">
+
+                </tbody>
+            </table>
         </div>
     </div>
-</form>
-
-
-<div class="table-responsive">
-    <table class="table table-sm">
-        <thead class="table-active">
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Dirección</th>
-                <th>Ubicación</th>
-            </tr>
-        </thead>
-        <tbody>
-
-            {% for lugar in lugares %}
-            <tr>
-                <td>{{ lugar.idLugar }}</td>
-                <td>{{ lugar.nombreLugar }}</td>
-                <td>{{ lugar.direccion }}</td>
-                <td>{{ lugar.ubicacion }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+</div>
 </div>

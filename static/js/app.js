@@ -201,21 +201,36 @@ app.controller("clientesCtrl", function($scope, $http) {
 app.controller("lugaresCtrl", function($scope, $http) {
     $scope.lugares = []
 
-    // Obtener lista de lugares - corregí para usar $http
-    $http.get("/lugares").then(function(res) {
-        $scope.lugares = res.data
+    $scope.allData = function() {
+    $scope.get("/lugares/all").then(function(res) {
+        $("#tablaLugares").html(res.data)
+    })
+}
+     //inizializa el template
+    $http.get("/").then(function(res) {
+        $scope.allData()
+    })
+     Pusher.logToConsole = true
+
+    var pusher = new Pusher("", {
+        cluster: 'us2'
+    })
+
+    var channel = pusher.subscribe("");
+    channel.bind("newDataInserted", function(data) {
+        $scope.allData();
     })
 
     // Guardar lugar
     $scope.guardar = function(lugar) {
-        $http.post("/lugar", lugar).then(function() {
-            alert("Lugar guardado")
-            location.reload()
+        $http.post("/lugar/guardar", lugar).then(function() {
+            $scope.lugar = {}
+            $scope.allData()
+        }, function(err) {
+            console.log("Error al guardar: " + (err.data ? err.message : ""))    
         })
     }
 })
-
-
 
 const DateTime = luxon.DateTime
 let lxFechaHora
