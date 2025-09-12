@@ -136,107 +136,130 @@ app.controller("eventosCtrl", function($scope, $http) {
 app.controller("categoriasCtrl", function($scope, $http) {
     $scope.categorias = [];
     $scope.mostrarTodos = true;
-    $scope.nombre = '';
 
+    // Inicializar el bus de eventos
+    const eventBus = {
+        subscribers: {},
 
+        // Suscribirse a eventos
+        subscribe: function(eventName, callback) {
+            if (!this.subscribers[eventName]) {
+                this.subscribers[eventName] = [];
+            }
+            this.subscribers[eventName].push(callback);
+        },
+
+        // Publicar eventos
+        publish: function(eventName, data) {
+            if (this.subscribers[eventName]) {
+                this.subscribers[eventName].forEach(callback => {
+                    callback(data);
+                });
+            }
+        }
+    };
+
+    // Servicio de Categorías - Escucha eventos
+    const categoriaService = {
+        cargarTodas: function() {
+            $http.get("/categorias/all").then(function(res) {
+                $("#tablaCategorias").html(res.data);
+                eventBus.publish('categorias_actualizadas', res.data);
+            });
+        },
+
+        buscar: function(nombre) {
+            $http.get("/categorias/buscar", {
+                params: { busqueda: nombre }
+            }).then(function(response) {
+                $("#tablaCategorias").html(response.data);
+                eventBus.publish('busqueda_realizada', response.data);
+            });
+        },
+
+        guardar: function(categoria) {
+            return $http.post("/categorias/agregar", categoria);
+        }
+    };
+
+    // Servicio de Notificaciones - Reacciona a eventos
+    const notificacionService = {
+        init: function() {
+            eventBus.subscribe('categoria_guardada', function(data) {
+                console.log('Notificación: Categoría guardada exitosamente', data);
+            });
+
+            eventBus.subscribe('error_guardado', function(error) {
+                console.error('Notificación: Error al guardar categoría', error);
+            });
+        }
+    };
+
+    // Servicio de Analytics - Reacciona a eventos
+    const analyticsService = {
+        init: function() {
+            eventBus.subscribe('busqueda_realizada', function(data) {
+                console.log('Analytics: Búsqueda realizada', data);
+            });
+
+            eventBus.subscribe('categoria_guardada', function(data) {
+                console.log('Analytics: Nueva categoría creada', data);
+            });
+        }
+    };
+
+    // Inicializar servicios
+    notificacionService.init();
+    analyticsService.init();
+
+    // Inicializar Pusher para eventos en tiempo real
     Pusher.logToConsole = true;
-    var pusher = new Pusher("db840e3e13b1c007269e", {
-        cluster: 'us2'
-    });
-
+    var pusher = new Pusher("db840e3e13b1c007269e", { cluster: 'us2' });
     var channel = pusher.subscribe("canalCategorias");
 
-    channel.bind("newDataInserted", function(data) {
-        if (!$scope.searching) {
-            $scope.allData();
-        }
-        if (!$scope.$$phase) {
-            $scope.$apply();
+    channel.bind("eventoCategorias", function(data) {
+        if ($scope.mostrarTodos) {
+            eventBus.publish('evento_externo', data);
+            categoriaService.cargarTodas();
         }
     });
 
-    // Obtener todas las categorías
-    $scope.allData = function() {
-        console.log('Cargando todas las categorías...');
-        $http.get("/categorias/all")
-            .then(function(res) {
-                $("#tablaCategorias").html(res.data);
-            })
-            .catch(function(error) {
-                console.error('Error al cargar categorías:', error);
-                $("#tablaCategorias").html(`
-                    <tr>
-                        <td colspan="3" class="text-center text-danger py-3">
-                            <i class="fas fa-exclamation-triangle me-2"></i> 
-                            Error al cargar categorías
-                        </td>
-                    </tr>
-                `);
-            });
-    };
+    // Cargar datos iniciales
+    categoriaService.cargarTodas();
+    $scope.mostrarTodos = true;
 
-    $scope.inicializar = function() {
-        $scope.allData();
-    };
-
-    $scope.inicializar();
-
-    // Guardar categoría
+    // Guardar categoría - Publica evento en lugar de llamada directa
     $scope.guardar = function(categoria) {
-        if (!categoria || !categoria.nombreCategoria || !categoria.nombreCategoria.trim()) {
-            return;
-        }
-
-        $http.post("/categorias/agregar", categoria)
+        categoriaService.guardar(categoria)
             .then(function(response) {
-                if (response.data.status === "success") {
-                    $scope.categoria = {};
-                } else {
-                    alert("Error: " + response.data.message);
-                }
+                eventBus.publish('categoria_guardada', response.data);
+                $scope.categoria = {};
+                categoriaService.cargarTodas();
             })
-            .catch(function(error) {
-                console.error("Error al guardar:", error);
+            .catch(function(err) {
+                eventBus.publish('error_guardado', err);
             });
     };
 
-    // Buscar categorías
+    // Buscar categorías - Publica evento
     $scope.buscar = function(nombre) {
-        console.log("Buscando:", nombre);
-        $scope.searching = true;
-
         if (!nombre || nombre.trim() === '') {
+            categoriaService.cargarTodas();
             $scope.mostrarTodos = true;
-            $scope.searching = false;
-            $scope.allData();
             return;
         }
 
-        $http.get("/categorias/buscar", {
-                params: { busqueda: nombre }
-            })
-            .then(function(response) {
-                $("#tablaCategorias").html(response.data);
-                $scope.mostrarTodos = false;
-            })
-            .catch(function(error) {
-                console.error("Error en búsqueda:", error);
-            });
+        categoriaService.buscar(nombre);
+        $scope.mostrarTodos = false;
     };
 
+    // Limpiar búsqueda
     $scope.limpiarBusqueda = function() {
         $scope.nombre = '';
+        categoriaService.cargarTodas();
         $scope.mostrarTodos = true;
-        $scope.searching = false;
-        $scope.allData();
     };
-
-    $scope.$on('$destroy', function() {
-        pusher.unsubscribe("canalCategorias");
-        pusher.disconnect();
-    });
 });
-
 
 
 app.controller("clientesCtrl", function($scope, $http) {
