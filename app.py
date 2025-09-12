@@ -216,7 +216,7 @@ def guardarLugar():
     cursor = con.cursor(dictionary=True)
         
     sql = """
-    INSERT INTO lugares (nombre, direccion, ubicacion)
+    INSERT INTO lugares (nombreLugar, direccion, ubicacion)
     VALUES (%s, %s, %s)
         """
 

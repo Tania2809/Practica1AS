@@ -226,24 +226,17 @@ app.controller("categoriasCtrl", function($scope, $http) {
             });
 
             var channel = pusher.subscribe("canalCategorias");
-
-            channel.bind("eventoCategorias", function(data) {
+            channel.bind("newDataInserted", function(data) {
                 console.log('Evento Pusher recibido:', data);
                 eventBus.publish('evento_pusher_recibido', data);
 
-                // Siempre actualizar, independientemente del estado de búsqueda
-                if (data.accion === 'crear' || data.accion === 'actualizar' || data.accion === 'eliminar') {
-                    // Forzar recarga según el estado actual
-                    if ($scope.mostrarTodos) {
-                        categoriaService.cargarTodas();
-                    } else {
-                        // Si estamos en búsqueda, mantener el filtro pero refrescar
-                        $scope.buscar($scope.nombre);
-                    }
+                if ($scope.mostrarTodos) {
+                    categoriaService.cargarTodas();
+                } else {
+                    $scope.buscar($scope.nombre);
                 }
             });
 
-            // Manejar errores de conexión Pusher
             channel.bind('pusher:subscription_error', function(status) {
                 console.error('Error de suscripción Pusher:', status);
             });
