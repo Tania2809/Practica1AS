@@ -177,7 +177,7 @@ def guardarLugar():
     return make_response(jsonify({}))
 
 
-@app.route("/pusherCategorias")
+
 def pusherCategorias():
     import pusher
     
@@ -192,14 +192,12 @@ def pusherCategorias():
     pusher_client.trigger("canalCategorias", "eventoCategorias", {"message": "Hola Mundo"})
     return make_response(jsonify({}))
 
-
 @app.route("/categorias", methods=["GET"])
 def categorias():
     if not con.is_connected():
         con.reconnect()
         
     return render_template("categorias.html")
-
 
 @app.route("/categorias/all", methods=["GET"])
 def ListarCategorias():
@@ -221,7 +219,6 @@ def ListarCategorias():
     finally:
         con.close()
     return render_template("tablaCategorias.html", categorias=registros)
-
 
 # categorias
 @app.route("/categorias/agregar", methods=["POST"])
@@ -246,9 +243,8 @@ def guardarCategoria():
     cursor.execute(sql, val)
     con.commit()
     cursor.close()
+    pusherCategorias()
     return make_response(jsonify({}))
-
-    
 
 @app.route("/categorias/buscar", methods=["GET"])
 def buscarCategorias():
@@ -256,17 +252,22 @@ def buscarCategorias():
         con.reconnect()
 
     args = request.args
-    busqueda = args["busqueda"]
+    busqueda = args.get("busqueda", "")
+    
+    if not busqueda or busqueda.strip() == "":
+        # Si la búsqueda está vacía, devolver todos los registros
+        return ListarCategorias()
+    
     busqueda = f"%{busqueda}%"
     
     cursor = con.cursor(dictionary=True)
     sql = """
     SELECT idCategoria,
            nombreCategoria,
-           description
+           descripcion
     FROM categorias
     WHERE nombreCategoria LIKE %s
-    OR    description LIKE %s
+    OR    descripcion LIKE %s
     ORDER BY idCategoria DESC
     LIMIT 10 OFFSET 0
     """
@@ -283,7 +284,7 @@ def buscarCategorias():
     finally:
         cursor.close()
 
-    return make_response(jsonify(registros))
+    return render_template("tablaCategorias.html", categorias=registros)
 
 
 # clientes
