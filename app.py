@@ -114,28 +114,7 @@ def guardarEvento():
     except Exception as e:
         return make_response(jsonify({"error": str(e)}))
 
-
-@app.route("/eventos/eliminar", methods=["POST"])
-def eliminarEvento():
-    if not con.is_connected():
-        con.reconnect()
-
-    id = request.form["idEvento"]
-
-    cursor = con.cursor(dictionary=True)
-    sql = """
-    DELETE FROM eventos
-    WHERE idEvento = %s
-    """
-    val = (id,)
-
-    cursor.execute(sql, val)
-    con.commit()
-    con.close()
-
-    return make_response(jsonify({}))
-
-
+m
 # lugares
 @app.route("/lugares")
 def lugares():
@@ -196,6 +175,8 @@ def guardarLugar():
     
 
     return make_response(jsonify({}))
+
+
 
 def pusherCategorias():
     import pusher
@@ -348,37 +329,7 @@ def clientesLista():
         return make_response(jsonify({"error": str(e)}))
     return render_template("tablaClientes.html", clientes=registros)
 
-@app.route("/clientes/buscar", methods=["GET"])
-def buscarCliente():
-    if not con.is_connected():
-        con.reconnect()
 
-    args = request.args
-    busqueda = args.get("nombre", "")
-    
-    busqueda = f"%{busqueda}%"
-    
-    cursor = con.cursor(dictionary=True)
-    sql = """
-    SELECT *
-    FROM clientes
-    WHERE nombreCliente LIKE %s
-    """
-    val = (busqueda)
-
-    try:
-        cursor.execute(sql, val)
-        registros = cursor.fetchall()
-
-    except mysql.connector.errors.ProgrammingError as error:
-        print(f"Ocurrió un error de programación en MySQL: {error}")
-        registros = []
-
-    finally:
-        cursor.close()
-
-    return render_template("tablaClientes.html", clientes=registros)
-    
 @app.route("/clientes/agregar", methods=["POST"])
 def guardarCliente():
     if not con.is_connected():
