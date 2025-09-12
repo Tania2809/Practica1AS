@@ -1,4 +1,4 @@
-{% if categorias %} {% for categoria in categorias %}
+{% if categorias and categorias|length > 0 %} {% for categoria in categorias %}
 <tr>
     <td>{{ categoria.idCategoria }}</td>
     <td>{{ categoria.nombreCategoria }}</td>
@@ -6,8 +6,8 @@
 </tr>
 {% endfor %} {% else %}
 <tr>
-    <td colspan="4" class="text-center text-muted">
-        <i class="fas fa-exclamation-circle me-2"></i> No se encontraron categorías
+    <td colspan="4" class="text-center text-muted py-3">
+        <i class="fas fa-search me-2"></i> No se encontraron categorías para la búsqueda
     </td>
 </tr>
 {% endif %}

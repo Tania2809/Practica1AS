@@ -299,35 +299,44 @@ def guardarCategoria():
             "message": f"Error interno del servidor: {str(e)}"
         }), 500)
     
-    
+
 # Buscar categorías
 @app.route("/categorias/buscar", methods=["GET"])
 def buscarCategorias():
-    if not con.is_connected():
-        con.reconnect()
-
-    args = request.args
-    busqueda = args.get("busqueda", "")
-    
-    if not busqueda or busqueda.strip() == "":
-        return ListarCategorias()
-    
-    busqueda = f"%{busqueda}%"
-    
-    cursor = con.cursor(dictionary=True)
-    sql = """
-    SELECT idCategoria, nombreCategoria, descripcion
-    FROM categorias
-    WHERE nombreCategoria LIKE %s OR descripcion LIKE %s
-    ORDER BY idCategoria DESC
-    LIMIT 10 OFFSET 0
-    """
-    val = (busqueda, busqueda)
-
     try:
+        if not con.is_connected():
+            con.reconnect()
+
+        args = request.args
+        busqueda = args.get("busqueda", "").strip()
+        
+        print(f"Búsqueda recibida: '{busqueda}'")
+        
+        if not busqueda:
+            # Si no hay búsqueda, devolver todas las categorías
+            return ListarCategorias()
+        
+        busqueda_param = f"%{busqueda}%"
+        
+        cursor = con.cursor(dictionary=True)
+        sql = """
+        SELECT idCategoria, nombreCategoria, descripcion
+        FROM categorias 
+        WHERE nombreCategoria LIKE %s 
+           OR descripcion LIKE %s
+        ORDER BY idCategoria DESC
+        """
+        val = (busqueda_param, busqueda_param)
+
+        print(f"Ejecutando consulta: {sql} con valores: {val}")
+        
         cursor.execute(sql, val)
         registros = cursor.fetchall()
         
+        print(f"Resultados encontrados: {len(registros)}")
+        for registro in registros:
+            print(f" - {registro['nombreCategoria']}: {registro['descripcion']}")
+
         # Publicar evento de búsqueda
         publicar_evento_categoria("busqueda_realizada", {
             "termino": busqueda,
@@ -335,13 +344,16 @@ def buscarCategorias():
             "timestamp": datetime.now().isoformat()
         })
         
-    except Exception as e:
-        print(f"Error en búsqueda: {e}")
-        registros = []
-    finally:
         cursor.close()
-
-    return render_template("tablaCategorias.html", categorias=registros)
+        
+        return render_template("tablaCategorias.html", categorias=registros)
+        
+    except Exception as e:
+        print(f"Error en búsqueda: {str(e)}")
+        return make_response(jsonify({
+            "status": "error", 
+            "message": f"Error en búsqueda: {str(e)}"
+        }), 500)
 
 # Función para publicar eventos de categoría
 def publicar_evento_categoria(evento, datos):
