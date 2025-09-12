@@ -158,7 +158,7 @@ def lugares():
 def ListarLugares():
     if not con.is_connected():
         con.reconnect()
-    con.reconnect()
+        
     lugares = []
     try:
         
