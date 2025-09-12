@@ -204,7 +204,6 @@ app.controller("categoriasCtrl", function($scope, $http, eventBus) {
                 params: { busqueda: nombre }
             })
             .then(function(response) {
-                console.log("Respuesta de búsqueda recibida:", response.data);
                 $("#tablaCategorias").html(response.data);
 
                 eventBus.publish('busquedaRealizada', {
