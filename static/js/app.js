@@ -92,15 +92,16 @@ app.controller("eventosCtrl", function($scope, $http) {
 
     // Guardar evento
     $scope.guardar = function(eventos) {
-        $http.post("/eventos/agregar", eventos).then(function() {
-            alert("evento guardado")
+        $http.post("/eventos/agregar", eventos).then(function(res) {
+            console.log(res);
+            console.log("evento guardado")
                 // Recargar lista sin recargar toda la página
             $http.get("/eventos").then(function(res) {
                 $scope.eventos = res.data
             })
             $scope.eventos = {} // Limpiar formulario
         }, function(err) {
-            alert("Error al guardar: " + (err.data ? err.message : ""))
+            console.log("Error al guardar: " + (err.data ? err.message : ""));
         })
     }
 
