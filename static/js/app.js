@@ -109,6 +109,8 @@ app.controller("eventosCtrl", function($scope, $http) {
 
     // Guardar evento
     $scope.eliminar = function(evento) {
+        console.log(evento);
+        
         $http.post("/eventos/eliminar", evento).then(function(res) {
             console.log(res);
             console.log("evento eliminado")
