@@ -166,7 +166,6 @@ def lugares():
 def ListarLugares():
     if not con.is_connected():
         con.reconnect()
-        
     lugares = []
     try:
         
@@ -177,10 +176,8 @@ def ListarLugares():
         
         cursor.execute(sql)
         lugares = cursor.fetchall()
-    except:
-        pass
-    #finally:
-        con.close()
+    except Exception as e:
+        return make_response(jsonify({"error": str(e)}))
     return render_template("tablalugares.html", lugares=lugares)
 
 
@@ -210,7 +207,7 @@ def guardarLugar():
 
     cursor.execute(sql, val)
     con.commit()
-    
+    con.close()
 
     return make_response(jsonify({}))
 
