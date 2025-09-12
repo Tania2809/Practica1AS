@@ -208,6 +208,8 @@ app.controller("clientesCtrl", function ($scope, $http) {
         }
 
         $http.get("/clientes/buscar",nombre).then(function (response) {
+            console.log(response);
+            
             $("#tablaClientes").html(response.data);
             $scope.searching = true;
         }, function (error) {
