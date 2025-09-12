@@ -188,13 +188,10 @@ app.controller("categoriasCtrl", function($scope, $http) {
         init: function() {
             eventBus.subscribe('categoria_guardada', function(data) {
                 console.log('Notificación: Categoría guardada exitosamente', data);
-                // Mostrar notificación al usuario
-                alert('Categoría guardada correctamente');
             });
 
             eventBus.subscribe('error_guardado', function(error) {
                 console.error('Notificación: Error al guardar categoría', error);
-                alert('Error al guardar la categoría: ' + error.message);
             });
 
             eventBus.subscribe('evento_pusher_recibido', function(data) {
@@ -257,9 +254,6 @@ app.controller("categoriasCtrl", function($scope, $http) {
             .then(function(response) {
                 eventBus.publish('categoria_guardada', response.data);
                 $scope.categoria = {};
-
-                // No forzar recarga inmediata - dejar que Pusher lo maneje
-                // El backend debería publicar el evento Pusher después del guardado
 
             })
             .catch(function(err) {
