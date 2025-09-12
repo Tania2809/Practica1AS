@@ -172,7 +172,7 @@ def guardarLugar():
 
     cursor.execute(sql, val)
     con.commit()
-    co  
+    
 
     return make_response(jsonify({}))
 
