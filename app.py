@@ -124,7 +124,6 @@ def eliminarEvento():
         id = data.get("idEvento", "").strip()
     else:
         id = request.form.get("idEvento", "").strip()
-        
 
     cursor = con.cursor(dictionary=True)
     sql = """
