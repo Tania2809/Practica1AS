@@ -353,7 +353,7 @@ def buscarCliente():
     if not con.is_connected():
         con.reconnect()
 
-    busqueda = request.form.get("nombre")
+    busqueda = request.get_json().get("nombre")
     
     busqueda = f"%{busqueda}%"
     return busqueda
