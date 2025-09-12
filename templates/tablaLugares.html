@@ -12,10 +12,7 @@
                                 {% endif %}
                             </td>
                             <td>
-                                {% if lugar.ubicacion %}
-                                    <a href="mailto:{{ lugar.ubicacion }}" class="text-decoration-none">
-                                        {{ lugar.ubicacion }}
-                                    </a>
+                                {% if lugar.ubicacion %} {{ lugar.ubicacion }}
                                 {% else %}
                                     <span class="text-muted">No especificado</span>
                                 {% endif %}
