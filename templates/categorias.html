@@ -1,5 +1,5 @@
 <div class="container py-4">
-    <!-- Formulario para nueva categoría (AngularJS) -->
+    <!-- Formulario para nueva categoría -->
     <form ng-submit="guardar(categoria)" class="mb-4" novalidate autocomplete="off">
         <div class="row g-2 align-items-end">
             <div class="col-md-4">
@@ -16,19 +16,32 @@
         </div>
     </form>
 
+    <!-- Formulario de búsqueda -->
     <form ng-submit="buscar(nombre)" class="mb-4" novalidate autocomplete="off">
         <div class="row mb-3">
-            <div class="input-group">
-                <span class="input-group-text"><i class="fas fa-search"></i></span>
-                <input type="text" ng-model="nombre" class="form-control" placeholder="Buscar categorías..." aria-label="Buscar categorías">
+            <div class="col-md-8">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" ng-model="nombre" class="form-control" placeholder="Buscar categorías..." aria-label="Buscar categorías">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search me-2"></i>Buscar
+                </button>
+            </div>
+            <div class="col-md-2">
+                <button type="button" ng-click="limpiarBusqueda()" class="btn btn-secondary w-100" ng-disabled="mostrarTodos">
+                    <i class="fas fa-times me-2"></i>Limpiar
+                </button>
             </div>
         </div>
-        <div class="col-md-4">
-            <button type="submit" class="btn btn-search w-100">
-                            <i class="fas fa-search me-2"></i>Buscar
-                        </button>
-        </div>
     </form>
+
+    <!-- Indicador de búsqueda activa -->
+    <div class="alert alert-info" ng-if="!mostrarTodos && nombre">
+        <i class="fas fa-info-circle me-2"></i> Mostrando resultados para: <strong>{{nombre}}</strong>
+    </div>
 
     <!-- Tabla de categorías -->
     <div class="table-responsive">
@@ -41,9 +54,13 @@
                 </tr>
             </thead>
             <tbody id="tablaCategorias">
-                <!-- Las filas de la tabla se llenarán dinámicamente con AngularJS -->
-
+                <!-- Las filas de la tabla se llenarán dinámicamente -->
             </tbody>
         </table>
+
+        <!-- Mensaje cuando no hay resultados -->
+        <div class="alert alert-warning text-center" id="sinResultados" style="display: none;">
+            <i class="fas fa-exclamation-triangle me-2"></i> No se encontraron resultados para la búsqueda.
+        </div>
     </div>
 </div>

@@ -115,51 +115,64 @@ app.controller("eventosCtrl", function($scope, $http) {
 
 app.controller("categoriasCtrl", function($scope, $http) {
     $scope.categorias = []
+    $scope.mostrarTodos = true; // Nueva variable para controlar qué datos mostrar
 
     $scope.allData = function() {
         $http.get("/categorias/all").then(function(res) {
-            $("#tablaCategorias").html(res.data)
+            $("#tablaCategorias").html(res.data);
+            $scope.mostrarTodos = true; // Indicar que estamos mostrando todos los datos
         })
     }
 
-    //inizializa el template
+    // Inicializa el template
     $http.get("/categorias").then(function(res) {
-        $scope.allData()
-    })
-
-    Pusher.logToConsole = true
-
-    var pusher = new Pusher("db840e3e13b1c007269e", {
-        cluster: 'us2'
-    })
-
-    var channel = pusher.subscribe("canalCategorias");
-    channel.bind("eventoCategorias", function(data) {
         $scope.allData();
     })
 
+    Pusher.logToConsole = true;
+    var pusher = new Pusher("db840e3e13b1c007269e", {
+        cluster: 'us2'
+    });
+    var channel = pusher.subscribe("canalCategorias");
+    channel.bind("eventoCategorias", function(data) {
+        if ($scope.mostrarTodos) {
+            $scope.allData(); // Solo actualizar si estamos viendo todos los datos
+        }
+    })
 
-    //Guardar categoría
+    // Guardar categoría
     $scope.guardar = function(categoria) {
         $http.post("/categorias/agregar", categoria).then(function() {
-
-            $scope.categoria = {} // Limpiar formulario
+            $scope.categoria = {}; // Limpiar formulario
+            $scope.allData(); // Recargar todos los datos después de guardar
+            $scope.mostrarTodos = true;
         }, function(err) {
-            alert("Error al guardar: " + (err.data ? err.message : ""))
+            alert("Error al guardar: " + (err.data ? err.message : ""));
         })
     }
 
-
     $scope.buscar = function(nombre) {
+        if (!nombre || nombre.trim() === '') {
+            $scope.allData(); // Si la búsqueda está vacía, mostrar todos
+            return;
+        }
+
         $http.get("/categorias/buscar", {
             params: {
                 busqueda: nombre
             }
         }).then(function(response) {
-            $scope.categorias = response.data
+            $("#tablaCategorias").html(response.data);
+            $scope.mostrarTodos = false; // Indicar que estamos mostrando resultados filtrados
         }, function(error) {
             console.error("Error en búsqueda:", error);
         })
+    }
+
+    // Nueva función para limpiar búsqueda y mostrar todos
+    $scope.limpiarBusqueda = function() {
+        $scope.nombre = '';
+        $scope.allData();
     }
 })
 
@@ -226,7 +239,7 @@ app.controller("lugaresCtrl", function($scope, $http) {
     var pusher = new Pusher("", {
         cluster: 'us2'
     })
-    
+
 
     var channel = pusher.subscribe("");
     channel.bind("newDataInserted", function(data) {

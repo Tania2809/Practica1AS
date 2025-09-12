@@ -1,7 +1,13 @@
- {% for categoria in categorias %}
+{% if categorias %} {% for categoria in categorias %}
 <tr>
     <td>{{ categoria.idCategoria }}</td>
     <td>{{ categoria.nombreCategoria }}</td>
     <td>{{ categoria.descripcion }}</td>
 </tr>
-{% endfor %}
+{% endfor %} {% else %}
+<tr>
+    <td colspan="3" class="text-center text-muted">
+        <i class="fas fa-exclamation-circle me-2"></i> No se encontraron categorías
+    </td>
+</tr>
+{% endif %}
