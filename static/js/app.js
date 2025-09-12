@@ -144,15 +144,23 @@ app.controller("categoriasCtrl", function($scope, $http) {
 
     // Escuchar eventos de Pusher para actualizaciones en tiempo real
     channel.bind("categoria_guardada", function(data) {
-        console.log('Evento Pusher recibido: categoria_guardada', data);
+        console.log('📦 Evento Pusher recibido: categoria_guardada', data);
         if ($scope.mostrarTodos) {
             $scope.allData(); // Recargar todos los datos
         }
         $scope.$applyAsync(); // Forzar actualización de Angular
     });
 
+    channel.bind("categoria_eliminada", function(data) {
+        console.log('📦 Evento Pusher recibido: categoria_eliminada', data);
+        if ($scope.mostrarTodos) {
+            $scope.allData(); // Recargar todos los datos
+        }
+        $scope.$applyAsync();
+    });
+
     channel.bind("busqueda_realizada", function(data) {
-        console.log('Evento Pusher recibido: busqueda_realizada', data);
+        console.log('📦 Evento Pusher recibido: busqueda_realizada', data);
         // El backend podría notificar sobre búsquedas si es necesario
     });
 
@@ -160,7 +168,17 @@ app.controller("categoriasCtrl", function($scope, $http) {
     $scope.allData = function() {
         $http.get("/categorias/all").then(function(res) {
             $("#tablaCategorias").html(res.data);
-            eventBus.publish('datosCargados', { tipo: 'todos' });
+            console.log('✅ Datos cargados correctamente');
+        }).catch(function(error) {
+            console.error('❌ Error al cargar datos:', error);
+            $("#tablaCategorias").html(`
+                <tr>
+                    <td colspan="4" class="text-center text-danger py-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i> 
+                        Error al cargar categorías
+                    </td>
+                </tr>
+            `);
         });
     };
 
@@ -169,23 +187,31 @@ app.controller("categoriasCtrl", function($scope, $http) {
         $scope.allData();
     });
 
-    // Guardar categoría - Publica evento después de guardar
+    // Guardar categoría - El backend publicará en Pusher automáticamente
     $scope.guardar = function(categoria) {
         if (!categoria.nombreCategoria || !categoria.nombreCategoria.trim()) {
+            alert("El nombre de la categoría es requerido");
             return;
         }
+
+        console.log('💾 Guardando categoría:', categoria);
 
         $http.post("/categorias/agregar", categoria)
             .then(function(response) {
                 if (response.data.status === "success") {
-                    $scope.categoria = {};
-                    eventBus.publish('categoriaGuardada', response.data);
+                    $scope.categoria = {}; // Limpiar formulario
+                    console.log('✅ Categoría guardada:', response.data);
+                    alert("Categoría guardada correctamente");
+
+                    // El backend se encarga de publicar el evento Pusher
+                    // para que todos los usuarios reciban la actualización
+
                 } else {
                     alert("Error: " + response.data.message);
                 }
             })
             .catch(function(error) {
-                console.error("Error:", error);
+                console.error("❌ Error al guardar:", error);
                 if (error.data && error.data.message) {
                     alert("Error: " + error.data.message);
                 } else {
@@ -194,13 +220,14 @@ app.controller("categoriasCtrl", function($scope, $http) {
             });
     };
 
-    // Buscar categorías - Publica evento con resultados
+    // Buscar categorías
     $scope.buscar = function(nombre) {
-        console.log("Buscando:", nombre);
+        console.log("🔍 Buscando:", nombre);
 
         if (!nombre || nombre.trim() === '') {
-            console.log("Búsqueda vacía, mostrando todos");
-            eventBus.publish('busquedaLimpiada');
+            console.log("ℹ️ Búsqueda vacía, mostrando todos");
+            $scope.mostrarTodos = true;
+            $scope.allData();
             return;
         }
 
@@ -209,29 +236,46 @@ app.controller("categoriasCtrl", function($scope, $http) {
             })
             .then(function(response) {
                 $("#tablaCategorias").html(response.data);
-
-                eventBus.publish('busquedaRealizada', {
-                    termino: nombre,
-                    html: response.data
-                });
+                $scope.mostrarTodos = false;
+                console.log('✅ Búsqueda completada');
             })
             .catch(function(error) {
-                console.error("Error en búsqueda:", error);
+                console.error("❌ Error en búsqueda:", error);
+
+                let mensaje = "Error desconocido al buscar categorías";
                 if (error.data && error.data.message) {
-                    alert("Error en búsqueda: " + error.data.message);
-                } else {
-                    alert("Error desconocido al buscar categorías");
+                    mensaje = error.data.message;
+                } else if (error.status === 500) {
+                    mensaje = "Error interno del servidor";
                 }
+
+                $("#tablaCategorias").html(`
+                    <tr>
+                        <td colspan="4" class="text-center text-danger py-3">
+                            <i class="fas fa-exclamation-triangle me-2"></i> 
+                            ${mensaje}
+                        </td>
+                    </tr>
+                `);
+
+                alert("Error en búsqueda: " + mensaje);
             });
     };
 
-    // Limpiar búsqueda - Publica evento
+    // Limpiar búsqueda
     $scope.limpiarBusqueda = function() {
         $scope.nombre = '';
-        eventBus.publish('busquedaLimpiada');
+        $scope.mostrarTodos = true;
+        $scope.allData();
+        console.log('🔄 Búsqueda limpiada');
     };
-});
 
+    // Limpiar suscripciones cuando el controlador se destruye
+    $scope.$on('$destroy', function() {
+        console.log('🧹 Limpiando suscripciones de Pusher');
+        pusher.unsubscribe("canalCategorias");
+    });
+});
 
 
 app.controller("clientesCtrl", function($scope, $http) {
