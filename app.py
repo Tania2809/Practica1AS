@@ -310,7 +310,7 @@ def buscarCategorias():
         args = request.args
         busqueda = args.get("busqueda", "").strip()
         
-        print(f"Búsqueda recibida: '{busqueda}'")
+        print(f"🔍 Búsqueda recibida: '{busqueda}'")
         
         if not busqueda:
             # Si no hay búsqueda, devolver todas las categorías
@@ -328,33 +328,39 @@ def buscarCategorias():
         """
         val = (busqueda_param, busqueda_param)
 
-        print(f"Ejecutando consulta: {sql} con valores: {val}")
+        print(f"📋 Ejecutando consulta: {sql}")
+        print(f"📊 Valores: {val}")
         
         cursor.execute(sql, val)
         registros = cursor.fetchall()
         
-        print(f"Resultados encontrados: {len(registros)}")
+        print(f"✅ Resultados encontrados: {len(registros)}")
         for registro in registros:
-            print(f" - {registro['nombreCategoria']}: {registro['descripcion']}")
+            print(f"   - {registro['idCategoria']}: {registro['nombreCategoria']} - {registro['descripcion']}")
 
-        # Publicar evento de búsqueda
-        publicar_evento_categoria("busqueda_realizada", {
-            "termino": busqueda,
-            "resultados": len(registros),
-            "timestamp": datetime.now().isoformat()
-        })
-        
         cursor.close()
         
         return render_template("tablaCategorias.html", categorias=registros)
         
-    except Exception as e:
-        print(f"Error en búsqueda: {str(e)}")
+    except mysql.connector.Error as err:
+        print(f"❌ Error de MySQL: {err}")
+        print(f"📋 Código de error: {err.errno}")
+        print(f"💬 Mensaje: {err.msg}")
         return make_response(jsonify({
             "status": "error", 
-            "message": f"Error en búsqueda: {str(e)}"
+            "message": f"Error de base de datos: {err}"
         }), 500)
-
+        
+    except Exception as e:
+        print(f"❌ Error general en búsqueda: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return make_response(jsonify({
+            "status": "error", 
+            "message": f"Error interno del servidor: {str(e)}"
+        }), 500)
+    
+    
 # Función para publicar eventos de categoría
 def publicar_evento_categoria(evento, datos):
     try:
