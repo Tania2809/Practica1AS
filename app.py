@@ -167,12 +167,12 @@ def guardarLugar():
     INSERT INTO lugares (nombre, direccion, ubicacion)
     VALUES (%s, %s, %s)
         """
-        
+
     val = (nombreL, direccion, ubicacion)
 
     cursor.execute(sql, val)
     con.commit()
-    con.close()
+    co  
 
     return make_response(jsonify({}))
 
