@@ -83,7 +83,7 @@ app.controller("appCtrl", function($scope, $http) {})
 
 app.controller("eventosCtrl", function($scope, $http) {
 
-      $scope.eventos = []
+    $scope.eventos = []
 
     // Obtener lista de categorías
     $http.get("/eventos").then(function(res) {
@@ -116,38 +116,17 @@ app.controller("eventosCtrl", function($scope, $http) {
 app.controller("categoriasCtrl", function($scope, $http) {
     $scope.categorias = []
 
-    // Obtener lista de categorías
-    //  $http.get("/categorias").then(function(response) {
-    //    $scope.categorias = response.data
-    // })
-
-    // Guardar categoría
-    $scope.guardar = function(categoria) {
-        $http.post("/categorias/agregar", categoria).then(function() {
-            alert("Categoría guardada")
-                // Recargar lista sin recargar toda la página
-            $http.get("/categorias").then(function(response) {
-                $scope.categorias = response.data
-            })
-            $scope.categoria = {} // Limpiar formulario
-        }, function(err) {
-            alert("Error al guardar: " + (err.data ? err.message : ""))
+    $scope.allData = function() {
+        $http.get("/categorias/all").then(function(res) {
+            $("#tablaCategorias").html(res.data)
         })
     }
 
-    $scope.buscar = function(nombre) {
-            $http.get("/categorias/buscar", {
-                params: {
-                    busqueda: nombre
-                }
-            }).then(function(response) {
-                $scope.categorias = response.data
-            }, function(error) {
-                console.error("Error en búsqueda:", error);
-                alert("Error al buscar categorías");
-            })
-        }
-        // Enable pusher logging - don't include this in production
+    //inizializa el template
+    $http.get("/categorias").then(function(res) {
+        $scope.allData()
+    })
+
     Pusher.logToConsole = true
 
     var pusher = new Pusher("db840e3e13b1c007269e", {
@@ -156,9 +135,32 @@ app.controller("categoriasCtrl", function($scope, $http) {
 
     var channel = pusher.subscribe("canalCategorias");
     channel.bind("eventoCategorias", function(data) {
-        alert(JSON.stringify(data));
+        $scope.allData();
     })
 
+
+    //Guardar categoría
+    $scope.guardar = function(categoria) {
+        $http.post("/categorias/agregar", categoria).then(function() {
+
+            $scope.categoria = {} // Limpiar formulario
+        }, function(err) {
+            alert("Error al guardar: " + (err.data ? err.message : ""))
+        })
+    }
+
+
+    $scope.buscar = function(nombre) {
+        $http.get("/categorias/buscar", {
+            params: {
+                busqueda: nombre
+            }
+        }).then(function(response) {
+            $scope.categorias = response.data
+        }, function(error) {
+            console.error("Error en búsqueda:", error);
+        })
+    }
 })
 
 app.controller("clientesCtrl", function($scope, $http) {
@@ -174,7 +176,7 @@ app.controller("clientesCtrl", function($scope, $http) {
     $http.get("/clientes").then(function(res) {
         $scope.allData()
     })
-     Pusher.logToConsole = true
+    Pusher.logToConsole = true
 
     var pusher = new Pusher("db840e3e13b1c007269e", {
         cluster: 'us2'
@@ -189,7 +191,7 @@ app.controller("clientesCtrl", function($scope, $http) {
     // Guardar cliente
     $scope.guardar = function(cliente) {
         $http.post("/clientes/agregar", cliente).then(function() {
-                // Recargar lista sin recargar toda la página
+            // Recargar lista sin recargar toda la página
             //$scope.allData()
             $scope.cliente = {} // Limpiar formulario
         }, function(err) {
@@ -203,15 +205,15 @@ app.controller("lugaresCtrl", function($scope, $http) {
     $scope.lugares = []
 
     $scope.allData = function() {
-    $scope.get("/lugares/all").then(function(res) {
-        $("#tablaLugares").html(res.data)
-    })
-}
-     //inizializa el template
+            $scope.get("/lugares/all").then(function(res) {
+                $("#tablaLugares").html(res.data)
+            })
+        }
+        //inizializa el template
     $http.get("/").then(function(res) {
         $http.allData()
     })
-     Pusher.logToConsole = true
+    Pusher.logToConsole = true
 
     var pusher = new Pusher("", {
         cluster: 'us2'
@@ -228,7 +230,7 @@ app.controller("lugaresCtrl", function($scope, $http) {
             $scope.lugar = {}
             $scope.allData()
         }, function(err) {
-            console.log("Error al guardar: " + (err.data ? err.message : ""))    
+            console.log("Error al guardar: " + (err.data ? err.message : ""))
         })
     }
 })
