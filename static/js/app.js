@@ -195,13 +195,10 @@ app.controller("categoriasCtrl", function ($scope, $http) {
         init: function () {
             eventBus.subscribe('categoria_guardada', function (data) {
                 console.log('Notificación: Categoría guardada exitosamente', data);
-                // Mostrar notificación al usuario
-                alert('Categoría guardada correctamente');
             });
 
             eventBus.subscribe('error_guardado', function (error) {
                 console.error('Notificación: Error al guardar categoría', error);
-                alert('Error al guardar la categoría: ' + error.message);
             });
 
             eventBus.subscribe('evento_pusher_recibido', function (data) {
@@ -264,9 +261,6 @@ app.controller("categoriasCtrl", function ($scope, $http) {
             .then(function (response) {
                 eventBus.publish('categoria_guardada', response.data);
                 $scope.categoria = {};
-
-                // No forzar recarga inmediata - dejar que Pusher lo maneje
-                // El backend debería publicar el evento Pusher después del guardado
 
             })
             .catch(function (err) {
@@ -357,33 +351,14 @@ app.controller("clientesCtrl", function ($scope, $http) {
 app.controller("lugaresCtrl", function ($scope, $http) {
     $scope.lugares = []
 
-    $scope.allData = function () {
-        $http.get("/lugares/all").then(function (res) {
-            $("#tablaLugares").html(res.data)
-        })
-    }
-    //inizializa el template
-    $http.get("/").then(function (res) {
+    $scope.allData = function() {
+            $http.get("/lugares/all").then(function(res) {
+                $("#tablaLugares").html(res.data)
+            })
+        }
+        //inizializa el template
+    $http.get("/lugares").then(function(res) {
         $scope.allData()
-        $http.get("/lugares/all").then(function (res) {
-            $("#tablaLugares").html(res.data)
-        })
-    })
-    //inizializa el template
-    $http.get("/lugares").then(function (res) {
-        $scope.allData()
-    })
-
-    Pusher.logToConsole = true
-
-    var pusher = new Pusher("", {
-        cluster: 'us2'
-    })
-
-
-    var channel = pusher.subscribe("");
-    channel.bind("newDataInserted", function (data) {
-        $scope.allData();
     })
 
     // Guardar lugar
