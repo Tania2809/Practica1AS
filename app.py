@@ -402,6 +402,7 @@ def clientesLista():
         return make_response(jsonify({"error": str(e)}))
     return render_template("tablaClientes.html", clientes=registros)
 
+
 @app.route("/clientes/buscar", methods=["GET"])
 def buscarCliente():
     if not con.is_connected():
