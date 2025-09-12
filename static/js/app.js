@@ -9,7 +9,7 @@ function activeMenuOption(href) {
 }
 
 const app = angular.module("angularjsApp", ["ngRoute"])
-app.config(function($routeProvider, $locationProvider) {
+app.config(function ($routeProvider, $locationProvider) {
     $locationProvider.hashPrefix("")
 
     $routeProvider
@@ -38,7 +38,7 @@ app.config(function($routeProvider, $locationProvider) {
             redirectTo: "/"
         })
 })
-app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, $timeout) {
+app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location, $timeout) {
     function actualizarFechaHora() {
         lxFechaHora = DateTime
             .now()
@@ -52,7 +52,7 @@ app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, 
 
     actualizarFechaHora()
 
-    $rootScope.$on("$routeChangeSuccess", function(event, current, previous) {
+    $rootScope.$on("$routeChangeSuccess", function (event, current, previous) {
         $("html").css("overflow-x", "hidden")
 
 
@@ -67,7 +67,7 @@ app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, 
                 $rootScope.slide += ((active > click) ? "Left" : "Right")
             }
 
-            $timeout(function() {
+            $timeout(function () {
                 $("html").css("overflow-x", "auto")
 
                 $rootScope.slide = ""
@@ -78,48 +78,55 @@ app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, 
     })
 }])
 
-app.controller("appCtrl", function($scope, $http) {})
+app.controller("appCtrl", function ($scope, $http) { })
 
 
-app.controller("eventosCtrl", function($scope, $http) {
+app.controller("eventosCtrl", function ($scope, $http) {
 
     $scope.eventos = []
+    $scope.allData = function () {
+        $http.get("/eventos/all").then(function (res) {
+            $("#tablaEventos").html(res.data)
+        })
+    }
 
     // Obtener lista de categorías
-    $http.get("/eventos").then(function(res) {
-        $scope.categorias = res.data
+    $http.get("/eventos").then(function (res) {
+       $scope.allData()
+    })
+    Pusher.logToConsole = true
+    var pusher = new Pusher("db840e3e13b1c007269e", {
+        cluster: 'us2'
+    })
+    var channel = pusher.subscribe("canalEventos");
+    channel.bind("newDataInserted", function (data) {
+            $scope.allData();
     })
 
     // Guardar evento
-    $scope.guardar = function(eventos) {
-        $http.post("/eventos/agregar", eventos).then(function(res) {
+    $scope.guardar = function (eventos) {
+        $http.post("/eventos/agregar", eventos).then(function (res) {
             console.log(res);
             console.log("evento guardado")
-                // Recargar lista sin recargar toda la página
-            $http.get("/eventos").then(function(res) {
-                $scope.eventos = res.data
-            })
+        
             $scope.eventos = {} // Limpiar formulario
-        }, function(err) {
+        }, function (err) {
             console.log("Error al guardar: " + (err.data ? err.message : ""));
         })
     }
 
 
 
-    // Guardar evento
-    $scope.eliminar = function(evento) {
+    // eliminar evento
+    $scope.eliminar = function (evento) {
         console.log(evento);
 
-        $http.post("/eventos/eliminar", evento).then(function(res) {
+        $http.post("/eventos/eliminar", evento).then(function (res) {
             console.log(res);
             console.log("evento eliminado")
-                // Recargar lista sin recargar toda la página
-            $http.get("/eventos").then(function(res) {
-                $scope.eventos = res.data
-            })
+         
             $scope.evento = {} // Limpiar formulario
-        }, function(err) {
+        }, function (err) {
             console.log("Error al eliminar: " + (err.data ? err.message : ""));
         })
     }
@@ -127,14 +134,14 @@ app.controller("eventosCtrl", function($scope, $http) {
 
 
     // Obtener lista de eventos
-    $http.get("/eventos").then(function(res) {
+    $http.get("/eventos").then(function (res) {
         $scope.eventos = res.data
     })
 
 })
 
 
-app.controller("categoriasCtrl", function($scope, $http) {
+app.controller("categoriasCtrl", function ($scope, $http) {
     $scope.categorias = [];
     $scope.mostrarTodos = true;
 
@@ -142,14 +149,14 @@ app.controller("categoriasCtrl", function($scope, $http) {
     const eventBus = {
         subscribers: {},
 
-        subscribe: function(eventName, callback) {
+        subscribe: function (eventName, callback) {
             if (!this.subscribers[eventName]) {
                 this.subscribers[eventName] = [];
             }
             this.subscribers[eventName].push(callback);
         },
 
-        publish: function(eventName, data) {
+        publish: function (eventName, data) {
             if (this.subscribers[eventName]) {
                 this.subscribers[eventName].forEach(callback => {
                     callback(data);
@@ -160,41 +167,41 @@ app.controller("categoriasCtrl", function($scope, $http) {
 
     // Servicio de Categorías
     const categoriaService = {
-        cargarTodas: function() {
-            return $http.get("/categorias/all").then(function(res) {
+        cargarTodas: function () {
+            return $http.get("/categorias/all").then(function (res) {
                 $("#tablaCategorias").html(res.data);
                 eventBus.publish('categorias_actualizadas', res.data);
                 return res.data;
             });
         },
 
-        buscar: function(nombre) {
+        buscar: function (nombre) {
             return $http.get("/categorias/buscar", {
                 params: { busqueda: nombre }
-            }).then(function(response) {
+            }).then(function (response) {
                 $("#tablaCategorias").html(response.data);
                 eventBus.publish('busqueda_realizada', response.data);
                 return response.data;
             });
         },
 
-        guardar: function(categoria) {
+        guardar: function (categoria) {
             return $http.post("/categorias/agregar", categoria);
         }
     };
 
     // Servicio de Notificaciones
     const notificacionService = {
-        init: function() {
-            eventBus.subscribe('categoria_guardada', function(data) {
+        init: function () {
+            eventBus.subscribe('categoria_guardada', function (data) {
                 console.log('Notificación: Categoría guardada exitosamente', data);
             });
 
-            eventBus.subscribe('error_guardado', function(error) {
+            eventBus.subscribe('error_guardado', function (error) {
                 console.error('Notificación: Error al guardar categoría', error);
             });
 
-            eventBus.subscribe('evento_pusher_recibido', function(data) {
+            eventBus.subscribe('evento_pusher_recibido', function (data) {
                 console.log('Notificación: Cambios en tiempo real recibidos', data);
             });
         }
@@ -202,12 +209,12 @@ app.controller("categoriasCtrl", function($scope, $http) {
 
     // Servicio de Analytics
     const analyticsService = {
-        init: function() {
-            eventBus.subscribe('busqueda_realizada', function(data) {
+        init: function () {
+            eventBus.subscribe('busqueda_realizada', function (data) {
                 console.log('Analytics: Búsqueda realizada', data);
             });
 
-            eventBus.subscribe('categoria_guardada', function(data) {
+            eventBus.subscribe('categoria_guardada', function (data) {
                 console.log('Analytics: Nueva categoría creada', data);
             });
         }
@@ -215,7 +222,7 @@ app.controller("categoriasCtrl", function($scope, $http) {
 
     // Servicio de Pusher
     const pusherService = {
-        init: function() {
+        init: function () {
             Pusher.logToConsole = true;
             var pusher = new Pusher("db840e3e13b1c007269e", {
                 cluster: 'us2',
@@ -223,7 +230,7 @@ app.controller("categoriasCtrl", function($scope, $http) {
             });
 
             var channel = pusher.subscribe("canalCategorias");
-            channel.bind("newDataInserted", function(data) {
+            channel.bind("newDataInserted", function (data) {
                 console.log('Evento Pusher recibido:', data);
                 eventBus.publish('evento_pusher_recibido', data);
 
@@ -234,7 +241,7 @@ app.controller("categoriasCtrl", function($scope, $http) {
                 }
             });
 
-            channel.bind('pusher:subscription_error', function(status) {
+            channel.bind('pusher:subscription_error', function (status) {
                 console.error('Error de suscripción Pusher:', status);
             });
         }
@@ -249,20 +256,20 @@ app.controller("categoriasCtrl", function($scope, $http) {
     categoriaService.cargarTodas();
 
     // Guardar categoría
-    $scope.guardar = function(categoria) {
+    $scope.guardar = function (categoria) {
         categoriaService.guardar(categoria)
-            .then(function(response) {
+            .then(function (response) {
                 eventBus.publish('categoria_guardada', response.data);
                 $scope.categoria = {};
 
             })
-            .catch(function(err) {
+            .catch(function (err) {
                 eventBus.publish('error_guardado', err);
             });
     };
 
     // Buscar categorías
-    $scope.buscar = function(nombre) {
+    $scope.buscar = function (nombre) {
         if (!nombre || nombre.trim() === '') {
             categoriaService.cargarTodas();
             $scope.mostrarTodos = true;
@@ -274,30 +281,30 @@ app.controller("categoriasCtrl", function($scope, $http) {
     };
 
     // Limpiar búsqueda
-    $scope.limpiarBusqueda = function() {
+    $scope.limpiarBusqueda = function () {
         $scope.nombre = '';
         categoriaService.cargarTodas();
         $scope.mostrarTodos = true;
     };
 
     // Verificar estado de Pusher
-    $scope.verificarPusher = function() {
+    $scope.verificarPusher = function () {
         console.log('Estado de Pusher verificado');
         categoriaService.cargarTodas(); // Recargar manualmente
     };
 });
 
 
-app.controller("clientesCtrl", function($scope, $http) {
+app.controller("clientesCtrl", function ($scope, $http) {
     $scope.clientes = []
     $scope.searching = false;
-    $scope.allData = function() {
-            $http.get("/clientes/all").then(function(res) {
-                $("#tablaClientes").html(res.data)
-            })
-        }
-        //inizializa el template
-    $http.get("/clientes").then(function(res) {
+    $scope.allData = function () {
+        $http.get("/clientes/all").then(function (res) {
+            $("#tablaClientes").html(res.data)
+        })
+    }
+    //inizializa el template
+    $http.get("/clientes").then(function (res) {
         $scope.allData()
     })
     Pusher.logToConsole = true
@@ -305,43 +312,43 @@ app.controller("clientesCtrl", function($scope, $http) {
         cluster: 'us2'
     })
     var channel = pusher.subscribe("canalClientes");
-    channel.bind("newDataInserted", function(data) {
+    channel.bind("newDataInserted", function (data) {
         if (!$scope.searching)
             $scope.allData();
     })
 
-    $scope.buscar = function(nombre) {
-            if (!nombre || nombre.trim() === '') {
-                $scope.searching = false
-                $scope.allData(); // Si la búsqueda está vacía, mostrar todos
-                return;
-            }
-
-            $http.get("/clientes/buscar", {
-                params: {
-                    busqueda: nombre
-                }
-            }).then(function(response) {
-                console.log(response);
-
-                $("#tablaClientes").html(response.data);
-                $scope.searching = true;
-            }, function(error) {
-                console.error("Error en búsqueda:", error);
-            })
+    $scope.buscar = function (nombre) {
+        if (!nombre || nombre.trim() === '') {
+            $scope.searching = false
+            $scope.allData(); // Si la búsqueda está vacía, mostrar todos
+            return;
         }
-        // Guardar cliente
-    $scope.guardar = function(cliente) {
-        $http.post("/clientes/agregar", cliente).then(function() {
+
+        $http.get("/clientes/buscar", {
+            params: {
+                busqueda: nombre
+            }
+        }).then(function (response) {
+            console.log(response);
+
+            $("#tablaClientes").html(response.data);
+            $scope.searching = true;
+        }, function (error) {
+            console.error("Error en búsqueda:", error);
+        })
+    }
+    // Guardar cliente
+    $scope.guardar = function (cliente) {
+        $http.post("/clientes/agregar", cliente).then(function () {
             $scope.cliente = {}
-        }, function(err) {
+        }, function (err) {
             console.log("Error al guardar: " + (err.data ? err.message : ""))
         })
     }
 })
 
 
-app.controller("lugaresCtrl", function($scope, $http) {
+app.controller("lugaresCtrl", function ($scope, $http) {
     $scope.lugares = []
 
     $scope.allData = function() {
@@ -355,11 +362,11 @@ app.controller("lugaresCtrl", function($scope, $http) {
     })
 
     // Guardar lugar
-    $scope.guardar = function(lugar) {
-        $http.post("/lugar/guardar", lugar).then(function() {
+    $scope.guardar = function (lugar) {
+        $http.post("/lugar/guardar", lugar).then(function () {
             $scope.lugar = {}
             $scope.allData()
-        }, function(err) {
+        }, function (err) {
             console.log("Error al guardar: " + (err.data ? err.message : ""))
         })
     }
@@ -368,7 +375,7 @@ app.controller("lugaresCtrl", function($scope, $http) {
 const DateTime = luxon.DateTime
 let lxFechaHora
 
-document.addEventListener("DOMContentLoaded", function(event) {
+document.addEventListener("DOMContentLoaded", function (event) {
     const configFechaHora = {
         locale: "es",
         weekNumbers: true,

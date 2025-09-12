@@ -181,54 +181,57 @@ def lugares():
 
 @app.route("/lugares/all", methods=["GET"])
 def ListarLugares():
-    if not con.is_connected():
-        con.reconnect()
-    lugares = []
     try:
+        if not con.is_connected():
+            con.reconnect()
         
         cursor = con.cursor(dictionary=True)
-        sql = """
-        SELECT * FROM lugares
-        """
-        
+        sql = "SELECT * FROM lugares"
         cursor.execute(sql)
-        l = cursor.fetchall()
+        lugares = cursor.fetchall()
+        cursor.close()
+        
+        return render_template("tablalugares.html", lugares=lugares)
+        
     except Exception as e:
+        print(f"Error en ListarLugares: {str(e)}")
+        return make_response(jsonify({"error": str(e)}), 500)
         return make_response(jsonify({"error": str(e)}))
     return render_template("tablaLugares.html", lugares=l)
 
 
 @app.route("/lugar/guardar", methods=["POST"])
 def guardarLugar():
-    if not con.is_connected():
-        con.reconnect()
+    try:
+        if not con.is_connected():
+            con.reconnect()
+            
+        if request.is_json:
+            data = request.get_json()
+            nombreL = data.get("nombreLugar")
+            direccion = data.get("direccion")
+            ubicacion = data.get("ubicacion")
+        else:
+            nombreL = request.form.get("nombreLugar")
+            direccion = request.form.get("direccion")
+            ubicacion = request.form.get("ubicacion")
+            
+        cursor = con.cursor(dictionary=True)
+        sql = """
+        INSERT INTO lugares (nombreLugar, direccion, ubicacion)
+        VALUES (%s, %s, %s)
+        """
+        val = (nombreL, direccion, ubicacion)
+
+        cursor.execute(sql, val)
+        con.commit()
+        cursor.close()
+
+        return make_response(jsonify({"success": True}), 200)
         
-    if request.is_json:
-        data = request.get_json()
-        nombreL = data.get("nombreLugar")
-        direccion = data.get("direccion")
-        ubicacion = data.get("ubicacion")
-    else:
-        nombreL = request.form.get("nombreLugar")
-        direccion = request.form.get("direccion")
-        ubicacion = request.form.get("ubicacion")
-        
-    cursor = con.cursor(dictionary=True)
-        
-    sql = """
-    INSERT INTO lugares (nombreLugar, direccion, ubicacion)
-    VALUES (%s, %s, %s)
-    """
-
-    val = (nombreL, direccion, ubicacion)
-
-    cursor.execute(sql, val)
-    con.commit()
-    con.close()
-
-    return make_response(jsonify({}))
-
-
+    except Exception as e:
+        print(f"Error en guardarLugar: {str(e)}")
+        return make_response(jsonify({"error": str(e)}), 500)
 
 # Ruta para obtener la vista principal de categorías
 @app.route("/categorias", methods=["GET"])
