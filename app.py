@@ -96,6 +96,23 @@ def guardarEvento():
             idLugar = request.form.get("idLugar")
             idCliente = request.form.get("idCliente")
 
+
+        response_data = {
+    "status": "success",
+    "data": {
+        "descripcionUbicacion": descripcionUbicacion,
+        "descripcionEvento": descripcionEvento,
+        "fechaInicio": fechainicio,
+        "fechaFin": fechaFin,
+        "idCategoria": idCategoria,
+        "idLugar": idLugar,
+        "idCliente": idCliente
+    },
+    "message": "Datos recibidos correctamente"  
+    }
+
+        return make_response(jsonify(response_data), 200)
+    
         cursor = con.cursor(dictionary=True)
         sql = """
         INSERT INTO eventos (descripcionUbicacion, descripcionEvento, fechaInicio, fechaFin, idCategoria, idLugar, idCliente)
@@ -127,7 +144,7 @@ def lugares():
 def ListarLugares():
     if not con.is_connected():
         con.reconnect()
-    con.reconnect()
+        
     lugares = []
     try:
         
@@ -142,7 +159,7 @@ def ListarLugares():
         pass
     finally:
         con.close()
-    return render_template("tabla_lugares.html", lugares=lugares)
+    return render_template("tablalugares.html", lugares=lugares)
 
 
 @app.route("/lugar/guardar", methods=["POST"])
