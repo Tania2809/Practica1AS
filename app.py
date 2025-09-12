@@ -360,7 +360,7 @@ def buscarCategorias():
             "message": f"Error interno del servidor: {str(e)}"
         }), 500)
     
-    
+
 # Función para publicar eventos de categoría
 def publicar_evento_categoria(evento, datos):
     try:
@@ -373,10 +373,11 @@ def publicar_evento_categoria(evento, datos):
         )
         
         pusher_client.trigger("canalCategorias", evento, datos)
-        print(f"Evento publicado: {evento}")
+        print(f"✅ Evento publicado: {evento} - {datos}")
+        
     except Exception as e:
-        print(f"Error al publicar evento: {e}")
-
+        print(f"❌ Error al publicar evento: {e}")
+        # Fallback: puedes agregar otras notificaciones aquí
 
 # clientes
 def triggerUpdateCliente():

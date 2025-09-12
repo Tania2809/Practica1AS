@@ -127,29 +127,33 @@ app.controller("eventosCtrl", function($scope, $http) {
 
 })
 
-// Controlador de Categorías con arquitectura dirigida por eventos
-app.controller("categoriasCtrl", function($scope, $http, eventBus) {
+
+app.controller("categoriasCtrl", function($scope, $http) {
     $scope.categorias = [];
     $scope.mostrarTodos = true;
 
-    // Inicializar suscripción a eventos
-    eventBus.subscribe('categoriaGuardada', function(data) {
-        console.log('Evento recibido: categoriaGuardada', data);
+    // Configurar Pusher para tiempo real
+    Pusher.logToConsole = true; // Activar logs para depuración
+    var pusher = new Pusher("db840e3e13b1c007269e", {
+        cluster: 'us2',
+        encrypted: true
+    });
+
+    // Suscribirse al canal de categorías
+    var channel = pusher.subscribe("canalCategorias");
+
+    // Escuchar eventos de Pusher para actualizaciones en tiempo real
+    channel.bind("categoria_guardada", function(data) {
+        console.log('Evento Pusher recibido: categoria_guardada', data);
         if ($scope.mostrarTodos) {
-            $scope.allData();
+            $scope.allData(); // Recargar todos los datos
         }
+        $scope.$applyAsync(); // Forzar actualización de Angular
     });
 
-    eventBus.subscribe('busquedaRealizada', function(data) {
-        console.log('Evento recibido: busquedaRealizada', data);
-        $scope.mostrarTodos = false;
-        $("#tablaCategorias").html(data.html);
-    });
-
-    eventBus.subscribe('busquedaLimpiada', function() {
-        console.log('Evento recibido: busquedaLimpiada');
-        $scope.mostrarTodos = true;
-        $scope.allData();
+    channel.bind("busqueda_realizada", function(data) {
+        console.log('Evento Pusher recibido: busqueda_realizada', data);
+        // El backend podría notificar sobre búsquedas si es necesario
     });
 
     // Obtener todas las categorías
@@ -228,36 +232,7 @@ app.controller("categoriasCtrl", function($scope, $http, eventBus) {
     };
 });
 
-// Servicio de bus de eventos
-app.factory("eventBus", function() {
-    const listeners = {};
 
-    return {
-        subscribe: function(eventName, callback) {
-            if (!listeners[eventName]) {
-                listeners[eventName] = [];
-            }
-            listeners[eventName].push(callback);
-        },
-
-        publish: function(eventName, data) {
-            if (listeners[eventName]) {
-                listeners[eventName].forEach(function(callback) {
-                    callback(data);
-                });
-            }
-        },
-
-        unsubscribe: function(eventName, callback) {
-            if (listeners[eventName]) {
-                const index = listeners[eventName].indexOf(callback);
-                if (index > -1) {
-                    listeners[eventName].splice(index, 1);
-                }
-            }
-        }
-    };
-});
 
 app.controller("clientesCtrl", function($scope, $http) {
     $scope.clientes = []
