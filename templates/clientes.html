@@ -1,52 +1,58 @@
 <!-- Modal para agregar cliente -->
-<p>version 2.6</p>
-<div>
-    <form   ng-submit="guardar(cliente)"   id="frmCliente"  class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalClienteLabel">Registrar Nuevo Cliente</h5>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label for="nombreCliente" class="form-label">Nombre</label>
-          <input required type="text" class="form-control"  ng-model="cliente.nombre" id="nombreCliente" name="nombreCliente">
-        </div>
-        <div class="mb-3">
-          <label for="telefono" class="form-label">Teléfono</label>
-          <input type="number" class="form-control"  ng-model="cliente.telefono" id="telefono" name="telefono">
-        </div>
-        <div class="mb-3">
-          <label for="correoElectronico" class="form-label">Correo Electrónico</label>
-          <input type="email"  ng-model="cliente.correo" class="form-control" id="correoElectronico" name="correoElectronico">
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" class="btn btn-primary">Registrar</button>
-      </div>
-    </form>
-  </div>
+<p>version 2.7</p>
 
-
-    <div class="card">
-        <div class="card-header ">
-            <h5 class="card-title mb-0">Lista de Clientes</h5>
+<div class="row  align-items-center g-2">
+  <div class="col-3">
+    <div>
+      <form ng-submit="guardar(cliente)" id="frmCliente" class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalClienteLabel">Registrar Nuevo Cliente</h5>
         </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover table-striped">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Teléfono</th>
-                            <th>Correo Electrónico</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tablaClientes">
-                       
-                    </tbody>
-                </table>
-            </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="nombreCliente" class="form-label">Nombre</label>
+            <input required type="text" class="form-control" ng-model="cliente.nombre" id="nombreCliente"
+              name="nombreCliente">
+          </div>
+          <div class="mb-3">
+            <label for="telefono" class="form-label">Teléfono</label>
+            <input type="number" class="form-control" ng-model="cliente.telefono" id="telefono" name="telefono">
+          </div>
+          <div class="mb-3">
+            <label for="correoElectronico" class="form-label">Correo Electrónico</label>
+            <input type="email" ng-model="cliente.correo" class="form-control" id="correoElectronico"
+              name="correoElectronico">
+          </div>
         </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Registrar</button>
+        </div>
+      </form>
     </div>
+  </div>
+  <div class="col">
+    <div class="card">
+      <div class="card-header ">
+        <h5 class="card-title mb-0">Lista de Clientes</h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover table-striped">
+            <thead class="table-dark">
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Teléfono</th>
+                <th>Correo Electrónico</th>
+              </tr>
+            </thead>
+            <tbody id="tablaClientes">
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
