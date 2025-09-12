@@ -192,41 +192,23 @@ app.controller("categoriasCtrl", function($scope, $http, eventBus) {
 
     // Buscar categorías - Publica evento con resultados
     $scope.buscar = function(nombre) {
-        console.log("Buscando:", nombre);
-
         if (!nombre || nombre.trim() === '') {
-            console.log("Búsqueda vacía, mostrando todos");
-            eventBus.publish('busquedaLimpiada');
+            categoriaService.cargarTodas();
+            $scope.mostrarTodos = true;
             return;
         }
 
-        $http.get("/categorias/buscar", {
-                params: { busqueda: nombre }
-            })
-            .then(function(response) {
-                console.log("Respuesta de búsqueda recibida:", response.data);
-                $("#tablaCategorias").html(response.data);
-
-                eventBus.publish('busquedaRealizada', {
-                    termino: nombre,
-                    html: response.data
-                });
-            })
-            .catch(function(error) {
-                console.error("Error en búsqueda:", error);
-                if (error.data && error.data.message) {
-                    alert("Error en búsqueda: " + error.data.message);
-                } else {
-                    alert("Error desconocido al buscar categorías");
-                }
-            });
+        categoriaService.buscar(nombre);
+        $scope.mostrarTodos = false;
     };
 
-    // Limpiar búsqueda - Publica evento
+    // Limpiar búsqueda
     $scope.limpiarBusqueda = function() {
         $scope.nombre = '';
-        eventBus.publish('busquedaLimpiada');
+        categoriaService.cargarTodas();
+        $scope.mostrarTodos = true;
     };
+
 });
 
 // Servicio de bus de eventos
