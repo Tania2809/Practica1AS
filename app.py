@@ -141,7 +141,7 @@ def eliminarEvento():
     except Exception as e:
         import traceback
         print("ERROR en eliminarEvento:", traceback.format_exc())
-        return make_response(jsonify({"error": str(e)}), 500)
+        return make_response(jsonify({"ultimo error": str(e)}), 500)
 
 
 # lugares
