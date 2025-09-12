@@ -1,6 +1,6 @@
 <!-- Modal para agregar cliente -->
 <p>version 2.9</p>
-
+<br>
 <div class="row  align-items-center g-2">
   <div class="col-3">
     <div>
@@ -35,7 +35,29 @@
     </div>
   </div>
   <div class="col-1"></div>
+
   <div class="col">
+    <form ng-submit="buscar(nombre)" class="mb-4" novalidate autocomplete="off">
+      <div class="row mb-3">
+        <div class="col-md-8">
+          <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+            <input type="text" ng-model="nombre" class="form-control" placeholder="Buscar clientes..."
+              aria-label="Buscar categorías">
+          </div>
+        </div>
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="fas fa-search me-2"></i>Buscar
+          </button>
+        </div>
+        <div class="col-md-2">
+          <button type="button" ng-click="limpiarBusqueda()" class="btn btn-secondary w-100" ng-disabled="mostrarTodos">
+            <i class="fas fa-times me-2"></i>Limpiar
+          </button>
+        </div>
+      </div>
+    </form>
     <div class="card">
       <div class="card-header ">
         <h5 class="card-title mb-0">Lista de Clientes</h5>
