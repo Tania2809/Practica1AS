@@ -216,6 +216,7 @@ app.controller("lugaresCtrl", function($scope, $http) {
     var pusher = new Pusher("", {
         cluster: 'us2'
     })
+    
 
     var channel = pusher.subscribe("");
     channel.bind("newDataInserted", function(data) {
