@@ -209,7 +209,7 @@ app.controller("lugaresCtrl", function($scope, $http) {
 }
      //inizializa el template
     $http.get("/lugares").then(function(res) {
-        $http.allData()
+        $scope.allData()
     })
      Pusher.logToConsole = true
 
