@@ -202,58 +202,61 @@ app.controller("clientesCtrl", function($scope, $http) {
 
 
 app.controller("lugaresCtrl", function($scope, $http) {
-            $scope.lugares = []
+    $scope.lugares = []
 
-            $scope.allData = function() {
-                    $scope.get("/lugares/all").then(function(res) {
-                        $("#tablaLugares").html(res.data)
-                    })
-                }
-                //inizializa el template
-            $http.get("/").then(function(res) {
-                    $http.allData()
-                    $http.get("/lugares/all").then(function(res) {
-                        $("#tablaLugares").html(res.data)
-                    })
-                }
-                //inizializa el template
-                $http.get("/lugares").then(function(res) {
-                    $scope.allData()
-                }) Pusher.logToConsole = true
-
-                var pusher = new Pusher("", {
-                    cluster: 'us2'
-                })
-
-                var channel = pusher.subscribe(""); channel.bind("newDataInserted", function(data) {
-                    $scope.allData();
-                })
-
-                // Guardar lugar
-                $scope.guardar = function(lugar) {
-                    $http.post("/lugar/guardar", lugar).then(function() {
-                        $scope.lugar = {}
-                        $scope.allData()
-                    }, function(err) {
-                        console.log("Error al guardar: " + (err.data ? err.message : ""))
-                    })
-                }
+    $scope.allData = function() {
+            $scope.get("/lugares/all").then(function(res) {
+                $("#tablaLugares").html(res.data)
             })
-
-        const DateTime = luxon.DateTime
-        let lxFechaHora
-
-        document.addEventListener("DOMContentLoaded", function(event) {
-            const configFechaHora = {
-                locale: "es",
-                weekNumbers: true,
-                minuteIncrement: 15,
-                altInput: true,
-                altFormat: "d/F/Y",
-                dateFormat: "Y-m-d",
-            }
-
-            activeMenuOption(location.hash)
-
-
+        }
+        //inizializa el template
+    $http.get("/").then(function(res) {
+            $http.allData()
+            $http.get("/lugares/all").then(function(res) {
+                $("#tablaLugares").html(res.data)
+            })
         })
+        //inizializa el template
+    $http.get("/lugares").then(function(res) {
+        $scope.allData()
+    })
+
+    Pusher.logToConsole = true
+
+    var pusher = new Pusher("", {
+        cluster: 'us2'
+    })
+
+    var channel = pusher.subscribe("");
+    channel.bind("newDataInserted", function(data) {
+        $scope.allData();
+    })
+
+    // Guardar lugar
+    $scope.guardar = function(lugar) {
+        $http.post("/lugar/guardar", lugar).then(function() {
+            $scope.lugar = {}
+            $scope.allData()
+        }, function(err) {
+            console.log("Error al guardar: " + (err.data ? err.message : ""))
+        })
+    }
+})
+
+const DateTime = luxon.DateTime
+let lxFechaHora
+
+document.addEventListener("DOMContentLoaded", function(event) {
+    const configFechaHora = {
+        locale: "es",
+        weekNumbers: true,
+        minuteIncrement: 15,
+        altInput: true,
+        altFormat: "d/F/Y",
+        dateFormat: "Y-m-d",
+    }
+
+    activeMenuOption(location.hash)
+
+
+})
