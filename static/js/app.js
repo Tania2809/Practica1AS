@@ -205,13 +205,13 @@ app.controller("lugaresCtrl", function($scope, $http) {
     $scope.lugares = []
 
     $scope.allData = function() {
-            $scope.get("/lugares/all").then(function(res) {
+            $http.get("/lugares/all").then(function(res) {
                 $("#tablaLugares").html(res.data)
             })
         }
         //inizializa el template
     $http.get("/").then(function(res) {
-            $http.allData()
+            $scope.allData()
             $http.get("/lugares/all").then(function(res) {
                 $("#tablaLugares").html(res.data)
             })
@@ -226,6 +226,7 @@ app.controller("lugaresCtrl", function($scope, $http) {
     var pusher = new Pusher("", {
         cluster: 'us2'
     })
+    
 
     var channel = pusher.subscribe("");
     channel.bind("newDataInserted", function(data) {
