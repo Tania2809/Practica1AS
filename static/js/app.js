@@ -351,26 +351,7 @@ app.controller("lugaresCtrl", function($scope, $http) {
         }
         //inizializa el template
     $http.get("/lugares").then(function(res) {
-            $scope.allData()
-            $http.get("/lugares/all").then(function(res) {
-                $("#tablaLugares").html(res.data)
-            })
-        })
-        //inizializa el template
-    $http.get("/lugares").then(function(res) {
         $scope.allData()
-    })
-
-    Pusher.logToConsole = true
-
-    var pusher = new Pusher("", {
-        cluster: 'us2'
-    })
-
-
-    var channel = pusher.subscribe("");
-    channel.bind("newDataInserted", function(data) {
-        $scope.allData();
     })
 
     // Guardar lugar
