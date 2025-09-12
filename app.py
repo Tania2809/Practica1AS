@@ -151,6 +151,8 @@ def lugares():
     if not con.is_connected():
         con.reconnect()
         
+        con.close()
+        
     return render_template("lugares.html")
 
 
@@ -159,7 +161,7 @@ def ListarLugares():
     if not con.is_connected():
         con.reconnect()
         
-        con.close()
+        
     lugares = []
     try:
         
