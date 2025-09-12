@@ -115,7 +115,7 @@ def guardarEvento():
         INSERT INTO eventos (descripcionUbicacion, descripcionEvento, fechaInicio, fechaFin, idCategoria, idLugar, idCliente)
         VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
-        val = ("", descripcionEvento, fechainicio, fechaFin, idCategoria, idLugar, idCliente)
+        val = (descripcionUbicacion, descripcionEvento, fechainicio, fechaFin, idCategoria, idLugar, idCliente)
         try:
             cursor.execute(sql, val)
             con.commit()
