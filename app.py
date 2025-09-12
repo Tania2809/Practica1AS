@@ -193,7 +193,7 @@ def guardarLugar():
     return make_response(jsonify({}))
 
 
-@app.route("/pusherCategorias")
+
 def pusherCategorias():
     import pusher
     
@@ -262,6 +262,7 @@ def guardarCategoria():
     cursor.execute(sql, val)
     con.commit()
     cursor.close()
+    pusherCategorias()
     return make_response(jsonify({}))
 
     
@@ -299,7 +300,7 @@ def buscarCategorias():
     finally:
         cursor.close()
 
-    return make_response(jsonify(registros))
+    return render_template("tablaCategorias.html", categorias=registros)
 
 
 # clientes
