@@ -138,7 +138,7 @@ app.controller("categoriasCtrl", function($scope, $http) {
     $scope.mostrarTodos = true;
     $scope.nombre = '';
 
-    // Inicializar Pusher
+
     Pusher.logToConsole = true;
     var pusher = new Pusher("db840e3e13b1c007269e", {
         cluster: 'us2'
@@ -146,9 +146,7 @@ app.controller("categoriasCtrl", function($scope, $http) {
 
     var channel = pusher.subscribe("canalCategorias");
 
-    // Escuchar eventos de Pusher
     channel.bind("newDataInserted", function(data) {
-        console.log('📢 Evento Pusher recibido: newDataInserted', data);
         if (!$scope.searching) {
             $scope.allData();
         }
@@ -159,14 +157,13 @@ app.controller("categoriasCtrl", function($scope, $http) {
 
     // Obtener todas las categorías
     $scope.allData = function() {
-        console.log('🔄 Cargando todas las categorías...');
+        console.log('Cargando todas las categorías...');
         $http.get("/categorias/all")
             .then(function(res) {
                 $("#tablaCategorias").html(res.data);
-                console.log('✅ Tabla actualizada correctamente');
             })
             .catch(function(error) {
-                console.error('❌ Error al cargar categorías:', error);
+                console.error('Error al cargar categorías:', error);
                 $("#tablaCategorias").html(`
                     <tr>
                         <td colspan="3" class="text-center text-danger py-3">
@@ -178,47 +175,34 @@ app.controller("categoriasCtrl", function($scope, $http) {
             });
     };
 
-    // Inicializar
     $scope.inicializar = function() {
         $scope.allData();
     };
 
-    // Iniciar
     $scope.inicializar();
 
     // Guardar categoría
     $scope.guardar = function(categoria) {
         if (!categoria || !categoria.nombreCategoria || !categoria.nombreCategoria.trim()) {
-            alert("❌ El nombre de la categoría es requerido");
             return;
         }
 
-        console.log('💾 Intentando guardar categoría:', categoria);
-
         $http.post("/categorias/agregar", categoria)
             .then(function(response) {
-                console.log('✅ Respuesta del servidor:', response.data);
                 if (response.data.status === "success") {
-                    $scope.categoria = {}; // Limpiar formulario
-                    alert("✅ Categoría guardada correctamente");
-                    // Pusher se encargará de actualizar la tabla automáticamente
+                    $scope.categoria = {};
                 } else {
-                    alert("❌ Error: " + response.data.message);
+                    alert("Error: " + response.data.message);
                 }
             })
             .catch(function(error) {
-                console.error("❌ Error al guardar:", error);
-                if (error.data && error.data.message) {
-                    alert("❌ Error: " + error.data.message);
-                } else {
-                    alert("❌ Error desconocido al guardar la categoría");
-                }
+                console.error("Error al guardar:", error);
             });
     };
 
     // Buscar categorías
     $scope.buscar = function(nombre) {
-        console.log("🔍 Buscando:", nombre);
+        console.log("Buscando:", nombre);
         $scope.searching = true;
 
         if (!nombre || nombre.trim() === '') {
@@ -236,12 +220,10 @@ app.controller("categoriasCtrl", function($scope, $http) {
                 $scope.mostrarTodos = false;
             })
             .catch(function(error) {
-                console.error("❌ Error en búsqueda:", error);
-                alert("Error en la búsqueda");
+                console.error("Error en búsqueda:", error);
             });
     };
 
-    // Limpiar búsqueda
     $scope.limpiarBusqueda = function() {
         $scope.nombre = '';
         $scope.mostrarTodos = true;
@@ -249,9 +231,7 @@ app.controller("categoriasCtrl", function($scope, $http) {
         $scope.allData();
     };
 
-    // Limpiar cuando se destruye el controlador
     $scope.$on('$destroy', function() {
-        console.log('🧹 Desconectando Pusher...');
         pusher.unsubscribe("canalCategorias");
         pusher.disconnect();
     });
