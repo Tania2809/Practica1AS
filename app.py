@@ -173,7 +173,7 @@ def ListarLugares():
         pass
     finally:
         con.close()
-    return render_template("tabla_lugares.html", lugares=lugares)
+    return render_template("tablalugares.html", lugares=lugares)
 
 
 @app.route("/lugar/guardar", methods=["POST"])
