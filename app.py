@@ -199,114 +199,185 @@ def guardarLugar():
 
 
 
-def pusherCategorias():
-    import pusher
-    
-    pusher_client = pusher.Pusher(
-        app_id="2046019",
-        key="db840e3e13b1c007269e",
-        secret="0f06a16c943fdf4bbc11",
-        cluster="us2",
-        ssl=True
-    )
-    
-    pusher_client.trigger("canalCategorias", "eventoCategorias", {"message": "Hola Mundo"})
-    return make_response(jsonify({}))
-
+# Ruta para obtener la vista principal de categorías
 @app.route("/categorias", methods=["GET"])
 def categorias():
     if not con.is_connected():
         con.reconnect()
-        
     return render_template("categorias.html")
 
+# Obtener todas las categorías
 @app.route("/categorias/all", methods=["GET"])
 def ListarCategorias():
     if not con.is_connected():
         con.reconnect()
-    con.reconnect()
+    
     registros = []
     try:
+        cursor = con.cursor(dictionary=True)
+        sql = "SELECT * FROM categorias ORDER BY idCategoria DESC"
+        cursor.execute(sql)
+        registros = cursor.fetchall()
+    except Exception as e:
+        print(f"Error al obtener categorías: {e}")
+    finally:
+        cursor.close()
+    
+    return render_template("tablaCategorias.html", categorias=registros)
+
+# Guardar nueva categoría
+@app.route("/categorias/agregar", methods=["POST"])
+def guardarCategoria():
+    try:
+        # Verificar conexión
+        if not con.is_connected():
+            con.reconnect()
+            
+        if not con.is_connected():
+            return make_response(jsonify({
+                "status": "error", 
+                "message": "Error de conexión a la base de datos"
+            }), 500)
+        
+        # Obtener datos
+        if request.is_json:
+            data = request.get_json()
+            nombre = data.get("nombreCategoria", "").strip()
+            descripcion = data.get("descripcion", "").strip()
+        else:
+            nombre = request.form.get("nombreCategoria", "").strip()
+            descripcion = request.form.get("descripcion", "").strip()
+        
+        # Validaciones
+        if not nombre:
+            return make_response(jsonify({
+                "status": "error", 
+                "message": "El nombre de categoría es requerido"
+            }), 400)
+            
+        if len(nombre) > 100:
+            return make_response(jsonify({
+                "status": "error", 
+                "message": "El nombre no puede exceder 100 caracteres"
+            }), 400)
+        
+        # Insertar en base de datos
+        cursor = con.cursor(dictionary=True)
+        sql = "INSERT INTO categorias (nombreCategoria, descripcion) VALUES (%s, %s)"
+        val = (nombre, descripcion)
+        
+        cursor.execute(sql, val)
+        con.commit()
+        
+        categoria_id = cursor.lastrowid
+        cursor.close()
+        
+        # Publicar evento
+        publicar_evento_categoria("categoria_guardada", {
+            "id": categoria_id,
+            "nombre": nombre,
+            "descripcion": descripcion
+        })
+        
+        return make_response(jsonify({
+            "status": "success", 
+            "id": categoria_id,
+            "message": "Categoría guardada correctamente"
+        }))
+        
+    except mysql.connector.Error as err:
+        print("Error de MySQL:", err)
+        return make_response(jsonify({
+            "status": "error", 
+            "message": f"Error de base de datos: {err}"
+        }), 500)
+        
+    except Exception as e:
+        print("Error general:", e)
+        return make_response(jsonify({
+            "status": "error", 
+            "message": f"Error interno del servidor: {str(e)}"
+        }), 500)
+    
+
+# Buscar categorías
+@app.route("/categorias/buscar", methods=["GET"])
+def buscarCategorias():
+    try:
+        if not con.is_connected():
+            con.reconnect()
+
+        args = request.args
+        busqueda = args.get("busqueda", "").strip()
+        
+        print(f"🔍 Búsqueda recibida: '{busqueda}'")
+        
+        if not busqueda:
+            # Si no hay búsqueda, devolver todas las categorías
+            return ListarCategorias()
+        
+        busqueda_param = f"%{busqueda}%"
         
         cursor = con.cursor(dictionary=True)
         sql = """
-        SELECT * FROM categorias
+        SELECT idCategoria, nombreCategoria, descripcion
+        FROM categorias 
+        WHERE nombreCategoria LIKE %s 
+           OR descripcion LIKE %s
+        ORDER BY idCategoria DESC
         """
+        val = (busqueda_param, busqueda_param)
+
+        print(f"📋 Ejecutando consulta: {sql}")
+        print(f"📊 Valores: {val}")
         
-        cursor.execute(sql)
-        registros = cursor.fetchall()
-    except:
-        pass
-    finally:
-        con.close()
-    return render_template("tablaCategorias.html", categorias=registros)
-
-# categorias
-@app.route("/categorias/agregar", methods=["POST"])
-def guardarCategoria():
-    if not con.is_connected():
-        con.reconnect()
-
-    if request.is_json:
-        data = request.get_json()
-        nombre = data.get("nombreCategoria")
-        descripcion = data.get("descripcion")
-    else:
-        nombre = request.form.get("nombreCategoria")
-        descripcion = request.form.get("descripcion")
-
-    cursor = con.cursor(dictionary=True)
-    sql = """
-    INSERT INTO categorias (nombreCategoria, descripcion)
-    VALUES (%s, %s)
-    """
-    val = (nombre, descripcion)
-    cursor.execute(sql, val)
-    con.commit()
-    cursor.close()
-    pusherCategorias()
-    return make_response(jsonify({}))
-
-@app.route("/categorias/buscar", methods=["GET"])
-def buscarCategorias():
-    if not con.is_connected():
-        con.reconnect()
-
-    args = request.args
-    busqueda = args.get("busqueda", "")
-    
-    if not busqueda or busqueda.strip() == "":
-        # Si la búsqueda está vacía, devolver todos los registros
-        return ListarCategorias()
-    
-    busqueda = f"%{busqueda}%"
-    
-    cursor = con.cursor(dictionary=True)
-    sql = """
-    SELECT idCategoria,
-           nombreCategoria,
-           descripcion
-    FROM categorias
-    WHERE nombreCategoria LIKE %s
-    OR    descripcion LIKE %s
-    ORDER BY idCategoria DESC
-    LIMIT 10 OFFSET 0
-    """
-    val = (busqueda, busqueda)
-
-    try:
         cursor.execute(sql, val)
         registros = cursor.fetchall()
+        
+        print(f"✅ Resultados encontrados: {len(registros)}")
+        for registro in registros:
+            print(f"   - {registro['idCategoria']}: {registro['nombreCategoria']} - {registro['descripcion']}")
 
-    except mysql.connector.errors.ProgrammingError as error:
-        print(f"Ocurrió un error de programación en MySQL: {error}")
-        registros = []
-
-    finally:
         cursor.close()
+        
+        return render_template("tablaCategorias.html", categorias=registros)
+        
+    except mysql.connector.Error as err:
+        print(f"❌ Error de MySQL: {err}")
+        print(f"📋 Código de error: {err.errno}")
+        print(f"💬 Mensaje: {err.msg}")
+        return make_response(jsonify({
+            "status": "error", 
+            "message": f"Error de base de datos: {err}"
+        }), 500)
+        
+    except Exception as e:
+        print(f"❌ Error general en búsqueda: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return make_response(jsonify({
+            "status": "error", 
+            "message": f"Error interno del servidor: {str(e)}"
+        }), 500)
+    
 
-    return render_template("tablaCategorias.html", categorias=registros)
-
+# Función para publicar eventos de categoría
+def publicar_evento_categoria(evento, datos):
+    try:
+        pusher_client = pusher.Pusher(
+            app_id="2046019",
+            key="db840e3e13b1c007269e",
+            secret="0f06a16c943fdf4bbc11",
+            cluster="us2",
+            ssl=True
+        )
+        
+        pusher_client.trigger("canalCategorias", evento, datos)
+        print(f"✅ Evento publicado: {evento} - {datos}")
+        
+    except Exception as e:
+        print(f"❌ Error al publicar evento: {e}")
+        # Fallback: puedes agregar otras notificaciones aquí
 
 # clientes
 def triggerUpdateCliente():
@@ -356,17 +427,17 @@ def buscarCliente():
     if not con.is_connected():
         con.reconnect()
 
-    busqueda = request.get_json().get("nombre")
+    args = request.args
+    busqueda = args.get("busqueda", "")
     
     busqueda = f"%{busqueda}%"
-    return busqueda
     cursor = con.cursor(dictionary=True)
     sql = """
     SELECT *
     FROM clientes
     WHERE nombreCliente LIKE %s
     """
-    val = (busqueda)
+    val = (busqueda,)
 
     try:
         cursor.execute(sql, val)
@@ -374,6 +445,7 @@ def buscarCliente():
 
     except mysql.connector.errors.ProgrammingError as error:
         print(f"Ocurrió un error de programación en MySQL: {error}")
+        return error
         registros = []
 
     finally:

@@ -9,7 +9,7 @@ function activeMenuOption(href) {
 }
 
 const app = angular.module("angularjsApp", ["ngRoute"])
-app.config(function ($routeProvider, $locationProvider) {
+app.config(function($routeProvider, $locationProvider) {
     $locationProvider.hashPrefix("")
 
     $routeProvider
@@ -38,7 +38,7 @@ app.config(function ($routeProvider, $locationProvider) {
             redirectTo: "/"
         })
 })
-app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location, $timeout) {
+app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, $timeout) {
     function actualizarFechaHora() {
         lxFechaHora = DateTime
             .now()
@@ -52,7 +52,7 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
 
     actualizarFechaHora()
 
-    $rootScope.$on("$routeChangeSuccess", function (event, current, previous) {
+    $rootScope.$on("$routeChangeSuccess", function(event, current, previous) {
         $("html").css("overflow-x", "hidden")
 
 
@@ -67,7 +67,7 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
                 $rootScope.slide += ((active > click) ? "Left" : "Right")
             }
 
-            $timeout(function () {
+            $timeout(function() {
                 $("html").css("overflow-x", "auto")
 
                 $rootScope.slide = ""
@@ -78,29 +78,29 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
     })
 }])
 
-app.controller("appCtrl", function ($scope, $http) { })
+app.controller("appCtrl", function($scope, $http) {})
 
 
-app.controller("eventosCtrl", function ($scope, $http) {
+app.controller("eventosCtrl", function($scope, $http) {
 
     $scope.eventos = []
 
     // Obtener lista de categorías
-    $http.get("/eventos").then(function (res) {
+    $http.get("/eventos").then(function(res) {
         $scope.categorias = res.data
     })
 
     // Guardar evento
-    $scope.guardar = function (eventos) {
-        $http.post("/eventos/agregar", eventos).then(function (res) {
+    $scope.guardar = function(eventos) {
+        $http.post("/eventos/agregar", eventos).then(function(res) {
             console.log(res);
             console.log("evento guardado")
-            // Recargar lista sin recargar toda la página
-            $http.get("/eventos").then(function (res) {
+                // Recargar lista sin recargar toda la página
+            $http.get("/eventos").then(function(res) {
                 $scope.eventos = res.data
             })
             $scope.eventos = {} // Limpiar formulario
-        }, function (err) {
+        }, function(err) {
             console.log("Error al guardar: " + (err.data ? err.message : ""));
         })
     }
@@ -109,85 +109,162 @@ app.controller("eventosCtrl", function ($scope, $http) {
 
 
     // Obtener lista de eventos
-    $http.get("/eventos").then(function (res) {
+    $http.get("/eventos").then(function(res) {
         $scope.eventos = res.data
     })
 
 })
 
-app.controller("categoriasCtrl", function ($scope, $http) {
-    $scope.categorias = []
-    $scope.mostrarTodos = true; // Nueva variable para controlar qué datos mostrar
 
-    $scope.allData = function () {
-        $http.get("/categorias/all").then(function (res) {
-            $("#tablaCategorias").html(res.data);
-            $scope.mostrarTodos = true; // Indicar que estamos mostrando todos los datos
-        })
-    }
 
-    // Inicializa el template
-    $http.get("/categorias").then(function (res) {
-        $scope.allData();
-    })
+app.controller("categoriasCtrl", function($scope, $http) {
+    $scope.categorias = [];
+    $scope.mostrarTodos = true;
 
-    Pusher.logToConsole = true;
+    // 1. Configurar Pusher CORRECTAMENTE
+    Pusher.logToConsole = true; // Ver logs en consola
+
     var pusher = new Pusher("db840e3e13b1c007269e", {
-        cluster: 'us2'
+        cluster: 'us2',
+        forceTLS: true // Important: usar conexión segura
     });
+
+    // 2. Suscribirse al canal
     var channel = pusher.subscribe("canalCategorias");
-    channel.bind("eventoCategorias", function (data) {
+
+    // 3. ESCUCHAR eventos de Pusher (¡ESTO ES LO QUE FALTABA!)
+    channel.bind("categoria_guardada", function(data) {
+        console.log('🎯 Evento Pusher RECIBIDO: categoria_guardada', data);
+
+        // Actualizar la tabla inmediatamente
         if ($scope.mostrarTodos) {
-            $scope.allData(); // Solo actualizar si estamos viendo todos los datos
+            $scope.allData();
         }
-    })
 
-    // Guardar categoría
-    $scope.guardar = function (categoria) {
-        $http.post("/categorias/agregar", categoria).then(function () {
-            $scope.categoria = {}; // Limpiar formulario
-            $scope.allData(); // Recargar todos los datos después de guardar
-            $scope.mostrarTodos = true;
-        }, function (err) {
-            alert("Error al guardar: " + (err.data ? err.message : ""));
-        })
-    }
+        // Forzar actualización de AngularJS
+        if (!$scope.$$phase) {
+            $scope.$apply();
+        }
+    });
 
-    $scope.buscar = function (nombre) {
+    // 4. Obtener todas las categorías (función mejorada)
+    $scope.allData = function() {
+        console.log('🔄 Cargando datos de categorías...');
+        $http.get("/categorias/all")
+            .then(function(res) {
+                $("#tablaCategorias").html(res.data);
+                console.log('✅ Tabla actualizada con', $(".table tbody tr").length - 1, 'categorías');
+            })
+            .catch(function(error) {
+                console.error('❌ Error al cargar categorías:', error);
+                $("#tablaCategorias").html(`
+                    <tr>
+                        <td colspan="4" class="text-center text-danger py-3">
+                            <i class="fas fa-exclamation-triangle me-2"></i> 
+                            Error al cargar categorías
+                        </td>
+                    </tr>
+                `);
+            });
+    };
+
+    // 5. Inicializar
+    $scope.inicializar = function() {
+        $http.get("/categorias")
+            .then(function(res) {
+                $scope.allData();
+            })
+            .catch(function(error) {
+                console.error('❌ Error al inicializar:', error);
+            });
+    };
+
+    // Iniciar
+    $scope.inicializar();
+
+    // 6. Guardar categoría (versión mejorada)
+    $scope.guardar = function(categoria) {
+        if (!categoria || !categoria.nombreCategoria || !categoria.nombreCategoria.trim()) {
+            alert("❌ El nombre de la categoría es requerido");
+            return;
+        }
+
+        console.log('💾 Intentando guardar categoría:', categoria);
+
+        $http.post("/categorias/agregar", categoria)
+            .then(function(response) {
+                console.log('✅ Respuesta del servidor:', response.data);
+
+                if (response.data.status === "success") {
+                    $scope.categoria = {}; // Limpiar formulario
+                    alert("✅ Categoría guardada correctamente");
+
+                    // ¡NO necesitamos recargar manualmente aquí!
+                    // Pusher se encargará de la actualización automática
+                    // cuando el backend publique el evento
+
+                } else {
+                    alert("❌ Error: " + response.data.message);
+                }
+            })
+            .catch(function(error) {
+                console.error("❌ Error al guardar:", error);
+                if (error.data && error.data.message) {
+                    alert("❌ Error: " + error.data.message);
+                } else {
+                    alert("❌ Error desconocido al guardar la categoría");
+                }
+            });
+    };
+
+    // 7. Buscar categorías
+    $scope.buscar = function(nombre) {
+        console.log("🔍 Buscando:", nombre);
+
         if (!nombre || nombre.trim() === '') {
-            $scope.allData(); // Si la búsqueda está vacía, mostrar todos
+            $scope.mostrarTodos = true;
+            $scope.allData();
             return;
         }
 
         $http.get("/categorias/buscar", {
-            params: {
-                busqueda: nombre
-            }
-        }).then(function (response) {
-            $("#tablaCategorias").html(response.data);
-            $scope.mostrarTodos = false; // Indicar que estamos mostrando resultados filtrados
-        }, function (error) {
-            console.error("Error en búsqueda:", error);
-        })
-    }
+                params: { busqueda: nombre }
+            })
+            .then(function(response) {
+                $("#tablaCategorias").html(response.data);
+                $scope.mostrarTodos = false;
+            })
+            .catch(function(error) {
+                console.error("❌ Error en búsqueda:", error);
+                alert("Error en la búsqueda");
+            });
+    };
 
-    // Nueva función para limpiar búsqueda y mostrar todos
-    $scope.limpiarBusqueda = function () {
+    // 8. Limpiar búsqueda
+    $scope.limpiarBusqueda = function() {
         $scope.nombre = '';
+        $scope.mostrarTodos = true;
         $scope.allData();
-    }
-})
+    };
 
-app.controller("clientesCtrl", function ($scope, $http) {
+    // 9. Limpiar cuando se destruye el controlador
+    $scope.$on('$destroy', function() {
+        console.log('🧹 Desconectando Pusher...');
+        pusher.unsubscribe("canalCategorias");
+        pusher.disconnect();
+    });
+});
+
+app.controller("clientesCtrl", function($scope, $http) {
     $scope.clientes = []
     $scope.searching = false;
-    $scope.allData = function () {
-        $http.get("/clientes/all").then(function (res) {
-            $("#tablaClientes").html(res.data)
-        })
-    }
-    //inizializa el template
-    $http.get("/clientes").then(function (res) {
+    $scope.allData = function() {
+            $http.get("/clientes/all").then(function(res) {
+                $("#tablaClientes").html(res.data)
+            })
+        }
+        //inizializa el template
+    $http.get("/clientes").then(function(res) {
         $scope.allData()
     })
     Pusher.logToConsole = true
@@ -195,55 +272,59 @@ app.controller("clientesCtrl", function ($scope, $http) {
         cluster: 'us2'
     })
     var channel = pusher.subscribe("canalClientes");
-    channel.bind("newDataInserted", function (data) {
+    channel.bind("newDataInserted", function(data) {
         if (!$scope.searching)
             $scope.allData();
     })
 
-    $scope.buscar = function (nombre) {
-        if (!nombre || nombre.trim() === '') {
-            $scope.searching = false
-            $scope.allData(); // Si la búsqueda está vacía, mostrar todos
-            return;
-        }
+    $scope.buscar = function(nombre) {
+            if (!nombre || nombre.trim() === '') {
+                $scope.searching = false
+                $scope.allData(); // Si la búsqueda está vacía, mostrar todos
+                return;
+            }
 
-        $http.get("/clientes/buscar",nombre).then(function (response) {
-            console.log(response);
-            
-            $("#tablaClientes").html(response.data);
-            $scope.searching = true;
-        }, function (error) {
-            console.error("Error en búsqueda:", error);
-        })
-    }
-    // Guardar cliente
-    $scope.guardar = function (cliente) {
-        $http.post("/clientes/agregar", cliente).then(function () {
+            $http.get("/clientes/buscar", {
+                params: {
+                    busqueda: nombre
+                }
+            }).then(function(response) {
+                console.log(response);
+
+                $("#tablaClientes").html(response.data);
+                $scope.searching = true;
+            }, function(error) {
+                console.error("Error en búsqueda:", error);
+            })
+        }
+        // Guardar cliente
+    $scope.guardar = function(cliente) {
+        $http.post("/clientes/agregar", cliente).then(function() {
             $scope.cliente = {}
-        }, function (err) {
+        }, function(err) {
             console.log("Error al guardar: " + (err.data ? err.message : ""))
         })
     }
 })
 
 
-app.controller("lugaresCtrl", function ($scope, $http) {
+app.controller("lugaresCtrl", function($scope, $http) {
     $scope.lugares = []
 
-    $scope.allData = function () {
-        $http.get("/lugares/all").then(function (res) {
-            $("#tablaLugares").html(res.data)
+    $scope.allData = function() {
+            $http.get("/lugares/all").then(function(res) {
+                $("#tablaLugares").html(res.data)
+            })
+        }
+        //inizializa el template
+    $http.get("/").then(function(res) {
+            $scope.allData()
+            $http.get("/lugares/all").then(function(res) {
+                $("#tablaLugares").html(res.data)
+            })
         })
-    }
-    //inizializa el template
-    $http.get("/").then(function (res) {
-        $scope.allData()
-        $http.get("/lugares/all").then(function (res) {
-            $("#tablaLugares").html(res.data)
-        })
-    })
-    //inizializa el template
-    $http.get("/lugares").then(function (res) {
+        //inizializa el template
+    $http.get("/lugares").then(function(res) {
         $scope.allData()
     })
 
@@ -255,16 +336,16 @@ app.controller("lugaresCtrl", function ($scope, $http) {
 
 
     var channel = pusher.subscribe("");
-    channel.bind("newDataInserted", function (data) {
+    channel.bind("newDataInserted", function(data) {
         $scope.allData();
     })
 
     // Guardar lugar
-    $scope.guardar = function (lugar) {
-        $http.post("/lugar/guardar", lugar).then(function () {
+    $scope.guardar = function(lugar) {
+        $http.post("/lugar/guardar", lugar).then(function() {
             $scope.lugar = {}
             $scope.allData()
-        }, function (err) {
+        }, function(err) {
             console.log("Error al guardar: " + (err.data ? err.message : ""))
         })
     }
@@ -273,7 +354,7 @@ app.controller("lugaresCtrl", function ($scope, $http) {
 const DateTime = luxon.DateTime
 let lxFechaHora
 
-document.addEventListener("DOMContentLoaded", function (event) {
+document.addEventListener("DOMContentLoaded", function(event) {
     const configFechaHora = {
         locale: "es",
         weekNumbers: true,
