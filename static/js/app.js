@@ -116,7 +116,7 @@ app.controller("eventosCtrl", function($scope, $http) {
             $http.get("/eventos").then(function(res) {
                 $scope.eventos = res.data
             })
-            $scope.eventos = {} // Limpiar formulario
+            $scope.evento = {} // Limpiar formulario
         }, function(err) {
             console.log("Error al guardar: " + (err.data ? err.message : ""));
         })
