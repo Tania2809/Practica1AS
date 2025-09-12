@@ -353,10 +353,10 @@ def buscarCliente():
     if not con.is_connected():
         con.reconnect()
 
-    busqueda = request.get_json().get("nombre")
+    args = request.args
+    busqueda = args.get("busqueda", "")
     
     busqueda = f"%{busqueda}%"
-    return busqueda
     cursor = con.cursor(dictionary=True)
     sql = """
     SELECT *

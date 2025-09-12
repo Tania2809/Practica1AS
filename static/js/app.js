@@ -219,8 +219,12 @@ app.controller("clientesCtrl", function ($scope, $http) {
             return;
         }
 
-        $http.get("/clientes/buscar",nombre).then(function (response) {
-            console.log(response);
+        $http.get("/clientes/buscar", {
+            params: {
+                busqueda: nombre
+            }
+        }).then(function (response) {
+            console.log();
             
             $("#tablaClientes").html(response.data);
             $scope.searching = true;
