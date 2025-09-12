@@ -117,26 +117,31 @@ def guardarEvento():
 
 @app.route("/eventos/eliminar", methods=["POST"])
 def eliminarEvento():
-    if not con.is_connected():
-        con.reconnect()
-    if request.is_json:
-        data = request.get_json()
-        id = data.get("idEvento", "").strip()
-    else:
-        id = request.form.get("idEvento", "").strip()
+    try:
+        if not con.is_connected():
+            con.reconnect()
 
-    cursor = con.cursor(dictionary=True)
-    sql = """
-    DELETE FROM eventos
-    WHERE idEvento = %s
-    """
-    val = (id,)
+        if request.is_json:
+            data = request.get_json()
+            id = data.get("idEvento", "").strip()
+        else:
+            id = request.form.get("idEvento", "").strip()
 
-    cursor.execute(sql, val)
-    con.commit()
-    con.close()
+        if not id or not id.isdigit():
+            return make_response(jsonify({"error": "ID de evento no válido"}), 400)
 
-    return make_response(jsonify({}))
+        cursor = con.cursor(dictionary=True)
+        sql = "DELETE FROM eventos WHERE idEvento = %s"
+        cursor.execute(sql, (id,))
+        con.commit()
+        cursor.close()
+
+        return make_response(jsonify({"success": True}), 200)
+
+    except Exception as e:
+        import traceback
+        print("ERROR en eliminarEvento:", traceback.format_exc())
+        return make_response(jsonify({"error": str(e)}), 500)
 
 
 # lugares
