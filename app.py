@@ -27,20 +27,6 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route("/pusherCategorias")
-def pusherCategorias():
-    import pusher
-    
-    pusher_client = pusher.Pusher(
-        app_id="2046019",
-        key="db840e3e13b1c007269e",
-        secret="0f06a16c943fdf4bbc11",
-        cluster="us2",
-        ssl=True
-    )
-    
-    pusher_client.trigger("canalCategorias", "eventoCategorias", {"message": "Hola Mundo"})
-    return make_response(jsonify({}))
 
 
 @app.route("/")
@@ -142,7 +128,7 @@ def lugares():
 def ListarLugares():
     if not con.is_connected():
         con.reconnect()
-    con.reconnect()
+        
     lugares = []
     try:
         
@@ -191,6 +177,52 @@ def guardarLugar():
     return make_response(jsonify({}))
 
 
+@app.route("/pusherCategorias")
+def pusherCategorias():
+    import pusher
+    
+    pusher_client = pusher.Pusher(
+        app_id="2046019",
+        key="db840e3e13b1c007269e",
+        secret="0f06a16c943fdf4bbc11",
+        cluster="us2",
+        ssl=True
+    )
+    
+    pusher_client.trigger("canalCategorias", "eventoCategorias", {"message": "Hola Mundo"})
+    return make_response(jsonify({}))
+
+
+@app.route("/categorias", methods=["GET"])
+def categorias():
+    if not con.is_connected():
+        con.reconnect()
+        
+    return render_template("categorias.html")
+
+
+@app.route("/categorias/all", methods=["GET"])
+def ListarCategorias():
+    if not con.is_connected():
+        con.reconnect()
+    con.reconnect()
+    registros = []
+    try:
+        
+        cursor = con.cursor(dictionary=True)
+        sql = """
+        SELECT * FROM categorias
+        """
+        
+        cursor.execute(sql)
+        registros = cursor.fetchall()
+    except:
+        pass
+    finally:
+        con.close()
+    return render_template("tablaCategorias.html", categorias=registros)
+
+
 # categorias
 @app.route("/categorias/agregar", methods=["POST"])
 def guardarCategoria():
@@ -217,18 +249,6 @@ def guardarCategoria():
     return make_response(jsonify({}))
 
     
-@app.route("/categorias", methods=["GET"])
-def categorias():
-    if not con.is_connected():
-        con.reconnect()
-
-    cursor = con.cursor(dictionary=True)
-    sql = "SELECT * FROM categorias"
-    cursor.execute(sql)
-    registros = cursor.fetchall()
-    cursor.close()
-    return render_template("categorias.html", categorias=registros)
-
 
 @app.route("/categorias/buscar", methods=["GET"])
 def buscarCategorias():
