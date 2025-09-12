@@ -357,6 +357,7 @@ def buscarCliente():
     busqueda = args.get("busqueda", "")
     
     busqueda = f"%{busqueda}%"
+    return busqueda
     cursor = con.cursor(dictionary=True)
     sql = """
     SELECT *
