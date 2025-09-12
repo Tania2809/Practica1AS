@@ -70,6 +70,13 @@
         <td>{{ evento.nombreLugar }}</td>
         <td>{{ evento.direccion }}</td>
         <td>{{ evento.nombreCliente }}</td>
+        <td>
+          <!-- Botón eliminar -->
+          <button class="btn btn-danger btn-sm" 
+                  ng-click="eliminar(evento.idEvento)">
+            Eliminar
+          </button>
+        </td>
       </tr>
       {% endfor %}
     </tbody>

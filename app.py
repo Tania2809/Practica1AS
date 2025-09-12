@@ -115,6 +115,27 @@ def guardarEvento():
         return make_response(jsonify({"error": str(e)}))
 
 
+@app.route("/eventos/eliminar", methods=["POST"])
+def eliminarEvento():
+    if not con.is_connected():
+        con.reconnect()
+
+    id = request.form["idEvento"]
+
+    cursor = con.cursor(dictionary=True)
+    sql = """
+    DELETE FROM eventos
+    WHERE idEvento = %s
+    """
+    val = (id,)
+
+    cursor.execute(sql, val)
+    con.commit()
+    con.close()
+
+    return make_response(jsonify({}))
+
+
 # lugares
 @app.route("/lugares")
 def lugares():

@@ -105,6 +105,20 @@ app.controller("eventosCtrl", function ($scope, $http) {
         })
     }
 
+     $scope.guardar = function(eventos) {
+        $http.post("/eventos/eliminar", eventos).then(function(res) {
+            console.log(res);
+            console.log("evento eliminado")
+                // Recargar lista sin recargar toda la página
+            $http.get("/eventos").then(function(res) {
+                $scope.eventos = res.data
+            })
+            $scope.eventos = {} // Limpiar formulario
+        }, function(err) {
+            console.log("Error al borrar: " + (err.data ? err.message : ""));
+        })
+    }
+
 
     // Obtener lista de eventos
     $http.get("/eventos").then(function (res) {
