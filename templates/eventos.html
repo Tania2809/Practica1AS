@@ -59,26 +59,7 @@
         <th>Cliente</th>
       </tr> 
     </thead>
-    <tbody>
-      {% for evento in eventos %}
-      <tr>
-        <td>{{ evento.idEvento }}</td>
-        <td>{{ evento.descripcionEvento }}</td>
-        <td>{{ evento.fechaInicio }}</td>
-        <td>{{ evento.fechaFin }}</td>
-        <td>{{ evento.nombreCategoria }}</td>
-        <td>{{ evento.nombreLugar }}</td>
-        <td>{{ evento.direccion }}</td>
-        <td>{{ evento.nombreCliente }}</td>
-        <td>
-          <!-- Botón eliminar -->
-          <button class="btn btn-danger btn-sm" 
-          ng-click="eliminar('{{ evento.idEvento }}')">
-        Eliminar
-          </button>
-        </td>
-      </tr>
-      {% endfor %}
+    <tbody  id="tablaEventos ">
     </tbody>
   </table>
 </div>
