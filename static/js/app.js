@@ -118,7 +118,7 @@ app.controller("eventosCtrl", function($scope, $http) {
             })
             $scope.evento = {} // Limpiar formulario
         }, function(err) {
-            console.log("Error al guardar: " + (err.data ? err.message : ""));
+            console.log("Error al eliminar: " + (err.data ? err.message : ""));
         })
     }
 

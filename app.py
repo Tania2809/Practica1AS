@@ -127,19 +127,20 @@ def eliminarEvento():
         else:
             id = request.form.get("idEvento", "").strip()
 
-        if not id:
-            return make_response(jsonify({"error": "ID de evento no proporcionado"}), 400)
+        if not id or not id.isdigit():
+            return make_response(jsonify({"error": "ID de evento no válido"}), 400)
 
         cursor = con.cursor(dictionary=True)
         sql = "DELETE FROM eventos WHERE idEvento = %s"
         cursor.execute(sql, (id,))
         con.commit()
         cursor.close()
-        con.close()
 
         return make_response(jsonify({"success": True}), 200)
 
     except Exception as e:
+        import traceback
+        print("ERROR en eliminarEvento:", traceback.format_exc())
         return make_response(jsonify({"error": str(e)}), 500)
 
 
