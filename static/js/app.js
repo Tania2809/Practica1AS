@@ -116,8 +116,6 @@ app.controller("eventosCtrl", function($scope, $http) {
         })
     }
 
-
-
     // eliminar evento
     $scope.eliminar = function(evento) {
         console.log(evento);
@@ -362,10 +360,10 @@ app.controller("lugaresCtrl", function($scope, $http) {
     })
     var channel = pusher.subscribe("canalLugares");
     channel.bind("newDataInserted", function(data) {
-        if (!$scope.searching)
-            $scope.allData();
-    })
-    // Guardar lugar
+            if (!$scope.searching)
+                $scope.allData();
+        })
+        // Guardar lugar
     $scope.guardar = function(lugar) {
         $http.post("/lugar/guardar", lugar).then(function() {
             $scope.lugar = {}

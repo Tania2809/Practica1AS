@@ -49,11 +49,7 @@ def app2():
     return "<h5>Hola, soy la view app</h5>"
 
 
-@app.route("/eventos")
-def eventos_view():
-    if not con.is_connected():
-        con.reconnect()
-    return render_template("eventos.html")
+
 
 # EVENTOS
 @app.route("/eventos/all")
@@ -174,6 +170,12 @@ def eliminarEvento():
         import traceback
         print("ERROR en eliminarEvento:", traceback.format_exc())
         return make_response(jsonify({"ultimo error": str(e)}), 500)
+    
+@app.route("/eventos")
+def eventos_view():
+    if not con.is_connected():
+        con.reconnect()
+    return render_template("eventos.html")
     
 
 
