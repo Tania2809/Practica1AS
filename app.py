@@ -232,8 +232,7 @@ def guardarLugar():
 
         cursor.execute(sql, val)
         con.commit()
-        cursor.close()
-
+        con.close()
         return make_response(jsonify({"success": True}), 200)
         
     except Exception as e:
