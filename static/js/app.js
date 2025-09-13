@@ -90,7 +90,9 @@ app.controller("eventosCtrl", function ($scope, $http) {
             $("#tablaEventos").html(res.data);
         });
     };
-    $http.get("/eventos").then(function (res) {
+    $http.get("/eventos").then(function(res) {
+        console.log(res);
+
         $scope.cargarEventos()
     });
 
@@ -385,7 +387,7 @@ app.controller("lugaresCtrl", function ($scope, $http) {
             params: {
                 busqueda: lugar
             }
-        }).then(function (response) {
+        }), then(function(response) {
             $("tablaLugares").html(response.data);
             $scope.searching = true;
         }, function (error) {
