@@ -391,7 +391,7 @@ app.controller("lugaresCtrl", function ($scope, $http) {
         }). then(function(response) {
             console.log(response);
             
-            $("tablaLugares").html(response.data);
+            $("#tablaLugares").html(response.data);
             $scope.searching = true;
         }, function (error) {
             console.error("Error en búsqueda:", error);
