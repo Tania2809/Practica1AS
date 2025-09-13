@@ -88,8 +88,7 @@ app.controller("eventosCtrl", function($scope, $http) {
     $scope.cargarEventos = function() {
         $http.get("/eventos/all").then(function(res) {
             $scope.eventos = res.data;
-            // Si usas el método de insertar HTML
-            // $("#tablaEventos").html(res.data);
+            $("#tablaEventos").html(res.data);
         });
     };
     Pusher.logToConsole = true
@@ -98,7 +97,7 @@ app.controller("eventosCtrl", function($scope, $http) {
     })
     var channel = pusher.subscribe("canalEventos");
     channel.bind("newDataInserted", function(data) {
-        $scope.allData();
+        $scope.cargarEventos();
     })
 
     // Guardar evento
