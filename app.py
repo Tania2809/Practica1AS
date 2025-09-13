@@ -48,19 +48,6 @@ def app2():
 
     return "<h5>Hola, soy la view app</h5>"
 
-def triggerUpdateEventos():
-    import pusher
-    
-    pusher_client = pusher.Pusher(
-        app_id="2046019",
-        key="db840e3e13b1c007269e",
-        secret="0f06a16c943fdf4bbc11",
-        cluster="us2",
-        ssl=True
-    )
-    
-    pusher_client.trigger("canalEventos", "newDataInserted", {"message": "triggered"})
-    return make_response(jsonify({}))
 
 # EVENTOS
 @app.route("/eventos/all")
@@ -84,6 +71,19 @@ INNER JOIN clientes cl ON e.idCliente = cl.idCliente;
     eventos = cursor.fetchall()
     return render_template("eventos.html", eventos=eventos)
 
+def triggerUpdateEventos():
+    import pusher
+    
+    pusher_client = pusher.Pusher(
+        app_id="2046019",
+        key="db840e3e13b1c007269e",
+        secret="0f06a16c943fdf4bbc11",
+        cluster="us2",
+        ssl=True
+    )
+    
+    pusher_client.trigger("canalEventos", "newDataInserted", {"message": "triggered"})
+    return make_response(jsonify({}))
 
 
 @app.route("/eventos/agregar", methods=["POST"])
