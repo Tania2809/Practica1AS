@@ -91,6 +91,8 @@ app.controller("eventosCtrl", function($scope, $http) {
         });
     };
     $http.get("/eventos").then(function(res) {
+        console.log(res);
+
         $scope.cargarEventos()
     });
 
@@ -378,14 +380,14 @@ app.controller("lugaresCtrl", function($scope, $http) {
             $scope.searching = false
             $scope.allData();
             return;
-            
+
         }
 
         $http.get("/lugar/buscar", {
             params: {
                 busqueda: lugar
             }
-        }),then(function(response){
+        }), then(function(response) {
             $("tablaLugares").html(response.data);
             $scope.searching = true;
         }, function(error) {
