@@ -85,6 +85,24 @@ def triggerUpdateEventos():
     pusher_client.trigger("canalEventos", "newDataInserted", {"message": "triggered"})
     return make_response(jsonify({}))
 
+@app.route("/eventos/all", methods=["GET"])
+def ListarEventos():
+    try:
+        if not con.is_connected():
+            con.reconnect()
+        
+        cursor = con.cursor(dictionary=True)
+        sql = "SELECT * FROM eventos"
+        cursor.execute(sql)
+        eventos = cursor.fetchall()
+        cursor.close()
+        
+        return render_template("tablaEventos.html", eventos=eventos)
+        
+    except Exception as e:
+        print(f"Error en ListarEventos: {str(e)}")
+        return make_response(jsonify({"error": str(e)}), 500)
+
 
 @app.route("/eventos/agregar", methods=["POST"])
 def guardarEvento():
