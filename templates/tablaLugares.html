@@ -1,29 +1,21 @@
- {% for lugar in lugares %}
-                        <tr>
-                            <td><strong>#{{ lugar.idLugar }}</strong></td>
-                            <td>
-                                <strong>{{ lugar.nombreLugar }}</strong>
-                            </td>
-                            <td>
-                                {% if lugar.direccion %}
-                                    {{ lugar.direccion }}
-                                {% else %}
-                                    <span class="text-muted">No especificado</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if lugar.ubicacion %} {{ lugar.ubicacion }}
-                                {% else %}
-                                    <span class="text-muted">No especificado</span>
-                                {% endif %}
-                            </td>
-                         
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="5" class="text-center text-muted py-4">
-                                <i class="fas fa-users fa-2x mb-2"></i>
-                                <p>No hay lugares registrados</p>
-                            </td>
-                        </tr>
-                        {% endfor %}
+{% for lugar in lugares %}
+<tr>
+    <td><strong>#{{ lugar.idLugar }}</strong></td>
+    <td><strong>{{ lugar.nombreLugar }}</strong></td>
+    <td>
+        {% if lugar.direccion %} {{ lugar.direccion }} {% else %}
+        <span class="text-muted">No especificado</span> {% endif %}
+    </td>
+    <td>
+        {% if lugar.ubicacion %} {{ lugar.ubicacion }} {% else %}
+        <span class="text-muted">No especificado</span> {% endif %}
+    </td>
+</tr>
+{% else %}
+<tr>
+    <td colspan="4" class="text-center text-muted py-4">
+        <i class="fas fa-map-marker-alt fa-2x mb-2"></i>
+        <p>No hay lugares registrados</p>
+    </td>
+</tr>
+{% endfor %}

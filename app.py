@@ -191,13 +191,11 @@ def ListarLugares():
         lugares = cursor.fetchall()
         cursor.close()
         
-        return render_template("tablalugares.html", lugares=lugares)
+        return render_template("tablaLugares.html", lugares=lugares)
         
     except Exception as e:
         print(f"Error en ListarLugares: {str(e)}")
         return make_response(jsonify({"error": str(e)}), 500)
-        return make_response(jsonify({"error": str(e)}))
-    return render_template("tablaLugares.html", lugares=l)
 
 
 @app.route("/lugar/guardar", methods=["POST"])
