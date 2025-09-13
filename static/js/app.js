@@ -81,7 +81,7 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
 app.controller("appCtrl", function ($scope, $http) { })
 
 
-app.controller("eventosCtrl", function ($scope, $http) {
+app.controller("eventosCtrl", function ($scope, $http,$compile) {
 
     $scope.eventos = []
 
