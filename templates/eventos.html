@@ -1,65 +1,65 @@
 <p>Version 2.2</p>
 <div>
-  <form ng-submit="guardar(evento)" method="POST" id="registrar" class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title">Registrar Nuevo Evento</h5>
-    </div>
-    <div class="modal-body">
-      <div class="mb-3">
-        <label for="descripcionEvento" class="form-label">Descripción del Evento</label>
-        <input required type="text" ng-model="evento.descripcionEvento" class="form-control" id="descripcionEvento" name="descripcionEvento">
-      </div>
-      <div class="mb-3">
-        <label for="descripcionUbicacion" class="form-label">Descripción la ubicacion</label>
-        <input required type="text" ng-model="evento.descripcionUbicacion" class="form-control" id="descripcionUbicacion" name="descripcionUbicacion">
-      </div>
-      <div class="mb-3">
-        <label for="fechaInicio" class="form-label">Fecha Inicio</label>
-        <input required type="date" ng-model="evento.fechaInicio" class="form-control" id="fechaInicio" name="fechaInicio">
-      </div>
-      <div class="mb-3">
-        <label for="fechaFin" class="form-label">Fecha Fin</label>
-        <input required type="date" ng-model="evento.fechaFin" class="form-control" id="fechaFin" name="fechaFin">
-      </div>
-      <div class="mb-3">
-        <label for="nombreCategoria" class="form-label">Categoría</label>
-        <input required type="text" ng-model="evento.idCategoria" class="form-control" id="nombreCategoria" name="nombreCategoria">
-      </div>
-      <div class="mb-3">
-        <label for="nombreLugar" class="form-label">Lugar</label>
-        <input required type="text" ng-model="evento.idLugar" class="form-control" id="nombreLugar" name="nombreLugar">
-      </div>
-      <div class="mb-3">
-        <label for="direccion" class="form-label">Dirección</label>
-        <input required type="text" ng-model="evento.direccion" class="form-control" id="direccion" name="direccion">
-      </div>
-      <div class="mb-3">
-        <label for="nombreCliente" class="form-label">Cliente</label>
-        <input required type="text" ng-model="evento.idCliente" class="form-control" id="nombreCliente" name="nombreCliente">
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-      <button type="submit" class="btn btn-primary">Registrar</button>
-    </div>
-  </form>
+    <form ng-submit="guardar(evento)" method="POST" id="registrar" class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Registrar Nuevo Evento</h5>
+        </div>
+        <div class="modal-body">
+            <div class="mb-3">
+                <label for="descripcionEvento" class="form-label">Descripción del Evento</label>
+                <input required type="text" ng-model="evento.descripcionEvento" class="form-control" id="descripcionEvento" name="descripcionEvento">
+            </div>
+            <div class="mb-3">
+                <label for="descripcionUbicacion" class="form-label">Descripción la ubicacion</label>
+                <input required type="text" ng-model="evento.descripcionUbicacion" class="form-control" id="descripcionUbicacion" name="descripcionUbicacion">
+            </div>
+            <div class="mb-3">
+                <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+                <input required type="date" ng-model="evento.fechaInicio" class="form-control" id="fechaInicio" name="fechaInicio">
+            </div>
+            <div class="mb-3">
+                <label for="fechaFin" class="form-label">Fecha Fin</label>
+                <input required type="date" ng-model="evento.fechaFin" class="form-control" id="fechaFin" name="fechaFin">
+            </div>
+            <div class="mb-3">
+                <label for="nombreCategoria" class="form-label">Categoría</label>
+                <input required type="text" ng-model="evento.idCategoria" class="form-control" id="nombreCategoria" name="nombreCategoria">
+            </div>
+            <div class="mb-3">
+                <label for="nombreLugar" class="form-label">Lugar</label>
+                <input required type="text" ng-model="evento.idLugar" class="form-control" id="nombreLugar" name="nombreLugar">
+            </div>
+            <div class="mb-3">
+                <label for="direccion" class="form-label">Dirección</label>
+                <input required type="text" ng-model="evento.direccion" class="form-control" id="direccion" name="direccion">
+            </div>
+            <div class="mb-3">
+                <label for="nombreCliente" class="form-label">Cliente</label>
+                <input required type="text" ng-model="evento.idCliente" class="form-control" id="nombreCliente" name="nombreCliente">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Registrar</button>
+        </div>
+    </form>
 </div>
 
 <div class="table-responsive">
-  <table class="table table-sm">
-    <thead class="table-active">
-      <tr>
-        <th>ID Evento</th>
-        <th>Descripción</th>
-        <th>Fecha Inicio</th>
-        <th>Fecha Fin</th>
-        <th>Categoría</th>
-        <th>Lugar</th>
-        <th>Dirección</th>
-        <th>Cliente</th>
-      </tr> 
-    </thead>
-    <tbody  id="tablaEventos ">
-    </tbody> 
-  </table>
+    <table class="table table-sm">
+        <thead class="table-active">
+            <tr>
+                <th>ID Evento</th>
+                <th>Descripción</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Fin</th>
+                <th>Categoría</th>
+                <th>Lugar</th>
+                <th>Dirección</th>
+                <th>Cliente</th>
+            </tr>
+        </thead>
+        <tbody id="tablaEventos">
+        </tbody>
+    </table>
 </div>

@@ -87,10 +87,14 @@ app.controller("eventosCtrl", function($scope, $http) {
         // Cargar datos de eventos
     $scope.cargarEventos = function() {
         $http.get("/eventos/all").then(function(res) {
-            $scope.eventos = res.data;
             $("#tablaEventos").html(res.data);
         });
     };
+    $http.get("/eventos").then(function(res) {
+        $scope.cargarEventos()
+    });
+
+
     Pusher.logToConsole = true
     var pusher = new Pusher("db840e3e13b1c007269e", {
         cluster: 'us2'
