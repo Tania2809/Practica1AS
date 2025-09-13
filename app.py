@@ -224,11 +224,11 @@ def guardarLugar():
             
         if request.is_json:
             data = request.get_json()
-            nombreL = data.get("nombreLugar")
+            nombreLugar = data.get("nombreLugar")
             direccion = data.get("direccion")
             ubicacion = data.get("ubicacion")
         else:
-            nombreL = request.form.get("nombreLugar")
+            nombreLugar = request.form.get("nombreLugar")
             direccion = request.form.get("direccion")
             ubicacion = request.form.get("ubicacion")
             
@@ -237,7 +237,7 @@ def guardarLugar():
         INSERT INTO lugares (nombreLugar, direccion, ubicacion)
         VALUES (%s, %s, %s)
         """
-        val = (nombreL, direccion, ubicacion)
+        val = (nombreLugar, direccion, ubicacion)
 
         cursor.execute(sql, val)
         con.commit()
