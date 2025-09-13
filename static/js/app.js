@@ -84,13 +84,19 @@ app.controller("appCtrl", function ($scope, $http) { })
 app.controller("eventosCtrl", function ($scope, $http) {
 
     $scope.eventos = []
+
+    $scope.agregarAngularATemplate = function (data) {
+        var compiled = $compile(data)($scope);
+        angular.element('#tablaEventos').html(compiled);
+    }
+
     // Cargar datos de eventos
     $scope.cargarEventos = function () {
         $http.get("/eventos/all").then(function (res) {
-            $("#tablaEventos").html(res.data);
+         $scope.agregarAngularATemplate(res.data);
         });
     };
-    $http.get("/eventos").then(function(res) {
+    $http.get("/eventos").then(function (res) {
         console.log(res);
 
         $scope.cargarEventos()
@@ -388,9 +394,9 @@ app.controller("lugaresCtrl", function ($scope, $http) {
             params: {
                 busqueda: lugar
             }
-        }). then(function(response) {
+        }).then(function (response) {
             console.log(response);
-            
+
             $("#tablaLugares").html(response.data);
             $scope.searching = true;
         }, function (error) {
