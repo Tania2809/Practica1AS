@@ -345,6 +345,7 @@ app.controller("clientesCtrl", function ($scope, $http) {
 
 app.controller("lugaresCtrl", function ($scope, $http) {
     $scope.lugares = []
+    $scope.searching = false;
 
     $scope.allData = function () {
         $http.get("/lugares/all").then(function (res) {
