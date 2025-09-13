@@ -1,73 +1,72 @@
-<p>Version 1.2.7</p>
+<p>Version 1.2.8</p>
+<div class="container my-4">
 
-<div>
-    <form ng-submit="guardar(lugar)" id="frmlugares" class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="modalLugaresLabel">Registrar Nuevo Lugar</h5>
+    <!-- Formulario para registrar lugar -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Registrar Nuevo Lugar</h5>
         </div>
-        <div class="modal-body">
+        <form ng-submit="guardar(lugar)" id="frmlugares" class="card-body">
             <div class="mb-3">
-                <label for="nombreLugar" class="form-label">Nombre del Lugar</label>
-                <input required type="text" class="form-control" ng-model="lugar.nombreLugar" id="nombreLugar"
-                    name="nombreLugar">
+                <label for="nombreLugar" class="form-label">Nombre del Lugar <span class="text-danger">*</span></label>
+                <input required type="text" class="form-control" ng-model="lugar.nombreLugar" id="nombreLugar" name="nombreLugar">
             </div>
             <div class="mb-3">
-                <label for="direccion" class="form-label">Direccion</label>
+                <label for="direccion" class="form-label">Dirección</label>
                 <input type="text" class="form-control" ng-model="lugar.direccion" id="direccion" name="direccion">
             </div>
             <div class="mb-3">
-                <label for="ubicacion" class="form-label">Ubicacion</label>
+                <label for="ubicacion" class="form-label">Ubicación</label>
                 <input type="text" ng-model="lugar.ubicacion" class="form-control" id="ubicacion" name="ubicacion">
             </div>
-        </div>
-        <div class="d-flex justify-content-between">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-primary">Registrar</button>
-        </div>
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-success">Registrar</button>
+            </div>
+        </form>
+    </div>
 
-    </form>
-</div>
-<div>
-    <form ng-submit="buscar(lugar)" class="mb-4" novalidate autocomplete="off">
-        <div class="row mb-3">
-            <div class="col-md-8">
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-search"></i></span>
-                    <input type="text" ng-model="lugar" class="form-control" placeholder="Buscar lugares...">
+    <!-- Formulario de búsqueda -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <form ng-submit="buscar(lugar)" class="row g-3" novalidate autocomplete="off">
+                <div class="col-md-8">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" ng-model="lugar" class="form-control" placeholder="Buscar lugares...">
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="fas fa-search me-2"></i>Buscar
-                </button>
-            </div>
-
-        </div>
-    </form>
-</div>
-
-
-
-<div class="card">
-    <div class="card-header ">
-        <h5 class="card-title mb-0">Lista de Lugares</h5>
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover table-striped">
-                <thead class="table-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre del Lugar</th>
-                        <th>Direccion</th>
-                        <th>Ubicacion</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaLugares">
-
-                </tbody>
-            </table>
+                <div class="col-md-4 d-grid">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search me-2"></i>Buscar
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-</div>
+
+    <!-- Tabla de lugares -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Lista de Lugares</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre del Lugar</th>
+                            <th>Dirección</th>
+                            <th>Ubicación</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaLugares">
+                        <!-- Los datos se cargan aquí -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
 </div>

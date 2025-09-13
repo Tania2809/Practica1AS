@@ -275,17 +275,17 @@ def buscarLugar():
     
     try:
         cursor.execute(sql, val)
-        lugares = cursor.fetchall()
+        l = cursor.fetchall()
 
     except mysql.connector.errors.ProgrammingError as error:
         print(f"Ocurrió un error de programación en MySQL: {error}")
         return error
-        lugares = []
+        l = []
 
     finally:
         cursor.close()
 
-    return render_template("tablaLugares.html", lugares=lugares)
+    return render_template("tablaLugares.html", lugares=l)
 
 # Ruta para obtener la vista principal de categorías
 @app.route("/categorias", methods=["GET"])
