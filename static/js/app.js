@@ -132,12 +132,6 @@ app.controller("eventosCtrl", function($scope, $http) {
     }
 
 
-
-    // Obtener lista de eventos
-    $http.get("/eventos").then(function(res) {
-        $scope.eventos = res.data
-    })
-
 })
 
 
