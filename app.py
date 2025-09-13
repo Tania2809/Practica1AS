@@ -50,7 +50,7 @@ def app2():
 
 
 # EVENTOS
-@app.route("/eventos/all")
+@app.route("/eventos")
 def eventos():
     if not con.is_connected():
         con.reconnect()

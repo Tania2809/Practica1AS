@@ -85,7 +85,7 @@ app.controller("eventosCtrl", function ($scope, $http) {
 
     $scope.eventos = []
     $scope.allData = function () {
-        $http.get("/eventos/all").then(function (res) {
+        $http.get("/eventos").then(function (res) {
             $("#tablaEventos").html(res.data)
         })
     }
