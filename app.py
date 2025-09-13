@@ -203,6 +203,8 @@ def ListarLugares():
     except Exception as e:
         print(f"Error en ListarLugares: {str(e)}")
         return make_response(jsonify({"error": str(e)}), 500)
+        return make_response(jsonify({"error": str(e)}))
+    return render_template("tablaLugares.html", lugares=l)
 
 
 @app.route("/lugar/guardar", methods=["POST"])
@@ -213,11 +215,11 @@ def guardarLugar():
             
         if request.is_json:
             data = request.get_json()
-            nombreLugar = data.get("nombreLugar")
+            nombreL = data.get("nombreLugar")
             direccion = data.get("direccion")
             ubicacion = data.get("ubicacion")
         else:
-            nombreLugar = request.form.get("nombreLugar")
+            nombreL = request.form.get("nombreLugar")
             direccion = request.form.get("direccion")
             ubicacion = request.form.get("ubicacion")
             
@@ -226,7 +228,7 @@ def guardarLugar():
         INSERT INTO lugares (nombreLugar, direccion, ubicacion)
         VALUES (%s, %s, %s)
         """
-        val = (nombreLugar, direccion, ubicacion)
+        val = (nombreL, direccion, ubicacion)
 
         cursor.execute(sql, val)
         con.commit()
