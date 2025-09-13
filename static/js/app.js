@@ -128,7 +128,7 @@ app.controller("eventosCtrl", function($scope, $http) {
         })
     }
 
-
+    $scope.cargarEventos()
 })
 
 
