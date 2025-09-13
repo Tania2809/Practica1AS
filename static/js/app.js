@@ -389,6 +389,8 @@ app.controller("lugaresCtrl", function ($scope, $http) {
                 busqueda: lugar
             }
         }). then(function(response) {
+            console.log(response);
+            
             $("tablaLugares").html(response.data);
             $scope.searching = true;
         }, function (error) {
