@@ -255,6 +255,37 @@ def guardarLugar():
     except Exception as e:
         print(f"Error en guardarLugar: {str(e)}")
         return make_response(jsonify({"error": str(e)}), 500)
+    
+@app.route("/lugar/buscar", methods=["GET"])
+def buscarLugar():
+    if not con.is_connected():
+        con.reconnect()
+        
+    args = request.args
+    busqueda = args.get("busqueda", "")
+    
+    busqueda = f"%{busqueda}%"
+    cursor = con.cursor(dictionary=True)
+    sql = """
+    SELECT *
+    FROM lugares
+    WHERE nombreLugar LIKE %s
+    """
+    val = (busqueda,)
+    
+    try:
+        cursor.execute(sql, val)
+        lugares = cursor.fetchall()
+
+    except mysql.connector.errors.ProgrammingError as error:
+        print(f"Ocurrió un error de programación en MySQL: {error}")
+        return error
+        lugares = []
+
+    finally:
+        cursor.close()
+
+    return render_template("tablaLugares.html", lugares=lugares)
 
 # Ruta para obtener la vista principal de categorías
 @app.route("/categorias", methods=["GET"])

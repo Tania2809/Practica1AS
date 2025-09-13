@@ -372,6 +372,26 @@ app.controller("lugaresCtrl", function($scope, $http) {
             console.log("Error al guardar: " + (err.data ? err.message : ""))
         })
     }
+
+    $scope.buscar = function(lugar) {
+        if (!lugar || lugar.trim() === '') {
+            $scope.searching = false
+            $scope.allData();
+            return;
+            
+        }
+
+        $http.get("/lugar/buscar", {
+            params: {
+                busqueda: lugar
+            }
+        }),then(function(response){
+            $("tablaLugares").html(response.data);
+            $scope.searching = true;
+        }, function(error) {
+            console.error("Error en búsqueda:", error);
+        })
+    }
 })
 
 const DateTime = luxon.DateTime
