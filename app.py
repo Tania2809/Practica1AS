@@ -50,7 +50,7 @@ def app2():
 
 
 # EVENTOS
-@app.route("/eventos")
+@app.route("/eventos/all")
 def eventos():
     if not con.is_connected():
         con.reconnect()
@@ -69,7 +69,7 @@ INNER JOIN clientes cl ON e.idCliente = cl.idCliente;
     """
     cursor.execute(sql)
     eventos = cursor.fetchall()
-    return render_template("eventos.html", eventos=eventos)
+    return render_template("tablaEventos.html", eventos=eventos)
 
 def triggerUpdateEventos():
     import pusher
@@ -85,23 +85,12 @@ def triggerUpdateEventos():
     pusher_client.trigger("canalEventos", "newDataInserted", {"message": "triggered"})
     return make_response(jsonify({}))
 
-@app.route("/eventos/all", methods=["GET"])
-def ListarEventos():
-    try:
-        if not con.is_connected():
-            con.reconnect()
-        
-        cursor = con.cursor(dictionary=True)
-        sql = "SELECT * FROM eventos"
-        cursor.execute(sql)
-        eventos = cursor.fetchall()
-        cursor.close()
-        
-        return render_template("tablaEventos.html", eventos=eventos)
-        
-    except Exception as e:
-        print(f"Error en ListarEventos: {str(e)}")
-        return make_response(jsonify({"error": str(e)}), 500)
+
+@app.route("/eventos")
+def eventos_view():
+    if not con.is_connected():
+        con.reconnect()
+    return render_template("eventos.html")
 
 
 @app.route("/eventos/agregar", methods=["POST"])
