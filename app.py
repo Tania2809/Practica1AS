@@ -175,7 +175,19 @@ def eliminarEvento():
     
 
 
-
+def triggerUpdateLugares():
+    import pusher
+    
+    pusher_client = pusher.Pusher(
+        app_id="2046019",
+        key="db840e3e13b1c007269e",
+        secret="0f06a16c943fdf4bbc11",
+        cluster="us2",
+        ssl=True
+    )
+    
+    pusher_client.trigger("canalLugares", "newDataInserted", {"message": "triggered"})
+    return make_response(jsonify({}))
 
 # lugares
 @app.route("/lugares")
@@ -233,6 +245,7 @@ def guardarLugar():
         cursor.execute(sql, val)
         con.commit()
         con.close()
+        triggerUpdateLugares()
         return make_response(jsonify({"success": True}), 200)
         
     except Exception as e:

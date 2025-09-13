@@ -352,6 +352,15 @@ app.controller("lugaresCtrl", function($scope, $http) {
         $scope.allData()
     })
 
+    Pusher.logToConsole = true
+    var pusher = new Pusher("db840e3e13b1c007269e", {
+        cluster: 'us2'
+    })
+    var channel = pusher.subscribe("canalLugares");
+    channel.bind("newDataInserted", function(data) {
+        if (!$scope.searching)
+            $scope.allData();
+    })
     // Guardar lugar
     $scope.guardar = function(lugar) {
         $http.post("/lugar/guardar", lugar).then(function() {
