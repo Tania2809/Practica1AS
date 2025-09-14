@@ -57,6 +57,11 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
         console.log(event);
         console.log(next);
         console.log(current);
+
+        if($rootScope.login == false && next.$$route.originalPath != "/"){
+                $location.path("/")
+        }
+
         
     })
     $rootScope.$on("$routeChangeSuccess", function (event, current, previous) {
@@ -85,7 +90,7 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
     })
 }])
 
-app.controller("loginCtrl", function ($scope, $rootScope, $http) {
+app.controller("loginCtrl", function ($scope, $rootScope, $http,$timeout) {
     // Inicializar el modelo de datos
     $scope.userData = {
         username: '',
