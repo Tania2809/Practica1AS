@@ -93,7 +93,7 @@ app.controller("loginCtrl", function ($scope, $location, $http) {
         $http.post("/login", $scope.userData).then(function (res) {
             console.log(res);
             
-            if (res == 1) {
+            if (res.data == 1) {
                 window.location = "/#/eventos"
             }
         }
