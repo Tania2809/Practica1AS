@@ -14,8 +14,8 @@ app.config(function ($routeProvider, $locationProvider) {
 
     $routeProvider
         .when("/", {
-            templateUrl: "/login",
-            controller: "appCtrl"
+            templateUrl: "/loginView",
+            controller: "loginCtrl"
         })
         .when("/categorias", {
             templateUrl: "/categorias",
@@ -79,21 +79,25 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
     })
 }])
 
-app.controller("appCtrl", function ($scope, $http) {
+app.controller("loginCtrl", function ($scope, $location, $http) {
     // Inicializar el modelo de datos
     $scope.userData = {
         username: '',
-        password: '',
-        rememberMe: false
+        password: ''
     };
 
     // Función para manejar el envío del formulario
     $scope.submitLogin = function () {
         // Aquí procesarías los datos de inicio de sesión
         console.log('Datos enviados:', $scope.userData);
-
-        // Normalmente aquí harías una llamada a tu API de autenticación
-        alert('Inicio de sesión exitoso para: ' + $scope.userData.username);
+        $http.post("/login", $scope.userData).then(function (res) {
+            console.log(res);
+            
+            if (res == 1) {
+                window.location = "/#/eventos"
+            }
+        }
+        )
     };
 })
 

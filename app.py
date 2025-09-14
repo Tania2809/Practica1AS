@@ -47,8 +47,8 @@ def app2():
     return "<h5>Hola, soy la view app</h5>"
 
 
-@app.route("/login")
-def login():
+@app.route("/loginView")
+def loginView():
     if not con.is_connected():
         con.reconnect()
 
@@ -56,6 +56,32 @@ def login():
     return render_template("login.html")
 
 
+@app.route("/login", methods=["POST"])
+def login():
+    if not con.is_connected():
+        con.reconnect()
+    cursor = con.cursor(dictionary=True)
+    
+    if request.is_json:
+        data = request.get_json()
+        nombre = data.get("username")
+        contrasena = data.get("password")
+    else:
+        nombre = request.form.get("username")
+        contrasena = request.form.get("password")
+    sql = """
+SELECT * FROM usuarios WHERE nombre = %s AND contrasena = %s
+    """
+    val = (nombre,contrasena)
+    cursor.execute(sql,val)
+    res = cursor.fetchall()
+    if(len(res) > 1):
+        return "1"
+    else:
+        return "0"
+    
+    
+    
 # EVENTOS
 @app.route("/eventos/all")
 def eventos():
