@@ -73,7 +73,7 @@ def login():
             nombre = request.form.get("username")
             contrasena = request.form.get("password")
         sql = """
-        SELECT * FROM usuarios WHERE nombre = %s AND contrasena = %s
+        SELECT * FROM Usuario WHERE nombre = %s AND contrasena = %s
         """
         val = (nombre,contrasena)
         cursor.execute(sql,val)
