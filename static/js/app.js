@@ -14,7 +14,7 @@ app.config(function ($routeProvider, $locationProvider) {
 
     $routeProvider
         .when("/", {
-            templateUrl: "/app",
+            templateUrl: "/login",
             controller: "appCtrl"
         })
         .when("/categorias", {
@@ -38,6 +38,7 @@ app.config(function ($routeProvider, $locationProvider) {
             redirectTo: "/"
         })
 })
+
 app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location, $timeout) {
     function actualizarFechaHora() {
         lxFechaHora = DateTime
@@ -78,10 +79,25 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
     })
 }])
 
-app.controller("appCtrl", function ($scope, $http) { })
+app.controller("appCtrl", function ($scope, $http) {
+    // Inicializar el modelo de datos
+    $scope.userData = {
+        username: '',
+        password: '',
+        rememberMe: false
+    };
 
+    // Función para manejar el envío del formulario
+    $scope.submitLogin = function () {
+        // Aquí procesarías los datos de inicio de sesión
+        console.log('Datos enviados:', $scope.userData);
 
-app.controller("eventosCtrl", function ($scope, $http,$compile) {
+        // Normalmente aquí harías una llamada a tu API de autenticación
+        alert('Inicio de sesión exitoso para: ' + $scope.userData.username);
+    };
+})
+
+app.controller("eventosCtrl", function ($scope, $http, $compile) {
 
     $scope.eventos = []
 
@@ -93,7 +109,7 @@ app.controller("eventosCtrl", function ($scope, $http,$compile) {
     // Cargar datos de eventos
     $scope.cargarEventos = function () {
         $http.get("/eventos/all").then(function (res) {
-         $scope.agregarAngularATemplate(res.data);
+            $scope.agregarAngularATemplate(res.data);
         });
     };
     $http.get("/eventos").then(function (res) {
@@ -140,7 +156,6 @@ app.controller("eventosCtrl", function ($scope, $http,$compile) {
 
     $scope.cargarEventos()
 })
-
 
 app.controller("categoriasCtrl", function ($scope, $http) {
     $scope.categorias = [];
@@ -295,7 +310,6 @@ app.controller("categoriasCtrl", function ($scope, $http) {
     };
 });
 
-
 app.controller("clientesCtrl", function ($scope, $http) {
     $scope.clientes = []
     $scope.searching = false;
@@ -347,7 +361,6 @@ app.controller("clientesCtrl", function ($scope, $http) {
         })
     }
 })
-
 
 app.controller("lugaresCtrl", function ($scope, $http) {
     $scope.lugares = []
