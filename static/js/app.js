@@ -54,13 +54,12 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
     $rootScope.login = false
     actualizarFechaHora()
     $rootScope.$on('$routeChangeStart', function (event, next, current) {
-        console.log(event);
-        console.log(next);
-        console.log(current);
+
 
         if ($rootScope.login == false) {
             if (next != null && next.$$route.originalPath != "/")
                 $location.path("/")
+
         }
 
 
@@ -102,9 +101,9 @@ app.controller("loginCtrl", ["$scope", "$rootScope", "$http", "$timeout", "$loca
         // Función para manejar el envío del formulario
         $scope.submitLogin = function () {
             // Aquí procesarías los datos de inicio de sesión
-            console.log('Datos enviados:', $scope.userData);
+       
             $http.post("/login", $scope.userData).then(function (res) {
-                console.log(res);
+              
 
                 if (res.data == 1) {
 
@@ -151,8 +150,7 @@ app.controller("eventosCtrl", function ($scope, $http, $compile) {
     // Guardar evento
     $scope.guardar = function (eventos) {
         $http.post("/eventos/agregar", eventos).then(function (res) {
-            console.log(res);
-            console.log("evento guardado")
+    
 
             $scope.eventos = {} // Limpiar formulario
         }, function (err) {
@@ -162,11 +160,10 @@ app.controller("eventosCtrl", function ($scope, $http, $compile) {
 
     // eliminar evento
     $scope.eliminar = function (evento) {
-        console.log(evento);
+  
 
         $http.post("/eventos/eliminar", evento).then(function (res) {
-            console.log(res);
-            console.log("evento eliminado")
+        
 
             $scope.evento = {} // Limpiar formulario
         }, function (err) {
@@ -230,15 +227,15 @@ app.controller("categoriasCtrl", function ($scope, $http) {
     const notificacionService = {
         init: function () {
             eventBus.subscribe('categoria_guardada', function (data) {
-                console.log('Notificación: Categoría guardada exitosamente', data);
+             //   console.log('Notificación: Categoría guardada exitosamente', data);
             });
 
             eventBus.subscribe('error_guardado', function (error) {
-                console.error('Notificación: Error al guardar categoría', error);
+             //   console.error('Notificación: Error al guardar categoría', error);
             });
 
             eventBus.subscribe('evento_pusher_recibido', function (data) {
-                console.log('Notificación: Cambios en tiempo real recibidos', data);
+            //    console.log('Notificación: Cambios en tiempo real recibidos', data);
             });
         }
     };
@@ -247,11 +244,11 @@ app.controller("categoriasCtrl", function ($scope, $http) {
     const analyticsService = {
         init: function () {
             eventBus.subscribe('busqueda_realizada', function (data) {
-                console.log('Analytics: Búsqueda realizada', data);
+            //    console.log('Analytics: Búsqueda realizada', data);
             });
 
             eventBus.subscribe('categoria_guardada', function (data) {
-                console.log('Analytics: Nueva categoría creada', data);
+            //    console.log('Analytics: Nueva categoría creada', data);
             });
         }
     };
@@ -267,7 +264,7 @@ app.controller("categoriasCtrl", function ($scope, $http) {
 
             var channel = pusher.subscribe("canalCategorias");
             channel.bind("newDataInserted", function (data) {
-                console.log('Evento Pusher recibido:', data);
+           
                 eventBus.publish('evento_pusher_recibido', data);
 
                 if ($scope.mostrarTodos) {
@@ -325,7 +322,7 @@ app.controller("categoriasCtrl", function ($scope, $http) {
 
     // Verificar estado de Pusher
     $scope.verificarPusher = function () {
-        console.log('Estado de Pusher verificado');
+       
         categoriaService.cargarTodas(); // Recargar manualmente
     };
 });
@@ -366,7 +363,7 @@ app.controller("clientesCtrl", function ($scope, $http) {
                 busqueda: nombre
             }
         }).then(function (response) {
-            console.log(response);
+        
 
             $("#tablaClientes").html(response.data);
             $scope.searching = true;
@@ -430,7 +427,7 @@ app.controller("lugaresCtrl", function ($scope, $http) {
                 busqueda: lugar
             }
         }).then(function (response) {
-            console.log(response);
+        
 
             $("#tablaLugares").html(response.data);
             $scope.searching = true;
