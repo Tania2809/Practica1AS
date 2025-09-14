@@ -40,6 +40,7 @@ app.config(function ($routeProvider, $locationProvider) {
 })
 
 app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location, $timeout) {
+
     function actualizarFechaHora() {
         lxFechaHora = DateTime
             .now()
@@ -50,7 +51,7 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
     }
 
     $rootScope.slide = ""
-
+    $rootScope.login = false
     actualizarFechaHora()
 
     $rootScope.$on("$routeChangeSuccess", function (event, current, previous) {
@@ -79,7 +80,7 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
     })
 }])
 
-app.controller("loginCtrl", function ($scope, $location, $http) {
+app.controller("loginCtrl", function ($scope, $http) {
     // Inicializar el modelo de datos
     $scope.userData = {
         username: '',
@@ -95,6 +96,7 @@ app.controller("loginCtrl", function ($scope, $location, $http) {
 
             if (res.data == 1) {
                 window.location = "/#/eventos"
+                $rootScope.login = true
             }
         }
         )
@@ -116,9 +118,8 @@ app.controller("eventosCtrl", function ($scope, $http, $compile) {
             $scope.agregarAngularATemplate(res.data);
         });
     };
-    $http.get("/eventos").then(function (res) {
-        console.log(res);
-
+   //inizializa el template
+    $scope.$on('$viewContentLoaded', function () {
         $scope.cargarEventos()
     });
 
@@ -377,10 +378,10 @@ app.controller("lugaresCtrl", function ($scope, $http) {
             $("#tablaLugares").html(res.data)
         })
     }
-    //inizializa el template
-    $http.get("/lugares").then(function (res) {
+   //inizializa el template
+    $scope.$on('$viewContentLoaded', function () {
         $scope.allData()
-    })
+    });
 
     Pusher.logToConsole = true
     var pusher = new Pusher("db840e3e13b1c007269e", {
