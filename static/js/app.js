@@ -80,7 +80,7 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
     })
 }])
 
-app.controller("loginCtrl", function ($scope, $http) {
+app.controller("loginCtrl", function ($scope,$rootScope, $http) {
     // Inicializar el modelo de datos
     $scope.userData = {
         username: '',
