@@ -58,11 +58,11 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
         console.log(next);
         console.log(current);
 
-        if($rootScope.login == false && next.$$route.originalPath != "/"){
-                $location.path("/")
+        if ($rootScope.login == false && next.$$route.originalPath != "/") {
+            $location.path("/")
         }
 
-        
+
     })
     $rootScope.$on("$routeChangeSuccess", function (event, current, previous) {
         $("html").css("overflow-x", "hidden")
@@ -90,34 +90,32 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
     })
 }])
 
-app.controller("loginCtrl", function ($scope, $rootScope, $http,$timeout,$location) {
-    // Inicializar el modelo de datos
-    $scope.userData = {
-        username: '',
-        password: ''
-    };
+app.controller("loginCtrl", ["$scope", "$rootScope", "$http", "$timeout", "$location",
+    function ($scope, $rootScope, $http, $timeout, $location) {
+        // Inicializar el modelo de datos
+        $scope.userData = {
+            username: '',
+            password: ''
+        };
 
-    // Función para manejar el envío del formulario
-    $scope.submitLogin = function () {
-        // Aquí procesarías los datos de inicio de sesión
-        console.log('Datos enviados:', $scope.userData);
-        $http.post("/login", $scope.userData).then(function (res) {
-            console.log(res);
+        // Función para manejar el envío del formulario
+        $scope.submitLogin = function () {
+            // Aquí procesarías los datos de inicio de sesión
+            console.log('Datos enviados:', $scope.userData);
+            $http.post("/login", $scope.userData).then(function (res) {
+                console.log(res);
 
-            if (res.data == 1) {
-
-                $rootScope.login = true
-                // Redirigimos después de un breve retraso
-                $timeout(function () {
-                    // Usamos $location para cambiar la ruta en lugar de window.location
-                    $location.path("/eventos");
-                }, 2000);
-            }
-        }
-        )
-    };
-})
-
+                if (res.data == 1) {
+                    $rootScope.login = true;
+                    // Redirigimos después de un breve retraso
+                    $timeout(function () {
+                        // Usamos $location para cambiar la ruta en lugar de window.location
+                        $location.path("/eventos");
+                    }, 2000);
+                }
+            });
+        };
+    }]);
 app.controller("eventosCtrl", function ($scope, $http, $compile) {
 
     $scope.eventos = []
