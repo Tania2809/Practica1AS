@@ -78,7 +78,7 @@ def login():
         val = (nombre,contrasena)
         cursor.execute(sql,val)
         res = cursor.fetchall()
-        if(len(res) > 1):
+        if(len(res) > 0):
             return "1"
         else:
             return "0"
