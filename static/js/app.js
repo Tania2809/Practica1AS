@@ -53,7 +53,12 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
     $rootScope.slide = ""
     $rootScope.login = false
     actualizarFechaHora()
-
+    $rootScope.$on('$routeChangeStart', function (event, next, current) {
+        console.log(event);
+        console.log(next);
+        console.log(current);
+        
+    })
     $rootScope.$on("$routeChangeSuccess", function (event, current, previous) {
         $("html").css("overflow-x", "hidden")
 
@@ -80,7 +85,7 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
     })
 }])
 
-app.controller("loginCtrl", function ($scope,$rootScope, $http) {
+app.controller("loginCtrl", function ($scope, $rootScope, $http) {
     // Inicializar el modelo de datos
     $scope.userData = {
         username: '',
@@ -95,8 +100,13 @@ app.controller("loginCtrl", function ($scope,$rootScope, $http) {
             console.log(res);
 
             if (res.data == 1) {
-                window.location = "/#/eventos"
+
                 $rootScope.login = true
+                // Redirigimos después de un breve retraso
+                $timeout(function () {
+                    // Usamos $location para cambiar la ruta en lugar de window.location
+                    $location.path("/eventos");
+                }, 2000);
             }
         }
         )
@@ -118,7 +128,7 @@ app.controller("eventosCtrl", function ($scope, $http, $compile) {
             $scope.agregarAngularATemplate(res.data);
         });
     };
-   //inizializa el template
+    //inizializa el template
     $scope.$on('$viewContentLoaded', function () {
         $scope.cargarEventos()
     });
@@ -378,7 +388,7 @@ app.controller("lugaresCtrl", function ($scope, $http) {
             $("#tablaLugares").html(res.data)
         })
     }
-   //inizializa el template
+    //inizializa el template
     $scope.$on('$viewContentLoaded', function () {
         $scope.allData()
     });
