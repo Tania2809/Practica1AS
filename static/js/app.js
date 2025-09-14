@@ -18,19 +18,15 @@ app.config(function ($routeProvider, $locationProvider) {
             controller: "loginCtrl"
         })
         .when("/categorias", {
-            templateUrl: "/categorias",
             controller: "categoriasCtrl"
         })
         .when("/lugares", {
-            templateUrl: "/lugares",
             controller: "lugaresCtrl"
         })
         .when("/clientes", {
-            templateUrl: "/clientes",
             controller: "clientesCtrl"
         })
         .when("/eventos", {
-            templateUrl: "/eventos",
             controller: "eventosCtrl"
         })
         // Eliminé la ruta de productos ya que no está definida en tus controladores
