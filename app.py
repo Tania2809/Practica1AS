@@ -60,27 +60,31 @@ def loginView():
 def login():
     if not con.is_connected():
         con.reconnect()
-    cursor = con.cursor(dictionary=True)
-    
-    if request.is_json:
-        data = request.get_json()
-        nombre = data.get("username")
-        contrasena = data.get("password")
-    else:
-        nombre = request.form.get("username")
-        contrasena = request.form.get("password")
-    sql = """
-SELECT * FROM usuarios WHERE nombre = %s AND contrasena = %s
-    """
-    val = (nombre,contrasena)
-    cursor.execute(sql,val)
-    res = cursor.fetchall()
-    if(len(res) > 1):
-        return "1"
-    else:
-        return "0"
-    
-    
+        
+    try:
+        
+        cursor = con.cursor(dictionary=True)
+        
+        if request.is_json:
+            data = request.get_json()
+            nombre = data.get("username")
+            contrasena = data.get("password")
+        else:
+            nombre = request.form.get("username")
+            contrasena = request.form.get("password")
+        sql = """
+        SELECT * FROM usuarios WHERE nombre = %s AND contrasena = %s
+        """
+        val = (nombre,contrasena)
+        cursor.execute(sql,val)
+        res = cursor.fetchall()
+        if(len(res) > 1):
+            return "1"
+        else:
+            return "0"
+    except Exception as e:
+        return str(e)   
+        
     
 # EVENTOS
 @app.route("/eventos/all")
