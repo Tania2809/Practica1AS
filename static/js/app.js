@@ -58,8 +58,9 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
         console.log(next);
         console.log(current);
 
-        if ($rootScope.login == false && next.$$route.originalPath != "/") {
-            $location.path("/")
+        if ($rootScope.login == false) {
+            if (next != null && next.$$route.originalPath != "/")
+                $location.path("/")
         }
 
 
@@ -106,11 +107,12 @@ app.controller("loginCtrl", ["$scope", "$rootScope", "$http", "$timeout", "$loca
                 console.log(res);
 
                 if (res.data == 1) {
-                    $rootScope.login = true;
+
                     // Redirigimos después de un breve retraso
                     $timeout(function () {
                         // Usamos $location para cambiar la ruta en lugar de window.location
                         $location.path("/eventos");
+                        $rootScope.login = true;
                     }, 2000);
                 }
             });
