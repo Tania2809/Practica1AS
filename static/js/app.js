@@ -90,7 +90,7 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
     })
 }])
 
-app.controller("loginCtrl", function ($scope, $rootScope, $http,$timeout) {
+app.controller("loginCtrl", function ($scope, $rootScope, $http,$timeout,$location) {
     // Inicializar el modelo de datos
     $scope.userData = {
         username: '',
