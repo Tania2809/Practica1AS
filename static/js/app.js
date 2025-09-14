@@ -18,15 +18,19 @@ app.config(function ($routeProvider, $locationProvider) {
             controller: "loginCtrl"
         })
         .when("/categorias", {
+            templateUrl: "/categorias",
             controller: "categoriasCtrl"
         })
         .when("/lugares", {
+            templateUrl: "/lugares",
             controller: "lugaresCtrl"
         })
         .when("/clientes", {
+            templateUrl: "/clientes",
             controller: "clientesCtrl"
         })
         .when("/eventos", {
+            templateUrl: "/eventos",
             controller: "eventosCtrl"
         })
         // Eliminé la ruta de productos ya que no está definida en tus controladores
@@ -88,7 +92,7 @@ app.controller("loginCtrl", function ($scope, $location, $http) {
         console.log('Datos enviados:', $scope.userData);
         $http.post("/login", $scope.userData).then(function (res) {
             console.log(res);
-            
+
             if (res.data == 1) {
                 window.location = "/#/eventos"
             }
@@ -318,10 +322,12 @@ app.controller("clientesCtrl", function ($scope, $http) {
             $("#tablaClientes").html(res.data)
         })
     }
+
     //inizializa el template
-    $http.get("/clientes").then(function (res) {
+    $scope.$on('$viewContentLoaded', function () {
         $scope.allData()
-    })
+    });
+
     Pusher.logToConsole = true
     var pusher = new Pusher("db840e3e13b1c007269e", {
         cluster: 'us2'
