@@ -37,6 +37,13 @@ def index():
     return render_template("index.html")
 
 
+
+@app.route("/landing")
+def landing():
+
+    return render_template("landing.html")
+
+
 @app.route("/app")
 def app2():
     if not con.is_connected():
