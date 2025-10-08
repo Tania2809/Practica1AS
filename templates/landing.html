@@ -13,13 +13,15 @@
 
 
     <!-- Additional CSS Files -->
-    <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css"href="{{ url_for("static", filename="css/bootstrap.min.css") }}" >
 
-    <link rel="stylesheet" type="text/css"   href="assets/css/font-awesome.css">
+    <link rel="stylesheet" type="text/css"   href="{{ url_for("static", filename="css/font-awesome.css") }}">
+    
+    <script src="{{ url_for("static", filename="js/app.js") }}"></script>
 
-    <link rel="stylesheet" type="text/css" href="assets/css/owl-carousel.css">
+    <link rel="stylesheet" type="text/css" {{ url_for("static", filename="css/owl-carousel.css") }} >
 
-    <link rel="stylesheet" href="assets/css/tooplate-artxibition.css">
+    <link rel="stylesheet" {{ url_for("static", filename="css/tooplate-artxibition.css") }}>
 <!--
 
 Tooplate 2125 ArtXibition
