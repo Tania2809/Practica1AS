@@ -56,7 +56,7 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
 
 
         if ($rootScope.login == false) {
-            if (next != null && next.$$route.originalPath != "/")
+            if (next != null && next.$$route != undefined && next.$$route.originalPath != "/home")
                 $location.path("/home")
 
         }
