@@ -27,6 +27,7 @@ app = Flask(__name__)
 CORS(app)
 
 
+
 @app.route("/")
 def index():
 
@@ -57,6 +58,7 @@ def loginView():
 
     con.close()
     return render_template("login.html")
+
 
 
 @app.route("/login", methods=["POST"])
@@ -723,3 +725,9 @@ def eliminarProducto():
 
     return make_response(jsonify({}))
 
+
+
+#! ELIMINAR O COMENTAR AL SUBIR A GITHUB
+if __name__ == '__main__':
+    app.run(debug=True)
+    
