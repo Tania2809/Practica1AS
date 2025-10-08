@@ -29,19 +29,15 @@ CORS(app)
 
 @app.route("/")
 def index():
-    if not con.is_connected():
-        con.reconnect()
-
-    con.close()
-
-    return render_template("index.html")
-
-
-
-@app.route("/landing")
-def landing():
 
     return render_template("landing.html")
+
+
+
+@app.route("/home")
+def landing():
+
+    return render_template("index.html")
 
 
 @app.route("/app")

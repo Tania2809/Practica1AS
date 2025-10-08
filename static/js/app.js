@@ -13,7 +13,7 @@ app.config(function ($routeProvider, $locationProvider) {
     $locationProvider.hashPrefix("")
 
     $routeProvider
-        .when("/", {
+        .when("/home", {
             templateUrl: "/loginView",
             controller: "loginCtrl"
         })
@@ -33,7 +33,6 @@ app.config(function ($routeProvider, $locationProvider) {
             templateUrl: "/eventos",
             controller: "eventosCtrl"
         })
-        // Eliminé la ruta de productos ya que no está definida en tus controladores
         .otherwise({
             redirectTo: "/"
         })
@@ -58,7 +57,7 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
 
         if ($rootScope.login == false) {
             if (next != null && next.$$route.originalPath != "/")
-                $location.path("/")
+                $location.path("/home")
 
         }
 
