@@ -27,12 +27,10 @@ app = Flask(__name__)
 CORS(app)
 
 
-
 @app.route("/")
 def index():
 
     return render_template("landing.html")
-
 
 
 @app.route("/home")
@@ -60,7 +58,6 @@ def loginView():
     return render_template("login.html")
 
 
-
 @app.route("/login", methods=["POST"])
 def login():
     if not con.is_connected():
@@ -80,8 +77,8 @@ def login():
         sql = """
         SELECT * FROM Usuario WHERE nombre = %s AND contrasena = %s
         """
-        val = (nombre,contrasena)
-        cursor.execute(sql,val)
+        val = (nombre, contrasena)
+        cursor.execute(sql, val)
         res = cursor.fetchall()
         if(len(res) > 0):
             return "1"
@@ -89,8 +86,8 @@ def login():
             return "0"
     except Exception as e:
         return str(e)   
+
         
-    
 # EVENTOS
 @app.route("/eventos/all")
 def eventos():
@@ -208,7 +205,7 @@ def eliminarEvento():
         print("ERROR en eliminarEvento:", traceback.format_exc())
         return make_response(jsonify({"ultimo error": str(e)}), 500)
 
-    
+  
 @app.route("/eventos")
 def eventos_view():
     if not con.is_connected():
@@ -294,7 +291,7 @@ def guardarLugar():
         print(f"Error en guardarLugar: {str(e)}")
         return make_response(jsonify({"error": str(e)}), 500)
 
-    
+
 @app.route("/lugar/buscar", methods=["GET"])
 def buscarLugar():
     if not con.is_connected():
@@ -423,8 +420,8 @@ def guardarCategoria():
             "message": "Categoría guardada exitosamente",
             "idCategoria": categoria_id
         }), 201)
-    
 
+    
 # Buscar categorías
 @app.route("/categorias/buscar", methods=["GET"])
 def buscarCategorias():
@@ -484,8 +481,8 @@ def buscarCategorias():
             "status": "error",
             "message": f"Error interno del servidor: {str(e)}"
         }), 500)
-    
 
+    
 # clientes
 def triggerUpdateCliente():
     import pusher
@@ -726,8 +723,7 @@ def eliminarProducto():
     return make_response(jsonify({}))
 
 
-
-#! ELIMINAR O COMENTAR AL SUBIR A GITHUB
-if __name__ == '__main__':
-    app.run(debug=True)
+# ! ELIMINAR O COMENTAR AL SUBIR A GITHUB
+#if __name__ == '__main__':
+#   app.run(debug=True)
     
