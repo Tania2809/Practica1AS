@@ -14,6 +14,82 @@
 
     <!-- Additional CSS Files -->
     <link rel="stylesheet" type="text/css" href="{{ url_for(" static ", filename="css/bootstrap.min.css ") }}">
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for(" static ", filename="css/font-awesome.css ") }}">
+
+
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for(" static ", filename="css/owl-carousel.css ") }}">
+
+    <link rel="stylesheet" href="{{ url_for(" static ", filename="css/tooplate-artxibition.css ") }}">
+    <!--
+
+Tooplate 2125 ArtXibition
+
+https://www.tooplate.com/view/2125-artxibition
+
+-->
+</head>
+
+<body>
+
+    <!-- ***** Preloader Start ***** -->
+    <div id="js-preloader" class="js-preloader">
+        <div class="preloader-inner">
+            <span class="dot"></span>
+            <div class="dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+    <!-- ***** Preloader End ***** -->
+
+    <!-- ***** Pre HEader ***** -->
+    <div class="pre-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-sm-6">
+                    <span>Hey! The Show is Starting in 15 Days.</span>
+                </div>
+                <div class="col-lg-6 col-sm-6">
+                    <div class="text-button">
+                        <a href="rent-venue.html">Contact Us Now! <i class="fa fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ***** Header Area Start ***** -->
+    <header class="header-area header-sticky">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <nav class="main-nav">
+                        <!-- ***** Logo Start ***** -->
+                        <a href="index.html" class="logo">Art<em>Xibition</em></a>
+                        <!-- ***** Logo End ***** -->
+                        <!-- ***** Menu Start ***** -->
+                        <ul class="nav">
+                            <li><a href="index.html" class="active">Home</a></li>
+                            <li><a href="about.html">About Us</a></li>
+                            <li><a href="rent-venue.html">Rent Venue</a></li>
+                            <li><a href="shows-events.html">Shows & Events</a></li>
+                            <li><a href="tickets.html">Tickets</a></li>
+                        </ul>
+                        <a class='menu-trigger'>
+                            <span>Menu</span>
+                        </a>
+                        <!-- ***** Menu End ***** -->
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- ***** Header Area End ***** -->
+
     <!-- ***** Main Banner Area Start ***** -->
     <div class="main-banner">
         <div class="counter-content">
@@ -91,10 +167,10 @@
                         <p>ArtXibition Event Template is brought to you by Tooplate website and it included total 7 HTML pages. These are <a href="index.html">Homepage</a>, <a href="about.html">About</a>,
                             <a href="rent-venue.html">Rent a venue</a>, <a href="shows-events.html">shows &amp; events</a>,
                             <a href="event-details.html">event details</a>, <a href="tickets.html">tickets</a>, and <a href="ticket-details.html">ticket details</a>. You can feel free to modify any page as you like. If you have any question, please visit
-                            our <a href="https://www.tooplate.com/contact" target="_blank" rel="noopener noreferrer">Contact page</a>.</p>
+                            our <a href="https://www.tooplate.com/contact" target="_blank">Contact page</a>.</p>
                         <br>
                         <p>You can use this event template for your commercial or business website. You are not permitted to redistribute this template ZIP file on any template download website. If you need the latest HTML templates, you may visit <a href="https://www.toocss.com/"
-                                target="_blank" rel="noopener noreferrer">Too CSS</a> website that features a great collection of templates in different categories.</p>
+                                target="_blank">Too CSS</a> website that features a great collection of templates in different categories.</p>
                     </div>
                 </div>
                 <div class="col-lg-3">
@@ -213,32 +289,54 @@
         </div>
         <div class="container">
             <div class="row">
-                {# Mostrar hasta 3 eventos desde el contexto 'eventos' #} {% if eventos and eventos|length > 0 %} {% for evento in eventos[:3] %}
                 <div class="col-lg-4">
                     <div class="event-item">
                         <div class="thumb">
-                            {% if evento.imagen %}
-                            <a href="/eventos/{{ evento.idEvento }}"><img src="{{ url_for('static', filename=evento.imagen) }}" alt="{{ evento.descripcionEvento }}"></a>
-                            {% else %}
-                            <a href="/eventos/{{ evento.idEvento }}"><img src="{{ url_for('static', filename='images/event-01.jpg') }}" alt="{{ evento.descripcionEvento }}"></a>
-                            {% endif %}
+                            <a href="event-details.html"><img src="{{ url_for('static', filename='images/event-01.jpg') }}" alt="no encontrada"></a>
                         </div>
                         <div class="down-content">
-                            <a href="/eventos/{{ evento.idEvento }}">
-                                <h4>{{ evento.descripcionEvento or 'Evento sin título' }}</h4>
+                            <a href="event-details.html">
+                                <h4>Radio City Musical Hall</h4>
                             </a>
                             <ul>
-                                <li><i class="fa fa-clock-o"></i> {{ evento.fechaInicio or 'Fecha no especificada' }}</li>
-                                <li><i class="fa fa-map-marker"></i> {{ evento.nombreLugar or 'Lugar no especificado' }}</li>
+                                <li><i class="fa fa-clock-o"></i> Tuesday: 15:30-19:30</li>
+                                <li><i class="fa fa-map-marker"></i> Copacabana Beach, Rio de Janeiro</li>
                             </ul>
                         </div>
                     </div>
                 </div>
-                {% endfor %} {% else %}
-                <div class="col-12 text-center py-4">
-                    <p class="text-muted">No hay eventos próximos.</p>
+                <div class="col-lg-4">
+                    <div class="event-item">
+                        <div class="thumb">
+                            <a href="event-details.html"><img src="{{ url_for('static', filename='images/event-02.jpg') }}" alt="no encontrada"></a>
+                        </div>
+                        <div class="down-content">
+                            <a href="event-details.html">
+                                <h4>Madison Square Garden</h4>
+                            </a>
+                            <ul>
+                                <li><i class="fa fa-clock-o"></i> Wednesday: 08:00-14:00</li>
+                                <li><i class="fa fa-map-marker"></i> Copacabana Beach, Rio de Janeiro</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-                {% endif %}
+                <div class="col-lg-4">
+                    <div class="event-item">
+                        <div class="thumb">
+                            <a href="event-details.html"><img src="{{ url_for('static', filename='images/event-03.jpg') }}" alt="no encontrada"></a>
+                        </div>
+                        <div class="down-content">
+                            <a href="event-details.html">
+                                <h4>Royce Hall</h4>
+                            </a>
+                            <ul>
+                                <li><i class="fa fa-clock-o"></i> Thursday: 09:00-23:00</li>
+                                <li><i class="fa fa-map-marker"></i> Copacabana Beach, Rio de Janeiro</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -283,13 +381,13 @@
                 </div>
                 <div class="col-lg-4">
                     <div class="links">
-                        <h4>Categories</h4>
+                        <h4>Useful Links</h4>
                         <ul>
-                            {% if categorias and categorias|length > 0 %} {% for categoria in categorias[:5] %}
-                            <li><a href="/categorias/{{ categoria.idCategoria }}">{{ categoria.nombreCategoria }}</a></li>
-                            {% endfor %} {% else %}
-                            <li><a href="#">No hay categorías</a></li>
-                            {% endif %}
+                            <li><a href="#">Info</a></li>
+                            <li><a href="#">Venues</a></li>
+                            <li><a href="#">Guides</a></li>
+                            <li><a href="#">Videos</a></li>
+                            <li><a href="#">Outreach</a></li>
                         </ul>
                     </div>
                 </div>
@@ -308,7 +406,6 @@
                         <div class="row">
                             <div class="col-lg-6 col-sm-6">
                                 <p>São Conrado, Rio de Janeiro</p>
-                                <p>Clientes registrados: {{ clientes|length if clientes else 0 }}</p>
                             </div>
                             <div class="col-lg-6 col-sm-6">
                                 <p class="copyright">Copyright 2021 ArtXibition Company
@@ -338,10 +435,10 @@
                             <div class="col-lg-3">
                                 <div class="social-links">
                                     <ul>
-                                        <li><a href="#" title="Twitter" aria-label="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                                        <li><a href="#" title="Facebook" aria-label="Facebook"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                                        <li><a href="#" title="Behance" aria-label="Behance"><i class="fa fa-behance" aria-hidden="true"></i></a></li>
-                                        <li><a href="#" title="Instagram" aria-label="Instagram"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
+                                        <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                                        <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                                        <li><a href="#"><i class="fa fa-behance"></i></a></li>
+                                        <li><a href="#"><i class="fa fa-instagram"></i></a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -371,6 +468,6 @@
     <!-- Global Init -->
     <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
 
-    </body>
+</body>
 
 </html>
