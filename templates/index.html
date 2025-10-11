@@ -76,15 +76,14 @@
     <script src="{{ url_for("static", filename="js/app.js") }}"></script>
 </head>
 <body>
+    <p>Version 1.2.8</p>
     <div class="float-end mt-1 me-3" style="font-size: 1.25rem;">
         <i class="bi bi-clock"></i>
          {{ '{{ angularjsHora }}' }}
     </div>
 
-    <ul class="app-menu nav nav-underline justify-content-center">
-        <li class="nav-item">
-            <a class="nav-link" href="#/">Inicio</a>
-        </li>
+    <ul ng-if="login" class="app-menu nav nav-underline justify-content-center">
+ 
         <li class="nav-item">
             <a class="nav-link" href="#/eventos">Eventos</a>
         </li>

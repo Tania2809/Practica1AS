@@ -13,9 +13,9 @@ app.config(function ($routeProvider, $locationProvider) {
     $locationProvider.hashPrefix("")
 
     $routeProvider
-        .when("/", {
-            templateUrl: "/app",
-            controller: "appCtrl"
+        .when("/home", {
+            templateUrl: "/loginView",
+            controller: "loginCtrl"
         })
         .when("/categorias", {
             templateUrl: "/categorias",
@@ -33,12 +33,13 @@ app.config(function ($routeProvider, $locationProvider) {
             templateUrl: "/eventos",
             controller: "eventosCtrl"
         })
-        // Eliminé la ruta de productos ya que no está definida en tus controladores
         .otherwise({
             redirectTo: "/"
         })
 })
+
 app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location, $timeout) {
+
     function actualizarFechaHora() {
         lxFechaHora = DateTime
             .now()
@@ -49,9 +50,25 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
     }
 
     $rootScope.slide = ""
-
+    $rootScope.login = false
     actualizarFechaHora()
+    $rootScope.$on('$routeChangeStart', function (event, next, current) {
 
+        console.log(next)
+        console.log(next.$$route)
+        if ($rootScope.login == false) {
+            if (next == null || next.$$route == undefined) {
+                $location.path("/home")
+                return
+            }
+            if (next.$$route.originalPath != "/home")
+                $location.path("/home")
+
+        }
+console.log('hi');
+
+
+    })
     $rootScope.$on("$routeChangeSuccess", function (event, current, previous) {
         $("html").css("overflow-x", "hidden")
 
@@ -78,68 +95,89 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
     })
 }])
 
-app.controller("appCtrl", function ($scope, $http) { })
+app.controller("loginCtrl", ["$scope", "$rootScope", "$http", "$timeout", "$location",
+    function ($scope, $rootScope, $http, $timeout, $location) {
+        // Inicializar el modelo de datos
+        $scope.userData = {
+            username: '',
+            password: ''
+        };
+
+        // Función para manejar el envío del formulario
+        $scope.submitLogin = function () {
+            // Aquí procesarías los datos de inicio de sesión
+
+            $http.post("/login", $scope.userData).then(function (res) {
 
 
-app.controller("eventosCtrl", function ($scope, $http) {
+                if (res.data == 1) {
+
+                    // Redirigimos después de un breve retraso
+                    $timeout(function () {
+                        // Usamos $location para cambiar la ruta en lugar de window.location
+                        $location.path("/eventos");
+                        $rootScope.login = true;
+                    }, 2000);
+                }
+            });
+        };
+    }]);
+app.controller("eventosCtrl", function ($scope, $http, $compile) {
 
     $scope.eventos = []
-    $scope.allData = function () {
-        $http.get("/eventos").then(function (res) {
-            $("#tablaEventos").html(res.data)
-        })
+
+    $scope.agregarAngularATemplate = function (data) {
+        var compiled = $compile(data)($scope);
+        angular.element('#tablaEventos').html(compiled);
     }
 
-    // Obtener lista de categorías
-    $http.get("/eventos").then(function (res) {
-       $scope.allData()
-    })
+    // Cargar datos de eventos
+    $scope.cargarEventos = function () {
+        $http.get("/eventos/all").then(function (res) {
+            $scope.agregarAngularATemplate(res.data);
+        });
+    };
+    //inizializa el template
+    $scope.$on('$viewContentLoaded', function () {
+        $scope.cargarEventos()
+    });
+
+
     Pusher.logToConsole = true
     var pusher = new Pusher("db840e3e13b1c007269e", {
         cluster: 'us2'
     })
     var channel = pusher.subscribe("canalEventos");
     channel.bind("newDataInserted", function (data) {
-            $scope.allData();
+        $scope.cargarEventos();
     })
 
     // Guardar evento
     $scope.guardar = function (eventos) {
         $http.post("/eventos/agregar", eventos).then(function (res) {
-            console.log(res);
-            console.log("evento guardado")
-        
+
+
             $scope.eventos = {} // Limpiar formulario
         }, function (err) {
             console.log("Error al guardar: " + (err.data ? err.message : ""));
         })
     }
 
-
-
     // eliminar evento
     $scope.eliminar = function (evento) {
-        console.log(evento);
+
 
         $http.post("/eventos/eliminar", evento).then(function (res) {
-            console.log(res);
-            console.log("evento eliminado")
-         
+
+
             $scope.evento = {} // Limpiar formulario
         }, function (err) {
             console.log("Error al eliminar: " + (err.data ? err.message : ""));
         })
     }
 
-
-
-    // Obtener lista de eventos
-    $http.get("/eventos").then(function (res) {
-        $scope.eventos = res.data
-    })
-
+    $scope.cargarEventos()
 })
-
 
 app.controller("categoriasCtrl", function ($scope, $http) {
     $scope.categorias = [];
@@ -194,15 +232,15 @@ app.controller("categoriasCtrl", function ($scope, $http) {
     const notificacionService = {
         init: function () {
             eventBus.subscribe('categoria_guardada', function (data) {
-                console.log('Notificación: Categoría guardada exitosamente', data);
+                //   console.log('Notificación: Categoría guardada exitosamente', data);
             });
 
             eventBus.subscribe('error_guardado', function (error) {
-                console.error('Notificación: Error al guardar categoría', error);
+                //   console.error('Notificación: Error al guardar categoría', error);
             });
 
             eventBus.subscribe('evento_pusher_recibido', function (data) {
-                console.log('Notificación: Cambios en tiempo real recibidos', data);
+                //    console.log('Notificación: Cambios en tiempo real recibidos', data);
             });
         }
     };
@@ -211,11 +249,11 @@ app.controller("categoriasCtrl", function ($scope, $http) {
     const analyticsService = {
         init: function () {
             eventBus.subscribe('busqueda_realizada', function (data) {
-                console.log('Analytics: Búsqueda realizada', data);
+                //    console.log('Analytics: Búsqueda realizada', data);
             });
 
             eventBus.subscribe('categoria_guardada', function (data) {
-                console.log('Analytics: Nueva categoría creada', data);
+                //    console.log('Analytics: Nueva categoría creada', data);
             });
         }
     };
@@ -231,7 +269,7 @@ app.controller("categoriasCtrl", function ($scope, $http) {
 
             var channel = pusher.subscribe("canalCategorias");
             channel.bind("newDataInserted", function (data) {
-                console.log('Evento Pusher recibido:', data);
+
                 eventBus.publish('evento_pusher_recibido', data);
 
                 if ($scope.mostrarTodos) {
@@ -289,11 +327,10 @@ app.controller("categoriasCtrl", function ($scope, $http) {
 
     // Verificar estado de Pusher
     $scope.verificarPusher = function () {
-        console.log('Estado de Pusher verificado');
+
         categoriaService.cargarTodas(); // Recargar manualmente
     };
 });
-
 
 app.controller("clientesCtrl", function ($scope, $http) {
     $scope.clientes = []
@@ -303,10 +340,12 @@ app.controller("clientesCtrl", function ($scope, $http) {
             $("#tablaClientes").html(res.data)
         })
     }
+
     //inizializa el template
-    $http.get("/clientes").then(function (res) {
+    $scope.$on('$viewContentLoaded', function () {
         $scope.allData()
-    })
+    });
+
     Pusher.logToConsole = true
     var pusher = new Pusher("db840e3e13b1c007269e", {
         cluster: 'us2'
@@ -329,7 +368,7 @@ app.controller("clientesCtrl", function ($scope, $http) {
                 busqueda: nombre
             }
         }).then(function (response) {
-            console.log(response);
+
 
             $("#tablaClientes").html(response.data);
             $scope.searching = true;
@@ -347,20 +386,29 @@ app.controller("clientesCtrl", function ($scope, $http) {
     }
 })
 
-
 app.controller("lugaresCtrl", function ($scope, $http) {
     $scope.lugares = []
+    $scope.searching = false;
 
-    $scope.allData = function() {
-            $http.get("/lugares/all").then(function(res) {
-                $("#tablaLugares").html(res.data)
-            })
-        }
-        //inizializa el template
-    $http.get("/lugares").then(function(res) {
+    $scope.allData = function () {
+        $http.get("/lugares/all").then(function (res) {
+            $("#tablaLugares").html(res.data)
+        })
+    }
+    //inizializa el template
+    $scope.$on('$viewContentLoaded', function () {
         $scope.allData()
-    })
+    });
 
+    Pusher.logToConsole = true
+    var pusher = new Pusher("db840e3e13b1c007269e", {
+        cluster: 'us2'
+    })
+    var channel = pusher.subscribe("canalLugares");
+    channel.bind("newDataInserted", function (data) {
+        if (!$scope.searching)
+            $scope.allData();
+    })
     // Guardar lugar
     $scope.guardar = function (lugar) {
         $http.post("/lugar/guardar", lugar).then(function () {
@@ -368,6 +416,28 @@ app.controller("lugaresCtrl", function ($scope, $http) {
             $scope.allData()
         }, function (err) {
             console.log("Error al guardar: " + (err.data ? err.message : ""))
+        })
+    }
+
+    $scope.buscar = function (lugar) {
+        if (!lugar || lugar.trim() === '') {
+            $scope.searching = false
+            $scope.allData();
+            return;
+
+        }
+
+        $http.get("/lugar/buscar", {
+            params: {
+                busqueda: lugar
+            }
+        }).then(function (response) {
+
+
+            $("#tablaLugares").html(response.data);
+            $scope.searching = true;
+        }, function (error) {
+            console.error("Error en búsqueda:", error);
         })
     }
 })

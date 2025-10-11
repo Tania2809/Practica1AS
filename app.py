@@ -27,14 +27,14 @@ app = Flask(__name__)
 CORS(app)
 
 
-
-
 @app.route("/")
 def index():
-    if not con.is_connected():
-        con.reconnect()
 
-    con.close()
+    return render_template("landing.html")
+
+
+@app.route("/home")
+def landing():
 
     return render_template("index.html")
 
@@ -49,8 +49,47 @@ def app2():
     return "<h5>Hola, soy la view app</h5>"
 
 
+@app.route("/loginView")
+def loginView():
+    if not con.is_connected():
+        con.reconnect()
+
+    con.close()
+    return render_template("login.html")
+
+
+@app.route("/login", methods=["POST"])
+def login():
+    if not con.is_connected():
+        con.reconnect()
+        
+    try:
+        
+        cursor = con.cursor(dictionary=True)
+        
+        if request.is_json:
+            data = request.get_json()
+            nombre = data.get("username")
+            contrasena = data.get("password")
+        else:
+            nombre = request.form.get("username")
+            contrasena = request.form.get("password")
+        sql = """
+        SELECT * FROM Usuario WHERE nombre = %s AND contrasena = %s
+        """
+        val = (nombre, contrasena)
+        cursor.execute(sql, val)
+        res = cursor.fetchall()
+        if(len(res) > 0):
+            return "1"
+        else:
+            return "0"
+    except Exception as e:
+        return str(e)   
+
+        
 # EVENTOS
-@app.route("/eventos")
+@app.route("/eventos/all")
 def eventos():
     if not con.is_connected():
         con.reconnect()
@@ -69,7 +108,8 @@ INNER JOIN clientes cl ON e.idCliente = cl.idCliente;
     """
     cursor.execute(sql)
     eventos = cursor.fetchall()
-    return render_template("eventos.html", eventos=eventos)
+    return render_template("tablaEventos.html", eventos=eventos)
+
 
 def triggerUpdateEventos():
     import pusher
@@ -109,7 +149,6 @@ def guardarEvento():
             idCategoria = request.form.get("idCategoria")
             idLugar = request.form.get("idLugar")
             idCliente = request.form.get("idCliente")
-
     
         cursor = con.cursor(dictionary=True)
         sql = """
@@ -165,9 +204,28 @@ def eliminarEvento():
         import traceback
         print("ERROR en eliminarEvento:", traceback.format_exc())
         return make_response(jsonify({"ultimo error": str(e)}), 500)
+
+  
+@app.route("/eventos")
+def eventos_view():
+    if not con.is_connected():
+        con.reconnect()
+    return render_template("eventos.html")
+
+
+def triggerUpdateLugares():
+    import pusher
     
-
-
+    pusher_client = pusher.Pusher(
+        app_id="2046019",
+        key="db840e3e13b1c007269e",
+        secret="0f06a16c943fdf4bbc11",
+        cluster="us2",
+        ssl=True
+    )
+    
+    pusher_client.trigger("canalLugares", "newDataInserted", {"message": "triggered"})
+    return make_response(jsonify({}))
 
 
 # lugares
@@ -196,6 +254,8 @@ def ListarLugares():
     except Exception as e:
         print(f"Error en ListarLugares: {str(e)}")
         return make_response(jsonify({"error": str(e)}), 500)
+        return make_response(jsonify({"error": str(e)}))
+    return render_template("tablaLugares.html", lugares=l)
 
 
 @app.route("/lugar/guardar", methods=["POST"])
@@ -223,13 +283,46 @@ def guardarLugar():
 
         cursor.execute(sql, val)
         con.commit()
-        cursor.close()
-
+        con.close()
+        triggerUpdateLugares()
         return make_response(jsonify({"success": True}), 200)
         
     except Exception as e:
         print(f"Error en guardarLugar: {str(e)}")
         return make_response(jsonify({"error": str(e)}), 500)
+
+
+@app.route("/lugar/buscar", methods=["GET"])
+def buscarLugar():
+    if not con.is_connected():
+        con.reconnect()
+        
+    args = request.args
+    busqueda = args.get("busqueda", "")
+    
+    busqueda = f"%{busqueda}%"
+    cursor = con.cursor(dictionary=True)
+    sql = """
+    SELECT *
+    FROM lugares
+    WHERE nombreLugar LIKE %s
+    """
+    val = (busqueda,)
+    
+    try:
+        cursor.execute(sql, val)
+        l = cursor.fetchall()
+
+    except mysql.connector.errors.ProgrammingError as error:
+        print(f"Ocurrió un error de programación en MySQL: {error}")
+        return error
+        l = []
+
+    finally:
+        cursor.close()
+
+    return render_template("tablaLugares.html", lugares=l)
+
 
 # Ruta para obtener la vista principal de categorías
 @app.route("/categorias", methods=["GET"])
@@ -237,7 +330,6 @@ def categorias():
     if not con.is_connected():
         con.reconnect()
     return render_template("categorias.html")
-
 
 
 # Obtener todas las categorías
@@ -259,6 +351,7 @@ def ListarCategorias():
     
     return render_template("tablaCategorias.html", categorias=registros)
 
+
 # clientes
 def pusherCategoria():
     import pusher
@@ -274,6 +367,7 @@ def pusherCategoria():
     pusher_client.trigger("canalCategorias", "newDataInserted", {"message": "triggered"})
     return make_response(jsonify({}))
 
+
 # Guardar nueva categoría
 @app.route("/categorias/agregar", methods=["POST"])
 def guardarCategoria():
@@ -283,7 +377,7 @@ def guardarCategoria():
             
         if not con.is_connected():
             return make_response(jsonify({
-                "status": "error", 
+                "status": "error",
                 "message": "Error de conexión a la base de datos"
             }), 500)
         
@@ -299,13 +393,13 @@ def guardarCategoria():
         # Validaciones
         if not nombre:
             return make_response(jsonify({
-                "status": "error", 
+                "status": "error",
                 "message": "El nombre de categoría es requerido"
             }), 400)
             
         if len(nombre) > 100:
             return make_response(jsonify({
-                "status": "error", 
+                "status": "error",
                 "message": "El nombre no puede exceder 100 caracteres"
             }), 400)
         
@@ -322,13 +416,12 @@ def guardarCategoria():
         pusherCategoria()
 
         return make_response(jsonify({
-            "status": "success", 
+            "status": "success",
             "message": "Categoría guardada exitosamente",
             "idCategoria": categoria_id
         }), 201)
 
     
-
 # Buscar categorías
 @app.route("/categorias/buscar", methods=["GET"])
 def buscarCategorias():
@@ -376,7 +469,7 @@ def buscarCategorias():
         print(f"📋 Código de error: {err.errno}")
         print(f"💬 Mensaje: {err.msg}")
         return make_response(jsonify({
-            "status": "error", 
+            "status": "error",
             "message": f"Error de base de datos: {err}"
         }), 500)
         
@@ -385,13 +478,11 @@ def buscarCategorias():
         import traceback
         traceback.print_exc()
         return make_response(jsonify({
-            "status": "error", 
+            "status": "error",
             "message": f"Error interno del servidor: {str(e)}"
         }), 500)
-    
 
     
-
 # clientes
 def triggerUpdateCliente():
     import pusher
@@ -465,6 +556,7 @@ def buscarCliente():
         cursor.close()
 
     return render_template("tablaClientes.html", clientes=registros)
+
     
 @app.route("/clientes/agregar", methods=["POST"])
 def guardarCliente():
@@ -630,3 +722,8 @@ def eliminarProducto():
 
     return make_response(jsonify({}))
 
+
+# ! ELIMINAR O COMENTAR AL SUBIR A GITHUB
+#if __name__ == '__main__':
+#   app.run(debug=True)
+    
