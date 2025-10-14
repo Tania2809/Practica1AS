@@ -563,29 +563,56 @@ def guardarCliente():
     if not con.is_connected():
         con.reconnect()
 
-    if request.is_json:
-        data = request.get_json()
-        nombre = data.get("nombre")
-        telefono = data.get("telefono")
-        correo = data.get("correo")
-    else:
-        nombre = request.form.get("nombre")
-        telefono = request.form.get("telefono")
-        correo = request.form.get("correo")
-    
+    data = request.get_json()
+    print(" front cliente/agregar" + str(data))
+    id1 = data.get("idCliente")        
+    nombre = data.get("nombreCliente")
+    telefono = data.get("telefono")
+    correo = data.get("correoElectronico")
+
     cursor = con.cursor(dictionary=True)
     
-    sql = """
-    INSERT INTO clientes (nombreCliente, correoElectronico, telefono)
-    VALUES (%s, %s, %s)
-    """
-    val = (nombre, correo, telefono)
+    if id1:
+        sql = """
+        UPDATE clientes
+
+        SET nombreCliente = %s,
+            telefono = %s,
+            correoElectronico = %s
+        WHERE idCliente = %s
+        """
+    
+        val = (nombre, telefono, correo, id1)
+    else:
+        sql = """
+        INSERT INTO clientes (nombreCliente, correoElectronico, telefono)
+        VALUES (%s, %s, %s)
+        """
+        val = (nombre, correo, telefono)
 
     cursor.execute(sql, val)
     con.commit()
     con.close()
     triggerUpdateCliente()
     return make_response(jsonify({}))
+
+
+@app.route("/clientes/editar/<int:id1>", methods=["GET"])
+def editarCliente(id1):
+    if not con.is_connected():
+        con.reconnect()
+
+    cursor = con.cursor(dictionary=True)
+    sql = """
+    SELECT * FROM clientes
+    WHERE idCliente = %s
+    """
+    val = (id1,)
+
+    cursor.execute(sql, val)
+    registros = cursor.fetchall()
+    con.close()
+    return make_response(jsonify(registros))
 
 
 @app.route("/productos/buscar", methods=["GET"])
@@ -724,6 +751,6 @@ def eliminarProducto():
 
 
 # ! ELIMINAR O COMENTAR AL SUBIR A GITHUB
-#if __name__ == '__main__':
-#   app.run(debug=True)
-    
+if __name__ == '__main__':
+    app.run(debug=True)
+

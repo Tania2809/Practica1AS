@@ -65,7 +65,7 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
                 $location.path("/home")
 
         }
-console.log('hi');
+        console.log('hi');
 
 
     })
@@ -125,6 +125,7 @@ app.controller("loginCtrl", ["$scope", "$rootScope", "$http", "$timeout", "$loca
 app.controller("eventosCtrl", function ($scope, $http, $compile) {
 
     $scope.eventos = []
+    $scope.evento = {}
 
     $scope.agregarAngularATemplate = function (data) {
         var compiled = $compile(data)($scope);
@@ -332,12 +333,22 @@ app.controller("categoriasCtrl", function ($scope, $http) {
     };
 });
 
-app.controller("clientesCtrl", function ($scope, $http) {
+app.controller("clientesCtrl", function ($scope, $http,$compile) {
     $scope.clientes = []
+    $scope.cliente = {};
     $scope.searching = false;
+    $scope.cargarTabla = function (data) {
+        var compiled = $compile(data)($scope);
+        angular.element('#tablaPostres').html(compiled);
+    }
+    $scope.cargarTabla = function (data) {
+        var compiled = $compile(data)($scope);
+        angular.element('#tablaClientes').html(compiled);
+    }
+
     $scope.allData = function () {
         $http.get("/clientes/all").then(function (res) {
-            $("#tablaClientes").html(res.data)
+            $scope.cargarTabla(res.data)
         })
     }
 
@@ -378,12 +389,31 @@ app.controller("clientesCtrl", function ($scope, $http) {
     }
     // Guardar cliente
     $scope.guardar = function (cliente) {
+        console.log(" front cliente/agregar",cliente);
+        
         $http.post("/clientes/agregar", cliente).then(function () {
             $scope.cliente = {}
         }, function (err) {
             console.log("Error al guardar: " + (err.data ? err.message : ""))
         })
     }
+    $scope.editar = function (id) {
+        console.log('editando el id: ', id);
+        $http.get("/clientes/editar/" + id).then(function (res) {
+            console.log("/editar", res.data);
+
+            if (res.data) {
+                $scope.cliente = res.data[0];
+                // Opcional: mostrar mensaje de éxito
+            }
+
+        }, function (err) {
+            console.log("Error al guardar: " + (err.data ? err.message : ""));
+            // Opcional: mostrar mensaje de error
+        });
+    }
+
+
 })
 
 app.controller("lugaresCtrl", function ($scope, $http) {
