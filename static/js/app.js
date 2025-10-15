@@ -122,7 +122,7 @@ app.controller("loginCtrl", ["$scope", "$rootScope", "$http", "$timeout", "$loca
             });
         };
     }]);
-app.controller("eventosCtrl", function ($scope, $http, $compile) {
+app.controller("eventosCtrl", function ($scope, $http, $compile,$timeout) {
 
     $scope.evento = {}
 
@@ -191,13 +191,27 @@ app.controller("eventosCtrl", function ($scope, $http, $compile) {
             if (res.data) {
                 var data = res.data[0];
                 console.log(data);
+
+                // Convertir fechas
                 var dateString = data.fechaInicio;
                 var date = new Date(dateString);
-                data.fechaInicio = date
+                data.fechaInicio = date;
                 dateString = data.fechaFin;
                 date = new Date(dateString);
-                data.fechaFin = date
+                data.fechaFin = date;
+
+                // Asignar el evento
                 $scope.evento = data;
+
+                // Seleccionar los IDs en los selects existentes
+                $timeout(function () {
+                    // Suponiendo que los campos son: idCategoria, idLugar, idCliente
+                    $("#nombreCategoria").val(data.idCategoria).trigger('change');
+                    $("#nombreLugar").val(data.idLugar).trigger('change');
+                    $("#nombreCliente").val(data.idCliente).trigger('change');
+                    console.log("changed");
+                    
+                }, 0);
             }
 
         }, function (err) {
