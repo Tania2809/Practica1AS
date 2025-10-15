@@ -324,6 +324,9 @@ def buscarLugar():
     return render_template("tablaLugares.html", lugares=l)
 
 
+
+# categorias
+
 # Ruta para obtener la vista principal de categorías
 @app.route("/categorias", methods=["GET"])
 def categorias():
@@ -352,7 +355,6 @@ def ListarCategorias():
     return render_template("tablaCategorias.html", categorias=registros)
 
 
-# clientes
 def pusherCategoria():
     import pusher
     
@@ -374,65 +376,46 @@ def guardarCategoria():
         # Verificar conexión
         if not con.is_connected():
             con.reconnect()
-            
-        if not con.is_connected():
-            return make_response(jsonify({
-                "status": "error",
-                "message": "Error de conexión a la base de datos"
-            }), 500)
-        
-        # Obtener datos
-        if request.is_json:
-            data = request.get_json()
-            nombre = data.get("nombreCategoria", "").strip()
-            descripcion = data.get("descripcion", "").strip()
-        else:
-            nombre = request.form.get("nombreCategoria", "").strip()
-            descripcion = request.form.get("descripcion", "").strip()
-        
-        # Validaciones
-        if not nombre:
-            return make_response(jsonify({
-                "status": "error",
-                "message": "El nombre de categoría es requerido"
-            }), 400)
-            
-        if len(nombre) > 100:
-            return make_response(jsonify({
-                "status": "error",
-                "message": "El nombre no puede exceder 100 caracteres"
-            }), 400)
-        
-        # Insertar en base de datos
+
+        data = request.get_json()
+        id1 = data.get("idCategoria")
+        nombre = data.get("nombreCategoria")
+        descripcion = data.get("descripcion")
+
         cursor = con.cursor(dictionary=True)
-        sql = "INSERT INTO categorias (nombreCategoria, descripcion) VALUES (%s, %s)"
-        val = (nombre, descripcion)
+
+        if id1:
+            sql = """
+            UPDATE categorias
+            SET nombreCategoria = %s,
+                descripcion = %s
+            WHERE idCategoria = %s
+            """
+            val = (nombre, descripcion, id1)
+        else:
+            sql = """
+            INSERT INTO categorias (nombreCategoria, descripcion)
+            VALUES (%s, %s)
+            """
+            val = (nombre, descripcion) 
+  
         
         cursor.execute(sql, val)
         con.commit()
-        
-        categoria_id = cursor.lastrowid
         cursor.close()
         pusherCategoria()
-
-        return make_response(jsonify({
-            "status": "success",
-            "message": "Categoría guardada exitosamente",
-            "idCategoria": categoria_id
-        }), 201)
-
+        return make_response(jsonify({}))
     
 # Buscar categorías
 @app.route("/categorias/buscar", methods=["GET"])
 def buscarCategorias():
-    try:
         if not con.is_connected():
             con.reconnect()
 
         args = request.args
         busqueda = args.get("busqueda", "").strip()
         
-        print(f"🔍 Búsqueda recibida: '{busqueda}'")
+        print(f"Búsqueda recibida: '{busqueda}'")
         
         if not busqueda:
             # Si no hay búsqueda, devolver todas las categorías
@@ -450,37 +433,38 @@ def buscarCategorias():
         """
         val = (busqueda_param, busqueda_param)
 
-        print(f"📋 Ejecutando consulta: {sql}")
-        print(f"📊 Valores: {val}")
+        print(f"Ejecutando consulta: {sql}")
+        print(f"Valores: {val}")
         
         cursor.execute(sql, val)
         registros = cursor.fetchall()
         
-        print(f"✅ Resultados encontrados: {len(registros)}")
+        print(f"Resultados encontrados: {len(registros)}")
         for registro in registros:
             print(f"   - {registro['idCategoria']}: {registro['nombreCategoria']} - {registro['descripcion']}")
 
         cursor.close()
         
         return render_template("tablaCategorias.html", categorias=registros)
+
+@app.route("/categorias/editar/<int:id>", methods=["GET"])
+def editarCategoria(id):
+    if not con.is_connected():
+        con.reconnect()
+
+    cursor = con.cursor(dictionary=True)
+    sql = """
+    SELECT * FROM categorias
+    WHERE idCategoria = %s
+    """
+    val = (id,)
+
+    cursor.execute(sql, val)
+    registros = cursor.fetchall()
+    con.close()
+    return make_response(jsonify(registros))
         
-    except mysql.connector.Error as err:
-        print(f"❌ Error de MySQL: {err}")
-        print(f"📋 Código de error: {err.errno}")
-        print(f"💬 Mensaje: {err.msg}")
-        return make_response(jsonify({
-            "status": "error",
-            "message": f"Error de base de datos: {err}"
-        }), 500)
-        
-    except Exception as e:
-        print(f"❌ Error general en búsqueda: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        return make_response(jsonify({
-            "status": "error",
-            "message": f"Error interno del servidor: {str(e)}"
-        }), 500)
+
 
     
 # clientes
