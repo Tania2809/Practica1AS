@@ -278,7 +278,19 @@ def eventos_view():
     if not con.is_connected():
         con.reconnect()
         
-    return render_template("eventos.html")
+    cursor = con.cursor(dictionary=True)
+    sql = "SELECT idLugar, nombreLugar FROM lugares"        
+    cursor.execute(sql)
+    lugares = cursor.fetchall()
+    sql = "SELECT idCategoria,nombreCategoria FROM categorias"
+    cursor.execute(sql)
+    categorias = cursor.fetchall()
+    sql = "SELECT idCliente,nombreCliente FROM clientes"
+    cursor.execute(sql)
+    clientes = cursor.fetchall()
+    cursor.close()
+        
+    return render_template("eventos.html", lugares=lugares, categorias=categorias,clientes=clientes)
 
 
 def triggerUpdateLugares():
@@ -666,7 +678,8 @@ def editarCliente(id1):
     con.close()
     return make_response(jsonify(registros))
 
+
 # ! ELIMINAR O COMENTAR AL SUBIR A GITHUB
-#if __name__ == '__main__':
-#    app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)
 
