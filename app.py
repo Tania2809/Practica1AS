@@ -696,6 +696,6 @@ def editarCliente(id1):
 
 
 # ! ELIMINAR O COMENTAR AL SUBIR A GITHUB
-if __name__ == '__main__':
-    app.run(debug=True)
+#if __name__ == '__main__':
+#   app.run(debug=True)
 
