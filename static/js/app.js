@@ -152,30 +152,30 @@ app.controller("eventosCtrl", function($scope, $http, $compile) {
     channel.bind("newDataInserted", function(data) {
         $scope.cargarEventos();
     })
-    $scope.buscar = function (descripcion) {
-        if (!descripcion || descripcion.trim() === '') {
-            $scope.searching = false
-            $scope.cargarEventos(); // Si la búsqueda está vacía, mostrar todos
-            return;
-        }
-
-        $http.get("/eventos/buscar", {
-            params: {
-                busqueda: descripcion
+    $scope.buscar = function(descripcion) {
+            if (!descripcion || descripcion.trim() === '') {
+                $scope.searching = false
+                $scope.cargarEventos(); // Si la búsqueda está vacía, mostrar todos
+                return;
             }
-        }).then(function (response) {
 
-            $scope.agregarAngularATemplate(response.data);
-            $scope.searching = true;
-        }, function (error) {
-            console.error("Error en búsqueda:", error);
-        })
-    }
-    // Guardar evento
-    $scope.guardar = function (eventos) {
+            $http.get("/eventos/buscar", {
+                params: {
+                    busqueda: descripcion
+                }
+            }).then(function(response) {
+
+                $scope.agregarAngularATemplate(response.data);
+                $scope.searching = true;
+            }, function(error) {
+                console.error("Error en búsqueda:", error);
+            })
+        }
+        // Guardar evento
+    $scope.guardar = function(eventos) {
         console.log(eventos);
 
-        $http.post("/eventos/agregar", eventos).then(function (res) {
+        $http.post("/eventos/agregar", eventos).then(function(res) {
 
 
             $scope.evento = {} // Limpiar formulario
@@ -184,30 +184,30 @@ app.controller("eventosCtrl", function($scope, $http, $compile) {
         })
     }
 
-    $scope.editar = function (id) {
-        console.log('editando el id: ', id);
-        $http.get("/eventos/editar/" + id).then(function (res) {
-            console.log("/editar", res.data);
+    $scope.editar = function(id) {
+            console.log('editando el id: ', id);
+            $http.get("/eventos/editar/" + id).then(function(res) {
+                console.log("/editar", res.data);
 
-            if (res.data) {
-                var data = res.data[0];
-                console.log(data);
-                var dateString = data.fechaInicio;
-                var date = new Date(dateString);
-                data.fechaInicio = date
-                dateString = data.fechaFin;
-                date = new Date(dateString);
-                data.fechaFin = date
-                $scope.evento = data;
-            }
+                if (res.data) {
+                    var data = res.data[0];
+                    console.log(data);
+                    var dateString = data.fechaInicio;
+                    var date = new Date(dateString);
+                    data.fechaInicio = date
+                    dateString = data.fechaFin;
+                    date = new Date(dateString);
+                    data.fechaFin = date
+                    $scope.evento = data;
+                }
 
-        }, function (err) {
-            console.log("Error al guardar: " + (err.data ? err.message : ""));
-            // Opcional: mostrar mensaje de error
-        });
-    }
-    // eliminar evento
-    $scope.eliminar = function (evento) {
+            }, function(err) {
+                console.log("Error al guardar: " + (err.data ? err.message : ""));
+                // Opcional: mostrar mensaje de error
+            });
+        }
+        // eliminar evento
+    $scope.eliminar = function(evento) {
 
 
         $http.post("/eventos/eliminar", evento).then(function(res) {
@@ -383,170 +383,170 @@ app.controller("categoriasCtrl", function($scope, $http) {
 });
 
 app.controller("clientesCtrl", function($scope, $http, $compile) {
-app.controller("clientesCtrl", function ($scope, $http, $compile) {
-    $scope.clientes = []
-    $scope.cliente = {};
-    $scope.searching = false;
-    $scope.cargarTabla = function(data) {
-        var compiled = $compile(data)($scope);
-        angular.element('#tablaPostres').html(compiled);
-    }
-    $scope.cargarTabla = function(data) {
-        var compiled = $compile(data)($scope);
-        angular.element('#tablaClientes').html(compiled);
-    }
-
-    $scope.allData = function() {
-        $http.get("/clientes/all").then(function(res) {
-            $scope.cargarTabla(res.data)
-        })
-    }
-
-    //inizializa el template
-    $scope.$on('$viewContentLoaded', function() {
-        $scope.allData()
-    });
-
-    Pusher.logToConsole = true
-    var pusher = new Pusher("db840e3e13b1c007269e", {
-        cluster: 'us2'
-    })
-    var channel = pusher.subscribe("canalClientes");
-    channel.bind("newDataInserted", function(data) {
-        if (!$scope.searching)
-            $scope.allData();
-    })
-
-    $scope.buscar = function(nombre) {
-            if (!nombre || nombre.trim() === '') {
-                $scope.searching = false
-                $scope.allData(); // Si la búsqueda está vacía, mostrar todos
-                return;
-            }
-
-            $http.get("/clientes/buscar", {
-                params: {
-                    busqueda: nombre
+            app.controller("clientesCtrl", function($scope, $http, $compile) {
+                $scope.clientes = []
+                $scope.cliente = {};
+                $scope.searching = false;
+                $scope.cargarTabla = function(data) {
+                    var compiled = $compile(data)($scope);
+                    angular.element('#tablaPostres').html(compiled);
                 }
-            }).then(function(response) {
+                $scope.cargarTabla = function(data) {
+                    var compiled = $compile(data)($scope);
+                    angular.element('#tablaClientes').html(compiled);
+                }
+
+                $scope.allData = function() {
+                    $http.get("/clientes/all").then(function(res) {
+                        $scope.cargarTabla(res.data)
+                    })
+                }
+
+                //inizializa el template
+                $scope.$on('$viewContentLoaded', function() {
+                    $scope.allData()
+                });
+
+                Pusher.logToConsole = true
+                var pusher = new Pusher("db840e3e13b1c007269e", {
+                    cluster: 'us2'
+                })
+                var channel = pusher.subscribe("canalClientes");
+                channel.bind("newDataInserted", function(data) {
+                    if (!$scope.searching)
+                        $scope.allData();
+                })
+
+                $scope.buscar = function(nombre) {
+                        if (!nombre || nombre.trim() === '') {
+                            $scope.searching = false
+                            $scope.allData(); // Si la búsqueda está vacía, mostrar todos
+                            return;
+                        }
+
+                        $http.get("/clientes/buscar", {
+                            params: {
+                                busqueda: nombre
+                            }
+                        }).then(function(response) {
 
 
-                $("#tablaClientes").html(response.data);
-                $scope.searching = true;
-            }, function(error) {
-                console.error("Error en búsqueda:", error);
+                            $("#tablaClientes").html(response.data);
+                            $scope.searching = true;
+                        }, function(error) {
+                            console.error("Error en búsqueda:", error);
+                        })
+                    }
+                    // Guardar cliente
+                $scope.guardar = function(cliente) {
+                        console.log(" front cliente/agregar", cliente);
+
+                        $http.post("/clientes/agregar", cliente).then(function() {
+                            $("#tablaClientes").html(response.data);
+                            $scope.searching = true;
+                        }, function(error) {
+                            console.error("Error en búsqueda:", error);
+                        })
+                    }
+                    // Guardar cliente
+                $scope.guardar = function(cliente) {
+                    console.log(" front cliente/agregar", cliente);
+
+                    $http.post("/clientes/agregar", cliente).then(function() {
+                        $scope.cliente = {}
+                    }, function(err) {
+                        console.log("Error al guardar: " + (err.data ? err.message : ""))
+                    })
+                }
+                $scope.editar = function(id) {
+                    console.log('editando el id: ', id);
+                    $http.get("/clientes/editar/" + id).then(function(res) {
+                        console.log("/editar", res.data);
+
+                        if (res.data) {
+                            $scope.cliente = res.data[0];
+                            // Opcional: mostrar mensaje de éxito
+                        }
+
+                    }, function(err) {
+                        console.log("Error al guardar: " + (err.data ? err.message : ""));
+                        // Opcional: mostrar mensaje de error
+                    });
+                }
+
+
             })
-        }
-        // Guardar cliente
-    $scope.guardar = function(cliente) {
-        console.log(" front cliente/agregar", cliente);
 
-        $http.post("/clientes/agregar", cliente).then(function() {
-            $("#tablaClientes").html(response.data);
-            $scope.searching = true;
-        }, function (error) {
-            console.error("Error en búsqueda:", error);
-        })
-    }
-    // Guardar cliente
-    $scope.guardar = function (cliente) {
-        console.log(" front cliente/agregar", cliente);
+            app.controller("lugaresCtrl", function($scope, $http) {
+                $scope.lugares = []
+                $scope.searching = false;
 
-        $http.post("/clientes/agregar", cliente).then(function () {
-            $scope.cliente = {}
-        }, function(err) {
-            console.log("Error al guardar: " + (err.data ? err.message : ""))
-        })
-    }
-    $scope.editar = function(id) {
-        console.log('editando el id: ', id);
-        $http.get("/clientes/editar/" + id).then(function(res) {
-            console.log("/editar", res.data);
+                $scope.allData = function() {
+                        $http.get("/lugares/all").then(function(res) {
+                            $("#tablaLugares").html(res.data)
+                        })
+                    }
+                    //inizializa el template
+                $scope.$on('$viewContentLoaded', function() {
+                    $scope.allData()
+                });
 
-            if (res.data) {
-                $scope.cliente = res.data[0];
-                // Opcional: mostrar mensaje de éxito
-            }
+                Pusher.logToConsole = true
+                var pusher = new Pusher("db840e3e13b1c007269e", {
+                    cluster: 'us2'
+                })
+                var channel = pusher.subscribe("canalLugares");
+                channel.bind("newDataInserted", function(data) {
+                        if (!$scope.searching)
+                            $scope.allData();
+                    })
+                    // Guardar lugar
+                $scope.guardar = function(lugar) {
+                    $http.post("/lugar/guardar", lugar).then(function() {
+                        $scope.lugar = {}
+                        $scope.allData()
+                    }, function(err) {
+                        console.log("Error al guardar: " + (err.data ? err.message : ""))
+                    })
+                }
 
-        }, function(err) {
-            console.log("Error al guardar: " + (err.data ? err.message : ""));
-            // Opcional: mostrar mensaje de error
-        });
-    }
+                $scope.buscar = function(lugar) {
+                    if (!lugar || lugar.trim() === '') {
+                        $scope.searching = false
+                        $scope.allData();
+                        return;
+
+                    }
+
+                    $http.get("/lugar/buscar", {
+                        params: {
+                            busqueda: lugar
+                        }
+                    }).then(function(response) {
 
 
-})
-
-app.controller("lugaresCtrl", function($scope, $http) {
-    $scope.lugares = []
-    $scope.searching = false;
-
-    $scope.allData = function() {
-            $http.get("/lugares/all").then(function(res) {
-                $("#tablaLugares").html(res.data)
+                        $("#tablaLugares").html(response.data);
+                        $scope.searching = true;
+                    }, function(error) {
+                        console.error("Error en búsqueda:", error);
+                    })
+                }
             })
-        }
-        //inizializa el template
-    $scope.$on('$viewContentLoaded', function() {
-        $scope.allData()
-    });
 
-    Pusher.logToConsole = true
-    var pusher = new Pusher("db840e3e13b1c007269e", {
-        cluster: 'us2'
-    })
-    var channel = pusher.subscribe("canalLugares");
-    channel.bind("newDataInserted", function(data) {
-            if (!$scope.searching)
-                $scope.allData();
-        })
-        // Guardar lugar
-    $scope.guardar = function(lugar) {
-        $http.post("/lugar/guardar", lugar).then(function() {
-            $scope.lugar = {}
-            $scope.allData()
-        }, function(err) {
-            console.log("Error al guardar: " + (err.data ? err.message : ""))
-        })
-    }
+            const DateTime = luxon.DateTime
+            let lxFechaHora
 
-    $scope.buscar = function(lugar) {
-        if (!lugar || lugar.trim() === '') {
-            $scope.searching = false
-            $scope.allData();
-            return;
+            document.addEventListener("DOMContentLoaded", function(event) {
+                const configFechaHora = {
+                    locale: "es",
+                    weekNumbers: true,
+                    minuteIncrement: 15,
+                    altInput: true,
+                    altFormat: "d/F/Y",
+                    dateFormat: "Y-m-d",
+                }
 
-        }
-
-        $http.get("/lugar/buscar", {
-            params: {
-                busqueda: lugar
-            }
-        }).then(function(response) {
+                activeMenuOption(location.hash)
 
 
-            $("#tablaLugares").html(response.data);
-            $scope.searching = true;
-        }, function(error) {
-            console.error("Error en búsqueda:", error);
-        })
-    }
-})
-
-const DateTime = luxon.DateTime
-let lxFechaHora
-
-document.addEventListener("DOMContentLoaded", function(event) {
-    const configFechaHora = {
-        locale: "es",
-        weekNumbers: true,
-        minuteIncrement: 15,
-        altInput: true,
-        altFormat: "d/F/Y",
-        dateFormat: "Y-m-d",
-    }
-
-    activeMenuOption(location.hash)
-
-
-})
+            })
