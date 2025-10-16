@@ -346,6 +346,8 @@ def guardarLugar():
             
         if request.is_json:
             data = request.get_json()
+            print(" front lugar/guardar" + str(data))
+            id1 = data.get("idlugar")
             nombreL = data.get("nombreLugar")
             direccion = data.get("direccion")
             ubicacion = data.get("ubicacion")
@@ -355,11 +357,23 @@ def guardarLugar():
             ubicacion = request.form.get("ubicacion")
             
         cursor = con.cursor(dictionary=True)
-        sql = """
-        INSERT INTO lugares (nombreLugar, direccion, ubicacion)
-        VALUES (%s, %s, %s)
-        """
-        val = (nombreL, direccion, ubicacion)
+
+        if id1:
+            sql = """"
+            UPDATE lugares
+
+            SET nombreLugar = %s,
+                direccion = %s,
+                ubicacion = %s
+            WHERE idLugar = %s
+            """
+            val = (nombreL, direccion, ubicacion, id1)
+        else :
+            sql = """
+            INSERT INTO lugares (nombreLugar, direccion, ubicacion)
+            VALUES (%s, %s, %s)
+            """
+            val = (nombreL, direccion, ubicacion)
 
         cursor.execute(sql, val)
         con.commit()
@@ -371,6 +385,22 @@ def guardarLugar():
         print(f"Error en guardarLugar: {str(e)}")
         return make_response(jsonify({"error": str(e)}), 500)
 
+@app.route("/lugar/editar/<int>id1>" , methods=["GET"])
+def editarlugares(id1):
+    if not con.is_connected():
+        con.reconnect()
+
+    cursor = con.cursor(dictionary=True)
+    sql = """
+    SELECT * FROM lugares
+    WHERE idLugar = %s
+    """
+    val = (id1,)
+
+    cursor.execute(sql, val)
+    registros = cursor.fetchall()
+    con.close()
+    return make_response(jsonify(registros))
 
 @app.route("/lugar/buscar", methods=["GET"])
 def buscarLugar():
