@@ -456,7 +456,9 @@ app.controller("clientesCtrl", function($scope, $http, $compile) {
         if (!$scope.searching)
             $scope.allData();
     })
-
+    $scope.cancelar = function(){
+        $scope.cliente = {}
+    }
     $scope.buscar = function(nombre) {
             if (!nombre || nombre.trim() === '') {
                 $scope.searching = false
