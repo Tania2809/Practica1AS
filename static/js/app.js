@@ -544,12 +544,30 @@ app.controller("lugaresCtrl", function($scope, $http) {
         })
         // Guardar lugar
     $scope.guardar = function(lugar) {
+        console.log(" front lugar/agregar", lugar);
+
         $http.post("/lugar/guardar", lugar).then(function() {
             $scope.lugar = {}
             $scope.allData()
         }, function(err) {
             console.log("Error al guardar: " + (err.data ? err.message : ""))
         })
+    }
+
+    $scope.editar = function(id) {
+        console.log('editando el id: ', id);
+        $http.get("/lugar/editar/" + id).then(function(res) {
+            console.log("/editar", res.data);
+
+            if (res.data) {
+                $scope.lugar = res.data[0];
+                // Opcional: mostrar mensaje de éxito
+            }
+    
+        }, function(err) {
+            console.log("Error al guardar: " + (err.data ? err.message : ""));
+            // Opcional: mostrar mensaje de error
+        });
     }
 
     $scope.buscar = function(lugar) {
