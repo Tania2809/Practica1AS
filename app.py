@@ -347,7 +347,7 @@ def guardarLugar():
         if request.is_json:
             data = request.get_json()
             print(" front lugar/guardar" + str(data))
-            id1 = data.get("idlugar")
+            id1 = data.get("idLugar")
             nombreL = data.get("nombreLugar")
             direccion = data.get("direccion")
             ubicacion = data.get("ubicacion")
