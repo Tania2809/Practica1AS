@@ -9,7 +9,7 @@ function activeMenuOption(href) {
 }
 
 const app = angular.module("angularjsApp", ["ngRoute"])
-app.config(function($routeProvider, $locationProvider) {
+app.config(function ($routeProvider, $locationProvider) {
     $locationProvider.hashPrefix("")
 
     $routeProvider
@@ -38,7 +38,7 @@ app.config(function($routeProvider, $locationProvider) {
         })
 })
 
-app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, $timeout) {
+app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location, $timeout) {
 
     function actualizarFechaHora() {
         lxFechaHora = DateTime
@@ -52,7 +52,7 @@ app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, 
     $rootScope.slide = ""
     $rootScope.login = false
     actualizarFechaHora()
-    $rootScope.$on('$routeChangeStart', function(event, next, current) {
+    $rootScope.$on('$routeChangeStart', function (event, next, current) {
 
         console.log(next)
         console.log(next.$$route)
@@ -69,7 +69,7 @@ app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, 
 
 
     })
-    $rootScope.$on("$routeChangeSuccess", function(event, current, previous) {
+    $rootScope.$on("$routeChangeSuccess", function (event, current, previous) {
         $("html").css("overflow-x", "hidden")
 
 
@@ -84,7 +84,7 @@ app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, 
                 $rootScope.slide += ((active > click) ? "Left" : "Right")
             }
 
-            $timeout(function() {
+            $timeout(function () {
                 $("html").css("overflow-x", "auto")
 
                 $rootScope.slide = ""
@@ -96,7 +96,7 @@ app.run(["$rootScope", "$location", "$timeout", function($rootScope, $location, 
 }])
 
 app.controller("loginCtrl", ["$scope", "$rootScope", "$http", "$timeout", "$location",
-    function($scope, $rootScope, $http, $timeout, $location) {
+    function ($scope, $rootScope, $http, $timeout, $location) {
         // Inicializar el modelo de datos
         $scope.userData = {
             username: '',
@@ -104,16 +104,16 @@ app.controller("loginCtrl", ["$scope", "$rootScope", "$http", "$timeout", "$loca
         };
 
         // Función para manejar el envío del formulario
-        $scope.submitLogin = function() {
+        $scope.submitLogin = function () {
             // Aquí procesarías los datos de inicio de sesión
 
-            $http.post("/login", $scope.userData).then(function(res) {
+            $http.post("/login", $scope.userData).then(function (res) {
 
 
                 if (res.data == 1) {
 
                     // Redirigimos después de un breve retraso
-                    $timeout(function() {
+                    $timeout(function () {
                         // Usamos $location para cambiar la ruta en lugar de window.location
                         $location.path("/eventos");
                         $rootScope.login = true;
@@ -121,30 +121,24 @@ app.controller("loginCtrl", ["$scope", "$rootScope", "$http", "$timeout", "$loca
                 }
             });
         };
-<<<<<<< HEAD
-    }
-]);
-app.controller("eventosCtrl", function($scope, $http, $compile) {
-=======
     }]);
-app.controller("eventosCtrl", function ($scope, $http, $compile,$timeout) {
->>>>>>> 55ba67a0065aefcd434b7a8cdab62f1f9168f820
+app.controller("eventosCtrl", function ($scope, $http, $compile, $timeout) {
 
     $scope.evento = {}
 
-    $scope.agregarAngularATemplate = function(data) {
+    $scope.agregarAngularATemplate = function (data) {
         var compiled = $compile(data)($scope);
         angular.element('#tablaEventos').html(compiled);
     }
 
     // Cargar datos de eventos
-    $scope.cargarEventos = function() {
-        $http.get("/eventos/all").then(function(res) {
+    $scope.cargarEventos = function () {
+        $http.get("/eventos/all").then(function (res) {
             $scope.agregarAngularATemplate(res.data);
         });
     };
     //inizializa el template
-    $scope.$on('$viewContentLoaded', function() {
+    $scope.$on('$viewContentLoaded', function () {
         $scope.cargarEventos()
     });
 
@@ -154,59 +148,46 @@ app.controller("eventosCtrl", function ($scope, $http, $compile,$timeout) {
         cluster: 'us2'
     })
     var channel = pusher.subscribe("canalEventos");
-    channel.bind("newDataInserted", function(data) {
+    channel.bind("newDataInserted", function (data) {
         $scope.cargarEventos();
     })
-    $scope.buscar = function(descripcion) {
-            if (!descripcion || descripcion.trim() === '') {
-                $scope.searching = false
-                $scope.cargarEventos(); // Si la búsqueda está vacía, mostrar todos
-                return;
-            }
-
-            $http.get("/eventos/buscar", {
-                params: {
-                    busqueda: descripcion
-                }
-            }).then(function(response) {
-
-                $scope.agregarAngularATemplate(response.data);
-                $scope.searching = true;
-            }, function(error) {
-                console.error("Error en búsqueda:", error);
-            })
+    $scope.buscar = function (descripcion) {
+        if (!descripcion || descripcion.trim() === '') {
+            $scope.searching = false
+            $scope.cargarEventos(); // Si la búsqueda está vacía, mostrar todos
+            return;
         }
-        // Guardar evento
-    $scope.guardar = function(eventos) {
+
+        $http.get("/eventos/buscar", {
+            params: {
+                busqueda: descripcion
+            }
+        }).then(function (response) {
+
+            $scope.agregarAngularATemplate(response.data);
+            $scope.searching = true;
+        }, function (error) {
+            console.error("Error en búsqueda:", error);
+        })
+    }
+    // Guardar evento
+    $scope.guardar = function (eventos) {
         console.log(eventos);
 
-        $http.post("/eventos/agregar", eventos).then(function(res) {
+        $http.post("/eventos/agregar", eventos).then(function (res) {
 
 
             $scope.evento = {} // Limpiar formulario
-        }, function(err) {
+        }, function (err) {
             console.log("Error al guardar: " + (err.data ? err.message : ""));
         })
     }
 
-    $scope.editar = function(id) {
-            console.log('editando el id: ', id);
-            $http.get("/eventos/editar/" + id).then(function(res) {
-                console.log("/editar", res.data);
+    $scope.editar = function (id) {
+        console.log('editando el id: ', id);
+        $http.get("/eventos/editar/" + id).then(function (res) {
+            console.log("/editar", res.data);
 
-<<<<<<< HEAD
-                if (res.data) {
-                    var data = res.data[0];
-                    console.log(data);
-                    var dateString = data.fechaInicio;
-                    var date = new Date(dateString);
-                    data.fechaInicio = date
-                    dateString = data.fechaFin;
-                    date = new Date(dateString);
-                    data.fechaFin = date
-                    $scope.evento = data;
-                }
-=======
             if (res.data) {
                 var data = res.data[0];
                 console.log(data);
@@ -229,25 +210,24 @@ app.controller("eventosCtrl", function ($scope, $http, $compile,$timeout) {
                     $("#nombreLugar").val(data.idLugar).trigger('change');
                     $("#nombreCliente").val(data.idCliente).trigger('change');
                     console.log("changed");
-                    
+
                 }, 0);
             }
->>>>>>> 55ba67a0065aefcd434b7a8cdab62f1f9168f820
 
-            }, function(err) {
-                console.log("Error al guardar: " + (err.data ? err.message : ""));
-                // Opcional: mostrar mensaje de error
-            });
-        }
-        // eliminar evento
-    $scope.eliminar = function(evento) {
+        }, function (err) {
+            console.log("Error al guardar: " + (err.data ? err.message : ""));
+            // Opcional: mostrar mensaje de error
+        });
+    }
+    // eliminar evento
+    $scope.eliminar = function (evento) {
 
 
-        $http.post("/eventos/eliminar", evento).then(function(res) {
+        $http.post("/eventos/eliminar", evento).then(function (res) {
 
 
             $scope.evento = {} // Limpiar formulario
-        }, function(err) {
+        }, function (err) {
             console.log("Error al eliminar: " + (err.data ? err.message : ""));
         })
     }
@@ -255,7 +235,7 @@ app.controller("eventosCtrl", function ($scope, $http, $compile,$timeout) {
     $scope.cargarEventos()
 })
 
-app.controller("categoriasCtrl", function($scope, $http) {
+app.controller("categoriasCtrl", function ($scope, $http) {
     $scope.categorias = [];
     $scope.mostrarTodos = true;
     $scope.categoria = {};
@@ -264,14 +244,14 @@ app.controller("categoriasCtrl", function($scope, $http) {
     const eventBus = {
         subscribers: {},
 
-        subscribe: function(eventName, callback) {
+        subscribe: function (eventName, callback) {
             if (!this.subscribers[eventName]) {
                 this.subscribers[eventName] = [];
             }
             this.subscribers[eventName].push(callback);
         },
 
-        publish: function(eventName, data) {
+        publish: function (eventName, data) {
             if (this.subscribers[eventName]) {
                 this.subscribers[eventName].forEach(callback => {
                     callback(data);
@@ -282,30 +262,30 @@ app.controller("categoriasCtrl", function($scope, $http) {
 
     // Servicio de Categorías
     const categoriaService = {
-        cargarTodas: function() {
-            return $http.get("/categorias/all").then(function(res) {
+        cargarTodas: function () {
+            return $http.get("/categorias/all").then(function (res) {
                 $("#tablaCategorias").html(res.data);
                 eventBus.publish('categorias_actualizadas', res.data);
                 return res.data;
             });
         },
 
-        buscar: function(nombre) {
+        buscar: function (nombre) {
             return $http.get("/categorias/buscar", {
                 params: { busqueda: nombre }
-            }).then(function(response) {
+            }).then(function (response) {
                 $("#tablaCategorias").html(response.data);
                 eventBus.publish('busqueda_realizada', response.data);
                 return response.data;
             });
         },
 
-        guardar: function(categoria) {
+        guardar: function (categoria) {
             return $http.post("/categorias/agregar", categoria);
         },
 
-        editar: function(id) {
-            return $http.get("/categorias/editar/" + id).then(function(res) {
+        editar: function (id) {
+            return $http.get("/categorias/editar/" + id).then(function (res) {
                 $scope.categoria = res.data[0];
             });
         }
@@ -313,16 +293,16 @@ app.controller("categoriasCtrl", function($scope, $http) {
 
     // Servicio de Notificaciones
     const notificacionService = {
-        init: function() {
-            eventBus.subscribe('categoria_guardada', function(data) {
+        init: function () {
+            eventBus.subscribe('categoria_guardada', function (data) {
                 //   console.log('Notificación: Categoría guardada exitosamente', data);
             });
 
-            eventBus.subscribe('error_guardado', function(error) {
+            eventBus.subscribe('error_guardado', function (error) {
                 //   console.error('Notificación: Error al guardar categoría', error);
             });
 
-            eventBus.subscribe('evento_pusher_recibido', function(data) {
+            eventBus.subscribe('evento_pusher_recibido', function (data) {
                 //    console.log('Notificación: Cambios en tiempo real recibidos', data);
             });
         }
@@ -330,12 +310,12 @@ app.controller("categoriasCtrl", function($scope, $http) {
 
     // Servicio de Analytics
     const analyticsService = {
-        init: function() {
-            eventBus.subscribe('busqueda_realizada', function(data) {
+        init: function () {
+            eventBus.subscribe('busqueda_realizada', function (data) {
                 console.log('Analytics: Búsqueda realizada', data);
             });
 
-            eventBus.subscribe('categoria_guardada', function(data) {
+            eventBus.subscribe('categoria_guardada', function (data) {
                 console.log('Analytics: Nueva categoría creada', data);
             });
         }
@@ -343,7 +323,7 @@ app.controller("categoriasCtrl", function($scope, $http) {
 
     // Servicio de Pusher
     const pusherService = {
-        init: function() {
+        init: function () {
             Pusher.logToConsole = true;
             var pusher = new Pusher("db840e3e13b1c007269e", {
                 cluster: 'us2',
@@ -351,7 +331,7 @@ app.controller("categoriasCtrl", function($scope, $http) {
             });
 
             var channel = pusher.subscribe("canalCategorias");
-            channel.bind("newDataInserted", function(data) {
+            channel.bind("newDataInserted", function (data) {
 
                 eventBus.publish('evento_pusher_recibido', data);
 
@@ -362,7 +342,7 @@ app.controller("categoriasCtrl", function($scope, $http) {
                 }
             });
 
-            channel.bind('pusher:subscription_error', function(status) {
+            channel.bind('pusher:subscription_error', function (status) {
                 console.error('Error de suscripción Pusher:', status);
             });
         }
@@ -377,20 +357,20 @@ app.controller("categoriasCtrl", function($scope, $http) {
     categoriaService.cargarTodas();
 
     // Guardar categoría
-    $scope.guardar = function(categoria) {
+    $scope.guardar = function (categoria) {
         categoriaService.guardar(categoria)
-            .then(function(response) {
+            .then(function (response) {
                 eventBus.publish('categoria_guardada', response.data);
                 $scope.categoria = {};
 
             })
-            .catch(function(err) {
+            .catch(function (err) {
                 eventBus.publish('error_guardado', err);
             });
     };
 
     // Buscar categorías
-    $scope.buscar = function(nombre) {
+    $scope.buscar = function (nombre) {
         if (!nombre || nombre.trim() === '') {
             categoriaService.cargarTodas();
             $scope.mostrarTodos = true;
@@ -402,184 +382,183 @@ app.controller("categoriasCtrl", function($scope, $http) {
     };
 
     // Limpiar búsqueda
-    $scope.limpiarBusqueda = function() {
+    $scope.limpiarBusqueda = function () {
         $scope.nombre = '';
         categoriaService.cargarTodas();
         $scope.mostrarTodos = true;
     };
 
     // Verificar estado de Pusher
-    $scope.verificarPusher = function() {
+    $scope.verificarPusher = function () {
 
         categoriaService.cargarTodas(); // Recargar manualmente
     };
 });
 
-app.controller("clientesCtrl", function($scope, $http, $compile) {
-            app.controller("clientesCtrl", function($scope, $http, $compile) {
-                $scope.clientes = []
-                $scope.cliente = {};
-                $scope.searching = false;
-                $scope.cargarTabla = function(data) {
-                    var compiled = $compile(data)($scope);
-                    angular.element('#tablaPostres').html(compiled);
-                }
-                $scope.cargarTabla = function(data) {
-                    var compiled = $compile(data)($scope);
-                    angular.element('#tablaClientes').html(compiled);
-                }
+app.controller("clientesCtrl", function ($scope, $http, $compile) {
+    $scope.clientes = []
+    $scope.cliente = {};
+    $scope.searching = false;
+    $scope.cargarTabla = function (data) {
+        var compiled = $compile(data)($scope);
+        angular.element('#tablaPostres').html(compiled);
+    }
+    $scope.cargarTabla = function (data) {
+        var compiled = $compile(data)($scope);
+        angular.element('#tablaClientes').html(compiled);
+    }
 
-                $scope.allData = function() {
-                    $http.get("/clientes/all").then(function(res) {
-                        $scope.cargarTabla(res.data)
-                    })
-                }
+    $scope.allData = function () {
+        $http.get("/clientes/all").then(function (res) {
+            $scope.cargarTabla(res.data)
+        })
+    }
 
-                //inizializa el template
-                $scope.$on('$viewContentLoaded', function() {
-                    $scope.allData()
-                });
+    //inizializa el template
+    $scope.$on('$viewContentLoaded', function () {
+        $scope.allData()
+    });
 
-                Pusher.logToConsole = true
-                var pusher = new Pusher("db840e3e13b1c007269e", {
-                    cluster: 'us2'
-                })
-                var channel = pusher.subscribe("canalClientes");
-                channel.bind("newDataInserted", function(data) {
-                    if (!$scope.searching)
-                        $scope.allData();
-                })
+    Pusher.logToConsole = true
+    var pusher = new Pusher("db840e3e13b1c007269e", {
+        cluster: 'us2'
+    })
+    var channel = pusher.subscribe("canalClientes");
+    channel.bind("newDataInserted", function (data) {
+        if (!$scope.searching)
+            $scope.allData();
+    })
 
-                $scope.buscar = function(nombre) {
-                        if (!nombre || nombre.trim() === '') {
-                            $scope.searching = false
-                            $scope.allData(); // Si la búsqueda está vacía, mostrar todos
-                            return;
-                        }
+    $scope.buscar = function (nombre) {
+        if (!nombre || nombre.trim() === '') {
+            $scope.searching = false
+            $scope.allData(); // Si la búsqueda está vacía, mostrar todos
+            return;
+        }
 
-                        $http.get("/clientes/buscar", {
-                            params: {
-                                busqueda: nombre
-                            }
-                        }).then(function(response) {
-
-
-                            $("#tablaClientes").html(response.data);
-                            $scope.searching = true;
-                        }, function(error) {
-                            console.error("Error en búsqueda:", error);
-                        })
-                    }
-                    // Guardar cliente
-                $scope.guardar = function(cliente) {
-                        console.log(" front cliente/agregar", cliente);
-
-                        $http.post("/clientes/agregar", cliente).then(function() {
-                            $("#tablaClientes").html(response.data);
-                            $scope.searching = true;
-                        }, function(error) {
-                            console.error("Error en búsqueda:", error);
-                        })
-                    }
-                    // Guardar cliente
-                $scope.guardar = function(cliente) {
-                    console.log(" front cliente/agregar", cliente);
-
-                    $http.post("/clientes/agregar", cliente).then(function() {
-                        $scope.cliente = {}
-                    }, function(err) {
-                        console.log("Error al guardar: " + (err.data ? err.message : ""))
-                    })
-                }
-                $scope.editar = function(id) {
-                    console.log('editando el id: ', id);
-                    $http.get("/clientes/editar/" + id).then(function(res) {
-                        console.log("/editar", res.data);
-
-                        if (res.data) {
-                            $scope.cliente = res.data[0];
-                            // Opcional: mostrar mensaje de éxito
-                        }
-
-                    }, function(err) {
-                        console.log("Error al guardar: " + (err.data ? err.message : ""));
-                        // Opcional: mostrar mensaje de error
-                    });
-                }
+        $http.get("/clientes/buscar", {
+            params: {
+                busqueda: nombre
+            }
+        }).then(function (response) {
 
 
-            })
+            $("#tablaClientes").html(response.data);
+            $scope.searching = true;
+        }, function (error) {
+            console.error("Error en búsqueda:", error);
+        })
+    }
+    // Guardar cliente
+    $scope.guardar = function (cliente) {
+        console.log(" front cliente/agregar", cliente);
 
-            app.controller("lugaresCtrl", function($scope, $http) {
-                $scope.lugares = []
-                $scope.searching = false;
+        $http.post("/clientes/agregar", cliente).then(function () {
+            $("#tablaClientes").html(response.data);
+            $scope.searching = true;
+        }, function (error) {
+            console.error("Error en búsqueda:", error);
+        })
+    }
+    // Guardar cliente
+    $scope.guardar = function (cliente) {
+        console.log(" front cliente/agregar", cliente);
 
-                $scope.allData = function() {
-                        $http.get("/lugares/all").then(function(res) {
-                            $("#tablaLugares").html(res.data)
-                        })
-                    }
-                    //inizializa el template
-                $scope.$on('$viewContentLoaded', function() {
-                    $scope.allData()
-                });
+        $http.post("/clientes/agregar", cliente).then(function () {
+            $scope.cliente = {}
+        }, function (err) {
+            console.log("Error al guardar: " + (err.data ? err.message : ""))
+        })
+    }
+    $scope.editar = function (id) {
+        console.log('editando el id: ', id);
+        $http.get("/clientes/editar/" + id).then(function (res) {
+            console.log("/editar", res.data);
 
-                Pusher.logToConsole = true
-                var pusher = new Pusher("db840e3e13b1c007269e", {
-                    cluster: 'us2'
-                })
-                var channel = pusher.subscribe("canalLugares");
-                channel.bind("newDataInserted", function(data) {
-                        if (!$scope.searching)
-                            $scope.allData();
-                    })
-                    // Guardar lugar
-                $scope.guardar = function(lugar) {
-                    $http.post("/lugar/guardar", lugar).then(function() {
-                        $scope.lugar = {}
-                        $scope.allData()
-                    }, function(err) {
-                        console.log("Error al guardar: " + (err.data ? err.message : ""))
-                    })
-                }
+            if (res.data) {
+                $scope.cliente = res.data[0];
+                // Opcional: mostrar mensaje de éxito
+            }
 
-                $scope.buscar = function(lugar) {
-                    if (!lugar || lugar.trim() === '') {
-                        $scope.searching = false
-                        $scope.allData();
-                        return;
-
-                    }
-
-                    $http.get("/lugar/buscar", {
-                        params: {
-                            busqueda: lugar
-                        }
-                    }).then(function(response) {
+        }, function (err) {
+            console.log("Error al guardar: " + (err.data ? err.message : ""));
+            // Opcional: mostrar mensaje de error
+        });
+    }
 
 
-                        $("#tablaLugares").html(response.data);
-                        $scope.searching = true;
-                    }, function(error) {
-                        console.error("Error en búsqueda:", error);
-                    })
-                }
-            })
+})
 
-            const DateTime = luxon.DateTime
-            let lxFechaHora
+app.controller("lugaresCtrl", function ($scope, $http) {
+    $scope.lugares = []
+    $scope.searching = false;
 
-            document.addEventListener("DOMContentLoaded", function(event) {
-                const configFechaHora = {
-                    locale: "es",
-                    weekNumbers: true,
-                    minuteIncrement: 15,
-                    altInput: true,
-                    altFormat: "d/F/Y",
-                    dateFormat: "Y-m-d",
-                }
+    $scope.allData = function () {
+        $http.get("/lugares/all").then(function (res) {
+            $("#tablaLugares").html(res.data)
+        })
+    }
+    //inizializa el template
+    $scope.$on('$viewContentLoaded', function () {
+        $scope.allData()
+    });
 
-                activeMenuOption(location.hash)
+    Pusher.logToConsole = true
+    var pusher = new Pusher("db840e3e13b1c007269e", {
+        cluster: 'us2'
+    })
+    var channel = pusher.subscribe("canalLugares");
+    channel.bind("newDataInserted", function (data) {
+        if (!$scope.searching)
+            $scope.allData();
+    })
+    // Guardar lugar
+    $scope.guardar = function (lugar) {
+        $http.post("/lugar/guardar", lugar).then(function () {
+            $scope.lugar = {}
+            $scope.allData()
+        }, function (err) {
+            console.log("Error al guardar: " + (err.data ? err.message : ""))
+        })
+    }
+
+    $scope.buscar = function (lugar) {
+        if (!lugar || lugar.trim() === '') {
+            $scope.searching = false
+            $scope.allData();
+            return;
+
+        }
+
+        $http.get("/lugar/buscar", {
+            params: {
+                busqueda: lugar
+            }
+        }).then(function (response) {
 
 
-            })
+            $("#tablaLugares").html(response.data);
+            $scope.searching = true;
+        }, function (error) {
+            console.error("Error en búsqueda:", error);
+        })
+    }
+})
+
+const DateTime = luxon.DateTime
+let lxFechaHora
+
+document.addEventListener("DOMContentLoaded", function (event) {
+    const configFechaHora = {
+        locale: "es",
+        weekNumbers: true,
+        minuteIncrement: 15,
+        altInput: true,
+        altFormat: "d/F/Y",
+        dateFormat: "Y-m-d",
+    }
+
+    activeMenuOption(location.hash)
+
+
+})
