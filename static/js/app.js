@@ -286,9 +286,8 @@ app.controller("categoriasCtrl", function($scope, $http) {
         },
 
         editar: function(id) {
-            return $http.get("/categorias/editar/" + id).then(function(res) {
-                $scope.categoria = res.data[0];
-            });
+            // Return the raw $http promise so caller can decide how to handle the response
+            return $http.get("/categorias/editar/" + id);
         }
     };
 
@@ -375,8 +374,9 @@ app.controller("categoriasCtrl", function($scope, $http) {
         console.log('Editando categoría id:', id);
         categoriaService.editar(id)
             .then(function(res) {
-                if (res.data && res.data.categoria) {
-                    $scope.categoria = res.data.categoria;
+                // The backend returns an array of registros; take the first one
+                if (res.data && res.data.length > 0) {
+                    $scope.categoria = res.data[0];
                 }
             })
             .catch(function(err) {
