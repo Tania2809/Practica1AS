@@ -4,15 +4,36 @@
         <div class="row g-2 align-items-end">
             <div class="col-md-4">
                 <label class="form-label mb-1">Nombre de la categoría</label>
-                <input required type="text" ng-model="categoria.nombreCategoria" class="form-control" placeholder="Nombre de la categoría">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                    <input name="nombreCategoria" required type="text" ng-model="categoria.nombreCategoria" class="form-control" placeholder="Nombre de la categoría" aria-label="Nombre de la categoría">
+                </div>
+                <div class="form-text text-danger" ng-show="(categoriaForm.$submitted || categoriaForm.nombreCategoria.$touched) && !categoria.nombreCategoria">
+                    El nombre es obligatorio.
+                </div>
             </div>
+
             <div class="col-md-6">
                 <label class="form-label mb-1">Descripción</label>
-                <input required type="text" ng-model="categoria.descripcion" class="form-control" placeholder="Descripción">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-align-left"></i></span>
+                    <input name="descripcion" required type="text" ng-model="categoria.descripcion" class="form-control" placeholder="Descripción" aria-label="Descripción">
+                </div>
+                <div class="form-text text-danger" ng-show="(categoriaForm.$submitted || categoriaForm.descripcion.$touched) && !categoria.descripcion">
+                    La descripción es obligatoria.
+                </div>
             </div>
-            <div class="col-md-2">
-                <button type="button" class="btn btn-secondary" ng-click="cancelar()">Cancelar</button>
-                <button type="submit" class="btn btn-primary">Registrar</button>
+
+            <div class="col-md-2 d-flex gap-2 justify-content-sm-end mt-2 mt-md-0">
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill d-flex align-items-center" ng-click="cancelar()" title="Cancelar">
+                    <i class="fas fa-times me-2"></i>Cancelar
+                </button>
+
+                <button type="submit" class="btn btn-primary btn-sm rounded-pill d-flex align-items-center" ng-disabled="categoriaForm.$invalid" title="Registrar">
+                    <i class="fas fa-check me-2"></i>
+                    <span ng-if="!procesando">Registrar</span>
+                    <span ng-if="procesando"><i class="fas fa-spinner fa-spin me-2"></i>Registrando...</span>
+                </button>
             </div>
         </div>
     </form>
