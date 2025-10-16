@@ -372,7 +372,16 @@ app.controller("categoriasCtrl", function($scope, $http) {
 
     // Editar categoría
     $scope.editar = function(id) {
-        categoriaService.editar(id);
+        console.log('Editando categoría id:', id);
+        categoriaService.editar(id)
+            .then(function(res) {
+                if (res.data && res.data.categoria) {
+                    $scope.categoria = res.data.categoria;
+                }
+            })
+            .catch(function(err) {
+                console.log("Error al cargar categoría: " + (err.data ? err.message : ""));
+            });
     };
 
     // Buscar categorías
