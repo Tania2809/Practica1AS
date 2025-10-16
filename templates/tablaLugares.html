@@ -17,6 +17,12 @@
         <span class="text-muted">No especificado</span>
         {% endif %}
     </td>
+    <td class="text-center">
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-sm btn-outline-primary" ng-click="editar('{{ lugar.idLugar }}')">
+                Editar
+            </button>
+        </div>
 
 </tr>
 {% else %}
