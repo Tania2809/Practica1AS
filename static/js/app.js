@@ -236,7 +236,7 @@ app.controller("eventosCtrl", function($scope, $http, $compile, $timeout) {
     $scope.cargarEventos()
 })
 
-app.controller("categoriasCtrl", function($scope, $http) {
+app.controller("categoriasCtrl", function($scope, $http, $compile) {
     $scope.categorias = [];
     $scope.mostrarTodos = true;
     $scope.categoria = {};
@@ -265,7 +265,9 @@ app.controller("categoriasCtrl", function($scope, $http) {
     const categoriaService = {
         cargarTodas: function() {
             return $http.get("/categorias/all").then(function(res) {
-                $("#tablaCategorias").html(res.data);
+                // Compile server-rendered HTML so Angular directives (ng-click) are bound
+                var compiled = $compile(res.data)($scope);
+                angular.element('#tablaCategorias').html(compiled);
                 eventBus.publish('categorias_actualizadas', res.data);
                 return res.data;
             });
@@ -275,7 +277,8 @@ app.controller("categoriasCtrl", function($scope, $http) {
             return $http.get("/categorias/buscar", {
                 params: { busqueda: nombre }
             }).then(function(response) {
-                $("#tablaCategorias").html(response.data);
+                var compiled = $compile(response.data)($scope);
+                angular.element('#tablaCategorias').html(compiled);
                 eventBus.publish('busqueda_realizada', response.data);
                 return response.data;
             });
