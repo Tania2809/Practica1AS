@@ -547,7 +547,6 @@ app.controller("lugaresCtrl", function($scope, $http) {
         console.log(" front lugar/agregar", lugar);
 
         $http.post("/lugar/guardar", lugar).then(function() {
-            $("#tablaLugares").html(response.data);
             $scope.lugar = {}
             $scope.allData()
         }, function(err) {
