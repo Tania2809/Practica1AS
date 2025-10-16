@@ -359,7 +359,7 @@ def guardarLugar():
         cursor = con.cursor(dictionary=True)
 
         if id1:
-            sql = """"
+            sql = """
             UPDATE lugares
 
             SET nombreLugar = %s,
@@ -385,7 +385,7 @@ def guardarLugar():
         print(f"Error en guardarLugar: {str(e)}")
         return make_response(jsonify({"error": str(e)}), 500)
 
-@app.route("/lugar/editar/<int>id1>" , methods=["GET"])
+@app.route("/lugar/editar/<int:id1>" , methods=["GET"])
 def editarlugares(id1):
     if not con.is_connected():
         con.reconnect()
