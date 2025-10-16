@@ -30,15 +30,17 @@
 
 LAYOUT_WITH_LEGEND()
 
+  System(app2, "Usuario", "El usuario interactua con la pagina", $sprite="person")
+
 Enterprise_Boundary(c1, "Contexto") {
     System(app, "Sistema web de agenda de eventos", "Pagina web para agendar eventos.", $sprite="web")
 
 
-    System(app2, "Usuario", "Usuario que interactua con el sistema web", $sprite="person")
+  
 
 
     System_Boundary(c2, "Contenedores") {
-        ContainerDb(bd, "Base de Datos", "MySQL", "Registros de eventos, categorias, clientes, lugares", $sprite="mysql")
+        ContainerDb(bd, "Base de Datos", "MySQL", "Aqui es donde se almacenan los datos de tablas en la cuales corresponden alas tablas de eventos, clientes, categorias, lugares", $sprite="mysql")
         Container(api, "API", "Python", "Aplicación Web CRUD de agenda de eventos.", $sprite="python")
 
 
@@ -49,7 +51,7 @@ Enterprise_Boundary(c1, "Contexto") {
         }
 
 
-        Container(html, "Front-end de la pagina", "HTML5", "Formulario para llenar el CRUD", $sprite="html5")
+        Container(html, "Front-end", "HTML5", "Formulario para llenar el CRUD", $sprite="html5")
         Container(angular, "Angular", "app.js", "Framework principal donde se ejecutan las rutas", $sprite="angular")
         Container(pusher, "Pusher", "", "Se encarga de emitir eventos en tiempo real", $sprite="cube")
         
@@ -59,15 +61,15 @@ Enterprise_Boundary(c1, "Contexto") {
 }
 
 
-BiRel_L(api, bd, "", "")
+BiRel_D(api, bd, "", "Consulta en la base de datos")
 
 Rel_R(app2, app, "", "Interaccion del usuario con la pagina web")
-Rel_R(app, c2, "", "Interaccion con la base de datos")
-Rel_R(angular, html, "", "Angular envia y recibe datos")
-Rel_L(html, angular, "", "Comunicacion entre html y angular")
-BiRel_R(angular, api, "", "Angular recibe datos de api y le devuelve datos a angular")
-BiRel_R(pusher, c3, "", "Angular recibe datos de api y le devuelve datos a angular")
-Rel_R(api, c3, "", "Angular envia y recibe datos")
+BiRel_R(app, c2, "", "Interaccion con el sistema")
+BiRel_D(angular, html, "", "Comunicacion entre html y angular")
+BiRel_D(angular, api, "", "Angular recibe datos de api y le devuelve datos a angular")
+Rel_D(api, c3, "", "Angular envia y recibe datos")
+BiRel_U(pusher, c3, "", "Angular recibe datos de api y le devuelve datos a angular")
+
 
 
 @enduml
