@@ -1,6 +1,6 @@
 <div class="container py-4">
     <!-- Formulario para nueva categoría -->
-    <form ng-submit="guardar(categoria)" class="mb-4" novalidate autocomplete="off">
+    <form name="categoriaForm" ng-submit="guardar(categoria)" class="mb-4" novalidate autocomplete="off">
         <div class="row g-2 align-items-end">
             <div class="col-md-4">
                 <label class="form-label mb-1">Nombre de la categoría</label>
@@ -10,8 +10,8 @@
                 <label class="form-label mb-1">Descripción</label>
                 <input required type="text" ng-model="categoria.descripcion" class="form-control" placeholder="Descripción">
             </div>
-            <div class="d-flex justify-content-between">
-                <button type="button" class="btn btn-secondary">Cancelar</button>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-secondary" ng-click="cancelar()">Cancelar</button>
                 <button type="submit" class="btn btn-primary">Registrar</button>
             </div>
         </div>

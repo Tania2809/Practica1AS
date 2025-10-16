@@ -236,7 +236,7 @@ app.controller("eventosCtrl", function($scope, $http, $compile, $timeout) {
     $scope.cargarEventos()
 })
 
-app.controller("categoriasCtrl", function($scope, $http) {
+app.controller("categoriasCtrl", function($scope, $http, $compile) {
     $scope.categorias = [];
     $scope.mostrarTodos = true;
     $scope.categoria = {};
@@ -265,7 +265,9 @@ app.controller("categoriasCtrl", function($scope, $http) {
     const categoriaService = {
         cargarTodas: function() {
             return $http.get("/categorias/all").then(function(res) {
-                $("#tablaCategorias").html(res.data);
+                // Compile server-rendered HTML so Angular directives (ng-click) are bound
+                var compiled = $compile(res.data)($scope);
+                angular.element('#tablaCategorias').html(compiled);
                 eventBus.publish('categorias_actualizadas', res.data);
                 return res.data;
             });
@@ -275,7 +277,8 @@ app.controller("categoriasCtrl", function($scope, $http) {
             return $http.get("/categorias/buscar", {
                 params: { busqueda: nombre }
             }).then(function(response) {
-                $("#tablaCategorias").html(response.data);
+                var compiled = $compile(response.data)($scope);
+                angular.element('#tablaCategorias').html(compiled);
                 eventBus.publish('busqueda_realizada', response.data);
                 return response.data;
             });
@@ -286,9 +289,8 @@ app.controller("categoriasCtrl", function($scope, $http) {
         },
 
         editar: function(id) {
-            return $http.get("/categorias/editar/" + id).then(function(res) {
-                $scope.categoria = res.data[0];
-            });
+            // Return the raw $http promise so caller can decide how to handle the response
+            return $http.get("/categorias/editar/" + id);
         }
     };
 
@@ -370,13 +372,24 @@ app.controller("categoriasCtrl", function($scope, $http) {
             });
     };
 
+    // Cancelar: limpiar formulario y modelo
+    $scope.cancelar = function() {
+        $scope.categoria = {};
+        // Si existe el formulario, resetear su estado de validación
+        if ($scope.categoriaForm) {
+            $scope.categoriaForm.$setPristine();
+            $scope.categoriaForm.$setUntouched();
+        }
+    };
+
     // Editar categoría
     $scope.editar = function(id) {
         console.log('Editando categoría id:', id);
         categoriaService.editar(id)
             .then(function(res) {
-                if (res.data && res.data.categoria) {
-                    $scope.categoria = res.data.categoria;
+                // The backend returns an array of registros; take the first one
+                if (res.data && res.data.length > 0) {
+                    $scope.categoria = res.data[0];
                 }
             })
             .catch(function(err) {
@@ -443,7 +456,9 @@ app.controller("clientesCtrl", function($scope, $http, $compile) {
         if (!$scope.searching)
             $scope.allData();
     })
-
+    $scope.cancelar = function(){
+        $scope.cliente = {}
+    }
     $scope.buscar = function(nombre) {
             if (!nombre || nombre.trim() === '') {
                 $scope.searching = false
