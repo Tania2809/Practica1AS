@@ -351,10 +351,6 @@ def guardarLugar():
             nombreL = data.get("nombreLugar")
             direccion = data.get("direccion")
             ubicacion = data.get("ubicacion")
-        else:
-            nombreL = request.form.get("nombreLugar")
-            direccion = request.form.get("direccion")
-            ubicacion = request.form.get("ubicacion")
             
         cursor = con.cursor(dictionary=True)
 
