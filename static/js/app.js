@@ -556,6 +556,16 @@ app.controller("lugaresCtrl", function($scope, $http, $compile) {
         })
     }
 
+    // Cancelar: limpiar el formulario y modelo
+    $scope.cancelar = function() {
+        $scope.lugar = {};
+        // Si existe el formulario en el scope, resetear su estado
+        if ($scope.lugarForm) {
+            $scope.lugarForm.$setPristine();
+            $scope.lugarForm.$setUntouched();
+        }
+    }
+
     $scope.editar = function(id) {
         console.log('editando el id: ', id);
         $http.get("/lugar/editar/" + id).then(function(res) {
