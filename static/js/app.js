@@ -65,7 +65,7 @@ app.run(["$rootScope", "$location", "$timeout", function ($rootScope, $location,
                 $location.path("/home")
 
         }
-console.log('hi');
+        console.log('hi');
 
 
     })
@@ -122,9 +122,9 @@ app.controller("loginCtrl", ["$scope", "$rootScope", "$http", "$timeout", "$loca
             });
         };
     }]);
-app.controller("eventosCtrl", function ($scope, $http, $compile) {
+app.controller("eventosCtrl", function ($scope, $http, $compile, $timeout) {
 
-    $scope.eventos = []
+    $scope.evento = {}
 
     $scope.agregarAngularATemplate = function (data) {
         var compiled = $compile(data)($scope);
@@ -151,18 +151,74 @@ app.controller("eventosCtrl", function ($scope, $http, $compile) {
     channel.bind("newDataInserted", function (data) {
         $scope.cargarEventos();
     })
+    $scope.buscar = function (descripcion) {
+        if (!descripcion || descripcion.trim() === '') {
+            $scope.searching = false
+            $scope.cargarEventos(); // Si la búsqueda está vacía, mostrar todos
+            return;
+        }
 
+        $http.get("/eventos/buscar", {
+            params: {
+                busqueda: descripcion
+            }
+        }).then(function (response) {
+
+            $scope.agregarAngularATemplate(response.data);
+            $scope.searching = true;
+        }, function (error) {
+            console.error("Error en búsqueda:", error);
+        })
+    }
     // Guardar evento
     $scope.guardar = function (eventos) {
+        console.log(eventos);
+
         $http.post("/eventos/agregar", eventos).then(function (res) {
 
 
-            $scope.eventos = {} // Limpiar formulario
+            $scope.evento = {} // Limpiar formulario
         }, function (err) {
             console.log("Error al guardar: " + (err.data ? err.message : ""));
         })
     }
 
+    $scope.editar = function (id) {
+        console.log('editando el id: ', id);
+        $http.get("/eventos/editar/" + id).then(function (res) {
+            console.log("/editar", res.data);
+
+            if (res.data) {
+                var data = res.data[0];
+                console.log(data);
+
+                // Convertir fechas
+                var dateString = data.fechaInicio;
+                var date = new Date(dateString);
+                data.fechaInicio = date;
+                dateString = data.fechaFin;
+                date = new Date(dateString);
+                data.fechaFin = date;
+
+                // Asignar el evento
+                $scope.evento = data;
+
+                // Seleccionar los IDs en los selects existentes
+                $timeout(function () {
+                    // Suponiendo que los campos son: idCategoria, idLugar, idCliente
+                    $("#nombreCategoria").val(data.idCategoria).trigger('change');
+                    $("#nombreLugar").val(data.idLugar).trigger('change');
+                    $("#nombreCliente").val(data.idCliente).trigger('change');
+                    console.log("changed");
+
+                }, 0);
+            }
+
+        }, function (err) {
+            console.log("Error al guardar: " + (err.data ? err.message : ""));
+            // Opcional: mostrar mensaje de error
+        });
+    }
     // eliminar evento
     $scope.eliminar = function (evento) {
 
@@ -182,6 +238,7 @@ app.controller("eventosCtrl", function ($scope, $http, $compile) {
 app.controller("categoriasCtrl", function ($scope, $http) {
     $scope.categorias = [];
     $scope.mostrarTodos = true;
+    $scope.categoria = {};
 
     // Inicializar el bus de eventos
     const eventBus = {
@@ -225,6 +282,12 @@ app.controller("categoriasCtrl", function ($scope, $http) {
 
         guardar: function (categoria) {
             return $http.post("/categorias/agregar", categoria);
+        },
+
+        editar: function (id) {
+            return $http.get("/categorias/editar/" + id).then(function (res) {
+                $scope.categoria = res.data[0];
+            });
         }
     };
 
@@ -249,11 +312,11 @@ app.controller("categoriasCtrl", function ($scope, $http) {
     const analyticsService = {
         init: function () {
             eventBus.subscribe('busqueda_realizada', function (data) {
-                //    console.log('Analytics: Búsqueda realizada', data);
+                console.log('Analytics: Búsqueda realizada', data);
             });
 
             eventBus.subscribe('categoria_guardada', function (data) {
-                //    console.log('Analytics: Nueva categoría creada', data);
+                console.log('Analytics: Nueva categoría creada', data);
             });
         }
     };
@@ -332,12 +395,22 @@ app.controller("categoriasCtrl", function ($scope, $http) {
     };
 });
 
-app.controller("clientesCtrl", function ($scope, $http) {
+app.controller("clientesCtrl", function ($scope, $http, $compile) {
     $scope.clientes = []
+    $scope.cliente = {};
     $scope.searching = false;
+    $scope.cargarTabla = function (data) {
+        var compiled = $compile(data)($scope);
+        angular.element('#tablaPostres').html(compiled);
+    }
+    $scope.cargarTabla = function (data) {
+        var compiled = $compile(data)($scope);
+        angular.element('#tablaClientes').html(compiled);
+    }
+
     $scope.allData = function () {
         $http.get("/clientes/all").then(function (res) {
-            $("#tablaClientes").html(res.data)
+            $scope.cargarTabla(res.data)
         })
     }
 
@@ -378,12 +451,42 @@ app.controller("clientesCtrl", function ($scope, $http) {
     }
     // Guardar cliente
     $scope.guardar = function (cliente) {
+        console.log(" front cliente/agregar", cliente);
+
+        $http.post("/clientes/agregar", cliente).then(function () {
+            $("#tablaClientes").html(response.data);
+            $scope.searching = true;
+        }, function (error) {
+            console.error("Error en búsqueda:", error);
+        })
+    }
+    // Guardar cliente
+    $scope.guardar = function (cliente) {
+        console.log(" front cliente/agregar", cliente);
+
         $http.post("/clientes/agregar", cliente).then(function () {
             $scope.cliente = {}
         }, function (err) {
             console.log("Error al guardar: " + (err.data ? err.message : ""))
         })
     }
+    $scope.editar = function (id) {
+        console.log('editando el id: ', id);
+        $http.get("/clientes/editar/" + id).then(function (res) {
+            console.log("/editar", res.data);
+
+            if (res.data) {
+                $scope.cliente = res.data[0];
+                // Opcional: mostrar mensaje de éxito
+            }
+
+        }, function (err) {
+            console.log("Error al guardar: " + (err.data ? err.message : ""));
+            // Opcional: mostrar mensaje de error
+        });
+    }
+
+
 })
 
 app.controller("lugaresCtrl", function ($scope, $http) {

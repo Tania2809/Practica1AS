@@ -3,6 +3,13 @@
     <td>{{ categoria.idCategoria }}</td>
     <td>{{ categoria.nombreCategoria }}</td>
     <td>{{ categoria.descripcion }}</td>
+    <td class="text-center">
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-sm btn-outline-primary" ng-click="editar('{{ categoria.idCategoria }}')">
+                Editar
+            </button>
+        </div>
+    </td>
 </tr>
 {% endfor %} {% else %}
 <tr>

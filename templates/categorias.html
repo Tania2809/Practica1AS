@@ -10,8 +10,9 @@
                 <label class="form-label mb-1">Descripción</label>
                 <input required type="text" ng-model="categoria.descripcion" class="form-control" placeholder="Descripción">
             </div>
-            <div class="col-md-2">
-                <button class="btn btn-success w-100" type="submit">Registrar</button>
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Registrar</button>
             </div>
         </div>
     </form>
@@ -51,6 +52,7 @@
                     <th>ID</th>
                     <th>Nombre</th>
                     <th>Descripción</th>
+                    <th>acciones</th>
                 </tr>
             </thead>
             <tbody id="tablaCategorias">
