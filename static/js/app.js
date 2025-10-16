@@ -372,6 +372,16 @@ app.controller("categoriasCtrl", function($scope, $http, $compile) {
             });
     };
 
+    // Cancelar: limpiar formulario y modelo
+    $scope.cancelar = function() {
+        $scope.categoria = {};
+        // Si existe el formulario, resetear su estado de validación
+        if ($scope.categoriaForm) {
+            $scope.categoriaForm.$setPristine();
+            $scope.categoriaForm.$setUntouched();
+        }
+    };
+
     // Editar categoría
     $scope.editar = function(id) {
         console.log('Editando categoría id:', id);
