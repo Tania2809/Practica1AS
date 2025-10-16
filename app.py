@@ -364,7 +364,7 @@ def guardarLugar():
             WHERE idLugar = %s
             """
             val = (nombreL, direccion, ubicacion, id1)
-        else :
+        else:
             sql = """
             INSERT INTO lugares (nombreLugar, direccion, ubicacion)
             VALUES (%s, %s, %s)

@@ -547,6 +547,7 @@ app.controller("lugaresCtrl", function($scope, $http) {
         console.log(" front lugar/agregar", lugar);
 
         $http.post("/lugar/guardar", lugar).then(function() {
+            $("#tablaLugares").html(response.data);
             $scope.lugar = {}
             $scope.allData()
         }, function(err) {
@@ -559,7 +560,7 @@ app.controller("lugaresCtrl", function($scope, $http) {
         $http.get("/lugar/editar/" + id).then(function(res) {
             console.log("/editar", res.data);
 
-            if (res.data) {
+            if (res.data && res.data.length > 0) {
                 $scope.lugar = res.data[0];
                 // Opcional: mostrar mensaje de éxito
             }
