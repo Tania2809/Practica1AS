@@ -519,13 +519,15 @@ app.controller("clientesCtrl", function($scope, $http, $compile) {
 
 })
 
-app.controller("lugaresCtrl", function($scope, $http) {
+app.controller("lugaresCtrl", function($scope, $http, $compile) {
     $scope.lugares = []
     $scope.searching = false;
 
     $scope.allData = function() {
             $http.get("/lugares/all").then(function(res) {
-                $("#tablaLugares").html(res.data)
+                // Compilar el HTML recibido para que Angular procese los directives (ng-click)
+                var compiled = $compile(res.data)($scope);
+                angular.element('#tablaLugares').html(compiled);
             })
         }
         //inizializa el template
@@ -583,9 +585,9 @@ app.controller("lugaresCtrl", function($scope, $http) {
                 busqueda: lugar
             }
         }).then(function(response) {
-
-
-            $("#tablaLugares").html(response.data);
+            // Compilar el HTML de respuesta para enlazar los ng-click y demás
+            var compiled = $compile(response.data)($scope);
+            angular.element('#tablaLugares').html(compiled);
             $scope.searching = true;
         }, function(error) {
             console.error("Error en búsqueda:", error);
