@@ -40,7 +40,8 @@ Enterprise_Boundary(c1, "Contexto") {
 
 
     System_Boundary(c2, "Contenedores") {
-        ContainerDb(bd, "Base de Datos", "MySQL", "Aqui es donde se almacenan los datos de tablas en la cuales corresponden alas tablas de eventos, clientes, categorias, lugares", $sprite="mysql")
+        ContainerDb(bd, "Base de Datos", "MySQL", "Aqui es donde se almacenan los datos de los clientes", $sprite="mysql")
+
         Container(api, "API", "Python", "Aplicación Web CRUD de agenda de eventos.", $sprite="python")
 
 

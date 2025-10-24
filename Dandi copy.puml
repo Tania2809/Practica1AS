@@ -1,0 +1,13 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Enterprise_Boundary(empresa, "Empresa Desarrolladora") {
+    System_Boundary(sistema, "Sistema de Aplicación Móvil") {
+
+
+    }
+}
+
+
+@enduml
