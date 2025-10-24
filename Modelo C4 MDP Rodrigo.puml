@@ -66,10 +66,10 @@ Enterprise_Boundary(c1, "Contexto") {
 
 BiRel_D(api, bd, "", "Consulta en la base de datos")
 
-Rel_R(app2, app, "", "Interaccion del usuario con la pagina web")
+Rel_R(app2, app, "", "Interaccion del usuario con la aplicacion")
 BiRel_R(app, c2, "", "Interaccion con el sistema")
-BiRel_D(angular, api, "", "Angular recibe datos de api y le devuelve datos a angular")
-Rel_D(api, c3, "", "Angular envia y recibe datos")
+BiRel_D(angular, api, "", "El codigo le envia una peticion le devuelve datos a angular")
+Rel_D(api, c3, "", "Csharp envia y recibe datos")
 
 
 @enduml
