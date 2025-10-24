@@ -32,44 +32,30 @@ LAYOUT_WITH_LEGEND()
 
   System(app2, "Usuario", "El usuario interactua con la pagina", $sprite="person")
 
-Enterprise_Boundary(c1, "Contexto") {
-    System(app, "Modulo de administracion de categorias", "Modulo para creacion y modificacion de categorias de eventos.", $sprite="web")
-
-
-  
+Enterprise_Boundary(c1, "Modulo de Categorias") {
+    System(app, "Sistema de Gestión de Categorías", "Sistema para la creación, modificación y visualización de categorías de eventos.", $sprite="web")
 
 
     System_Boundary(c2, "Contenedores") {
-        ContainerDb(bd, "Base de Datos", "MySQL", "Aqui es donde se almacenan los datos de la tabla de categorias", $sprite="mysql")
-        Container(api, "API", "Python", "Aplicación Web CRUD de agenda de eventos.", $sprite="python")
+        ContainerDb(bd, "Base de Datos - Categorías", "MySQL", "Almacena la tabla 'categorias' con los datos de cada categoría.", $sprite="mysql")
+        Container(api, "API de Categorías", "Python/Flask", "Servicio para crear, buscar y actualizar categorías.", $sprite="python")
 
-
-        Container_Boundary(c3, "Componente") {
-            Component(Flask, "app.py", "Flask", "Rutas/Métodos donde se ejecutan la funciones CRUD", $sprite="flask_original")
-            
-
+        Container_Boundary(c3, "Componentes del API") {
+            Component(Flask, "app.py", "Flask", "Endpoints y lógica CRUD para el módulo de categorías.", $sprite="flask_original")
         }
 
-
-        Container(html, "Front-end", "HTML5", "Formulario para llenar el CRUD", $sprite="html5")
-        Container(angular, "Angular", "app.js", "Framework principal donde se ejecutan las rutas", $sprite="angular")
-        Container(pusher, "Pusher", "", "Se encarga de emitir eventos en tiempo real", $sprite="cube")
-        
-
-       
+        Container(html, "Front-end (HTML)", "HTML5", "Formularios y vistas para listar y administrar categorías.", $sprite="html5")
+        Container(angular, "Frontend Angular", "Angular", "Módulo de interfaz que consume la API de categorías", $sprite="angular")
+        Container(pusher, "Pusher (Eventos)", "Servicio externo", "Emite notificaciones en tiempo real cuando cambian las categorías.", $sprite="cube")
     }
 }
 
-
-BiRel_D(api, bd, "", "Consulta en la base de datos")
-
-Rel_R(app2, app, "", "Interaccion del usuario con la pagina web")
-BiRel_R(app, c2, "", "Interaccion con el sistema")
-BiRel_D(angular, html, "", "Comunicacion entre html y angular")
-BiRel_D(angular, api, "", "Angular recibe datos de api y le devuelve datos a angular")
-Rel_D(api, c3, "", "Angular envia y recibe datos")
-BiRel_U(pusher, c3, "", "Angular recibe datos de api y le devuelve datos a angular")
-
-
+BiRel_D(api, bd, "", "Consulta los datos de categorías en la base de datos")
+Rel_R(app2, app, "", "El usuario interactúa con el módulo de categorías desde la página web")
+BiRel_R(app, c2, "Interactúa con el módulo de categorías", "")
+BiRel_D(angular, html, "Renderiza vistas de categorías", "")
+BiRel_D(angular, api, "", "Angular solicita y envía datos de categorías al API")
+Rel_D(api, c3, "Invoca endpoints de categorías", "")
+BiRel_U(pusher, c3, "Notifica cambios", "")
 
 @enduml
