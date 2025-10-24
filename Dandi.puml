@@ -1,0 +1,88 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Enterprise_Boundary(empresa, "Empresa Desarrolladora") {
+    System_Boundary(sistema, "Sistema de Aplicación Móvil") {
+
+        ' === ACTORES PRINCIPALES ===
+        Person(usuario, "Usuario", "Usuario de la aplicación móvil", SPRITE_ANDROID)
+        Person_Ext(admin, "Administrador", "Admin del sistema", SPRITE_LAPTOP)
+
+        ' === CONTENEDORES PRINCIPALES ===
+        Container_Boundary(app_movil, "Aplicación Móvil") {
+            Component(frontend, "Interfaz de Usuario", "React Native/Flutter", "UI de la aplicación", SPRITE_APPLE)
+            Component(logica_negocio, "Lógica de Negocio", "Dart/JavaScript", "Maneja la lógica de la app", SPRITE_LAPTOP)
+            Component(sdk_firebase, "SDK Firebase", "Firebase SDK", "Cliente para servicios Firebase", SPRITE_FIRE)
+        }
+
+        Container_Boundary(backend, "Backend Firebase") {
+            ContainerDb(auth, "Firebase Auth", "Firebase", "Autenticación de usuarios", SPRITE_FIRE)
+            ContainerDb(firestore, "Cloud Firestore", "NoSQL", "Base de datos en tiempo real", SPRITE_DATABASE)
+            Container(fcm, "Firebase Cloud Messaging", "FCM", "Servicio de notificaciones push", SPRITE_BELL)
+            Container(storage, "Cloud Storage", "Firebase", "Almacenamiento de archivos", SPRITE_CLOUD)
+            Container(functions, "Cloud Functions", "Node.js", "Backend sin servidor", SPRITE_CLOUD)
+        }
+    }
+}
+
+' === RELACIONES PRINCIPALES ===
+
+' Flujo de Autenticación
+Rel(usuario, frontend, "Inicia sesión/Registro", "HTTP/REST")
+Rel(frontend, logica_negocio, "Procesa credenciales", "JSON")
+Rel(logica_negocio, sdk_firebase, "Solicita autenticación", "SDK Call")
+Rel(sdk_firebase, auth, "authenticateWithEmail()", "HTTPS")
+Rel(auth, sdk_firebase, "JWT Token", "JSON")
+Rel(sdk_firebase, logica_negocio, "Token recibido", "Callback")
+Rel(logica_negocio, frontend, "Sesión iniciada", "State Update")
+Rel(frontend, usuario, "Interfaz actualizada", "UI Render")
+
+' Flujo de Datos - Escritura
+Rel(usuario, frontend, "Crea contenido", "Touch Event")
+Rel(frontend, logica_negocio, "Valida datos", "Method Call")
+Rel(logica_negocio, sdk_firebase, "Prepara datos Firestore", "Data Object")
+Rel(sdk_firebase, firestore, "addDocument()", "HTTPS/WebSocket")
+Rel(firestore, sdk_firebase, "Confirmación escritura", "Callback")
+Rel(sdk_firebase, logica_negocio, "Éxito operación", "Promise")
+Rel(logica_negocio, frontend, "Actualiza estado local", "State Change")
+Rel(frontend, usuario, "Mensaje de éxito", "UI Feedback")
+
+' Flujo de Datos - Lectura Tiempo Real
+Rel(sdk_firebase, firestore, "onSnapshot()", "WebSocket")
+Rel(firestore, sdk_firebase, "Datos actualizados", "Real-time Stream")
+Rel(sdk_firebase, logica_negocio, "Procesa cambios", "Event Listener")
+Rel(logica_negocio, frontend, "Actualiza UI", "State Update")
+Rel(frontend, usuario, "Muestra datos nuevos", "UI Render")
+
+' Flujo de Notificaciones - Configuración
+Rel(sdk_firebase, fcm, "getToken()", "HTTPS")
+Rel(fcm, sdk_firebase, "Device Token", "JSON")
+Rel(sdk_firebase, firestore, "saveDeviceToken()", "HTTPS")
+
+' Flujo de Notificaciones - Emisión
+Rel(admin, functions, "Trigger manual/Config", "HTTP/Console")
+Rel(firestore, functions, "onWrite Trigger", "Event")
+Rel(functions, firestore, "Consulta seguidores", "HTTPS")
+Rel(firestore, functions, "Lista tokens", "JSON")
+Rel(functions, fcm, "sendToDevice()", "HTTPS")
+Rel(fcm, sdk_firebase, "Push Notification", "FCM Protocol")
+Rel(sdk_firebase, logica_negocio, "Mensaje recibido", "Event")
+Rel(logica_negocio, frontend, "Muestra notificación", "Local Notification")
+Rel(frontend, usuario, "Notificación visible", "OS Notification")
+
+' Flujo de Almacenamiento
+Rel(usuario, frontend, "Selecciona archivo", "File Picker")
+Rel(frontend, logica_negocio, "Procesa archivo", "File Object")
+Rel(logica_negocio, sdk_firebase, "uploadFile()", "SDK Call")
+Rel(sdk_firebase, storage, "put()", "HTTPS Upload")
+Rel(storage, sdk_firebase, "URL descarga", "JSON")
+Rel(sdk_firebase, logica_negocio, "Upload completado", "Callback")
+Rel(logica_negocio, frontend, "Actualiza estado", "State Change")
+
+' Relaciones Administrativas
+Rel(admin, auth, "Gestiona usuarios", "Firebase Console")
+Rel(admin, firestore, "Consulta datos", "Admin SDK")
+Rel(admin, functions, "Despliega funciones", "CLI/Console")
+
+@enduml
