@@ -3,73 +3,61 @@
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
-
 !define FONTAWESOME6 https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v3.0.0/icons/font-awesome-6
 !define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v3.0.0/icons/devicons
-
 !define DEVICONS2 https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v3.0.0/icons/devicons2
-!define MATERIAL https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v3.0.0/icons/material
-
 
 !include FONTAWESOME6/users.puml
-!include FONTAWESOME6/school.puml
-!include FONTAWESOME6/certificate.puml
-!include FONTAWESOME6/android.puml
+!include FONTAWESOME6/file.puml
 !include FONTAWESOME6/cube.puml
-
-
+!include FONTAWESOME6/cloud.puml
 !include FONTAWESOME6/windows.puml
 !include DEVICONS/html5.puml
 !include DEVICONS/python.puml
 !include DEVICONS/mysql.puml
 !include DEVICONS2/flask_original.puml
-
-!include MATERIAL/web.puml
-!include MATERIAL/person.puml
 !include DEVICONS2/angular.puml
 
-LAYOUT_WITH_LEGEND()
-
-  System(app2, "Usuario", "El usuario interactua con la pagina", $sprite="person")
-
-Enterprise_Boundary(c1, "Contexto") {
-    System(app, "Sistema web de agenda de eventos", "Pagina web para agendar eventos.", $sprite="web")
 
 
-  
+System(user, "Usuario", "Interacciona con la aplicación desde el navegador", $sprite="person")
 
+Enterprise_Boundary(appCtx, "Contexto - Colaborador de Documentos en Tiempo Real") {
+    System(app, "Sistema Web Colaborador de Documentos", "Permite a múltiples usuarios editar documentos en tiempo real, con sincronización instantánea y chat.", $sprite="web")
 
-    System_Boundary(c2, "Contenedores") {
-        ContainerDb(bd, "Base de Datos", "MySQL", "Aqui es donde se almacenan los datos de tablas en la cuales corresponden alas tablas de eventos, clientes, categorias, lugares", $sprite="mysql")
-        Container(api, "API", "Python", "Aplicación Web CRUD de agenda de eventos.", $sprite="python")
+    System_Boundary(containers, "Contenedores") {
+        ContainerDb(db, "Base de Datos", "MySQL", "Almacena información de usuarios, documentos, versiones e historial de cambios.", $sprite="mysql")
+        
+        Container(api, "API Backend", "Python", "Gestiona la lógica del sistema, usuarios, documentos, historial y comunicación con la base de datos.", $sprite="python")
 
-
-        Container_Boundary(c3, "Componente") {
-            Component(Flask, "app.py", "Flask", "Rutas/Métodos donde se ejecutan la funciones CRUD", $sprite="flask_original")
-            
-
+        Container_Boundary(apiComponents, "Componente") {
+            Component(flask, "app.py", "Flask", "Rutas/Métodos donde se ejecutan las funciones CRUD y gestión de documentos", $sprite="flask_original")
         }
 
-
-        Container(html, "Front-end", "HTML5", "Formulario para llenar el CRUD", $sprite="html5")
-        Container(angular, "Angular", "app.js", "Framework principal donde se ejecutan las rutas", $sprite="angular")
-        Container(pusher, "Pusher", "", "Se encarga de emitir eventos en tiempo real", $sprite="cube")
+        Container(frontend, "Front-End", "Angular", "Proporciona la interfaz de usuario para edición de documentos, registro, chat y visualización de cambios.", $sprite="angular")
         
-
-       
+        Container(html, "Interfaz Web", "HTML5", "Formularios y vistas para la edición colaborativa de documentos", $sprite="html5")
+        
+        Container(realtime, "Servidor de Tiempo Real", "Pusher", "Difunde los cambios instantáneamente a todos los usuarios conectados.", $sprite="cube")
+        
+        Container(chat, "Módulo de Chat", "Socket.io", "Permite comunicación en tiempo real entre los colaboradores dentro del documento.", $sprite="windows")
+        
+        Container(storage, "Almacenamiento de Archivos", "Cloud Storage", "Guarda versiones de documentos o archivos adjuntos.", $sprite="cloud")
     }
 }
 
+' Relaciones
+Rel_R(user, app, "Usa", "HTTP/HTTPS")
+BiRel_R(app, containers, "Interaccion con el sistema", "HTTP/HTTPS")
 
-BiRel_D(api, bd, "", "Consulta en la base de datos")
-
-Rel_R(app2, app, "", "Interaccion del usuario con la pagina web")
-BiRel_R(app, c2, "", "Interaccion con el sistema")
-BiRel_D(angular, html, "", "Comunicacion entre html y angular")
-BiRel_D(angular, api, "", "Angular recibe datos de api y le devuelve datos a angular")
-Rel_D(api, c3, "", "Angular envia y recibe datos")
-BiRel_U(pusher, c3, "", "Angular recibe datos de api y le devuelve datos a angular")
-
-
+BiRel_D(api, db, "Lee y escribe datos", "SQL")
+BiRel_D(frontend, html, "Renderiza interfaz", "HTML/CSS/JS")
+BiRel_D(frontend, api, "Envía solicitudes CRUD y autenticación", "REST API (JSON)")
+BiRel_D(frontend, realtime, "Escucha y envía actualizaciones", "WebSocket")
+BiRel_D(frontend, chat, "Envia y recibe mensajes", "Socket.io")
+Rel_D(api, apiComponents, "Ejecuta lógica de negocio", "Python/Flask")
+BiRel_U(realtime, apiComponents, "Notifica actualizaciones en tiempo real", "Eventos WebSocket")
+BiRel_U(chat, apiComponents, "Gestiona mensajes de chat", "Eventos WebSocket")
+BiRel_D(api, storage, "Guarda archivos y versiones", "API de almacenamiento")
 
 @enduml
