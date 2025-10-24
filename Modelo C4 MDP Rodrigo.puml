@@ -23,6 +23,9 @@
 !include DEVICONS/python.puml
 !include DEVICONS/mysql.puml
 !include DEVICONS2/flask_original.puml
+!include DEVICONS2/framework7_original.puml
+!include DEVICONS2/csharp.puml
+
 
 !include MATERIAL/web.puml
 !include MATERIAL/person.puml
@@ -30,31 +33,30 @@
 
 LAYOUT_WITH_LEGEND()
 
-  System(app2, "Usuario", "El usuario interactua con la pagina", $sprite="person")
+  System(app2, "Usuario", "El usuario interactua la aplicacion", $sprite="person")
 
 Enterprise_Boundary(c1, "Contexto") {
-    System(app, "modulo de administración de clientes", "Modulo para creación y modificación de clientes", $sprite="web")
+    System(app, "Sistema web de agenda de eventos", "Aplicacion de escritorio para adminstrar un inventario", $sprite="web")
 
 
   
 
 
     System_Boundary(c2, "Contenedores") {
-        ContainerDb(bd, "Base de Datos", "MySQL", "Aqui es donde se almacenan los datos de los clientes", $sprite="mysql")
-
-        Container(api, "API", "Python", "Aplicación Web CRUD de agenda de eventos.", $sprite="python")
+        ContainerDb(bd, "Base de Datos", "MySQL", "La base de datos se va encargar de cargar los datos ala tabla de Eventos", $sprite="mysql")
+        Container(api, "Programa", "CSHARP", "Contiene las funciones de Guardar, Modificar, Buscar y Eliminar", $sprite="csharp")
 
 
         Container_Boundary(c3, "Componente") {
-            Component(Flask, "app.py", "Flask", "Rutas/Métodos donde se ejecutan la funciones CRUD", $sprite="flask_original")
+            Component(Flask, "Form1", "Flask", "Se encarga de llamar alas Rutas de Buscar, Modificar, Buscar y eliminar", $sprite="csharp")
             
 
         }
 
 
-        Container(html, "Front-end", "HTML5", "Formulario para llenar el CRUD", $sprite="html5")
-        Container(angular, "Angular", "app.js", "Framework principal donde se ejecutan las rutas", $sprite="angular")
-        Container(pusher, "Pusher", "", "Se encarga de emitir eventos en tiempo real", $sprite="cube")
+        
+        Container(angular, ".NET", "Form1.Designer", "Framework principal", $sprite="framework7_original")
+        
         
 
        
@@ -64,13 +66,10 @@ Enterprise_Boundary(c1, "Contexto") {
 
 BiRel_D(api, bd, "", "Consulta en la base de datos")
 
-Rel_R(app2, app, "", "Interaccion del usuario con el modulo de clientes")
+Rel_R(app2, app, "", "Interaccion del usuario con la aplicacion")
 BiRel_R(app, c2, "", "Interaccion con el sistema")
-BiRel_D(angular, html, "", "Comunicacion entre html y angular")
-BiRel_D(angular, api, "", "Angular recibe datos de api y le devuelve datos a angular")
-Rel_D(api, c3, "", "Angular envia y recibe datos")
-BiRel_U(pusher, c3, "", "Angular recibe datos de api y le devuelve datos a angular")
-
+BiRel_D(angular, api, "", "El codigo le envia una peticion le devuelve datos a angular")
+Rel_D(api, c3, "", "Csharp envia y recibe datos")
 
 
 @enduml
