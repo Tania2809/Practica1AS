@@ -3,9 +3,9 @@
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
 Enterprise_Boundary(empresa, "LDVR") {
-    System_Boundary(sistema, "Sistema de Aplicación Móvil") {
 
         Person(usuario, "Usuario", "Usuario de la aplicación móvil", SPRITE_ANDROID)
+    System_Boundary(sistema, "Sistema de Aplicación Móvil") {
 
         Container_Boundary(aplicacion_movil,"Aplicación Móvil"){
             Component(logica,"logica de aplicacion","JAVA","logica de aplicacion")
@@ -14,15 +14,19 @@ Enterprise_Boundary(empresa, "LDVR") {
 
         Container_Boundary(firebase,"Firebase"){
             Component(firestore,"base de datos","JSON","se almacenan los datos del usuario")
-            Component(notificaciones,"disparador de eventos","Triggers","emite eventos a los usuarios de un grupo ")
+            Component(eventos,"disparador de eventos","Triggers","emite eventos a los usuarios de un grupo ")
         }
 
     }
 }
 
-BiRel(usuario,vista,"interacción de usuario")
+Rel_D(usuario,vista,"interacción de usuario")
+Rel_U(vista,usuario,"muestra datos nuevos")
 Rel_D(vista,logica,"eventos de usuario")
-BiRel(vista,logica,"actualizacion de estadísticas")
-BiRel(vista,logica,"recepción/emisión de eventos")
+Rel_U(logica,vista,"actualizacion de información en vista")
+Rel_D(logica,firestore,"actualización de estadísticas")
+Rel_U(firestore,logica,"emite datos actualizados")
+Rel_U(eventos,logica,"evento recibido")
+Rel_D(logica,eventos,"evento emitido")
 
 @enduml
