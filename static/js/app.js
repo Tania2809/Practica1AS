@@ -35,7 +35,7 @@ app.config(function($routeProvider, $locationProvider) {
         })
         .when("/bitacora", {
             templateUrl: "/bitacora",
-            controller: "/bitacoraCtrl"
+            controller: "bitacoraCtrl"
         })
         .otherwise({
             redirectTo: "/"
@@ -607,6 +607,87 @@ app.controller("lugaresCtrl", function($scope, $http, $compile) {
             console.error("Error en búsqueda:", error);
         })
     }
+})
+
+app.controller("bitacoraCtrl", function($scope, $http, $compile) {
+    $scope.registros = [];
+    $scope.bitacora = {};
+    $scope.mostrarTodos = true;
+
+    // Cargar todos los registros
+    $scope.cargarRegistros = function() {
+        $http.get("/bitacora/all").then(function(res) {
+            var compiled = $compile(res.data)($scope);
+            angular.element('#tablaBitacora').html(compiled);
+            $scope.mostrarTodos = true;
+        }, function(err) {
+            console.log("Error al cargar registros: " + err);
+        });
+    };
+
+    // Guardar registro
+    $scope.guardarBitacora = function(bitacora) {
+        console.log("Guardando bitácora:", bitacora);
+        $http.post("/bitacora/agregar", bitacora).then(function(res) {
+            $scope.bitacora = {};
+            $scope.cargarRegistros();
+            toast("Registro guardado exitosamente", 2);
+        }, function(err) {
+            console.log("Error al guardar: " + err);
+            toast("Error al guardar el registro", 3, "error");
+        });
+    };
+
+    // Buscar registros
+    $scope.buscar = function(fechaBusqueda) {
+        if (!fechaBusqueda || fechaBusqueda.trim() === '') {
+            $scope.cargarRegistros();
+            return;
+        }
+
+        $http.get("/bitacora/buscar", {
+            params: { busqueda: fechaBusqueda }
+        }).then(function(response) {
+            var compiled = $compile(response.data)($scope);
+            angular.element('#tablaBitacora').html(compiled);
+            $scope.mostrarTodos = false;
+        }, function(error) {
+            console.error("Error en búsqueda:", error);
+        });
+    };
+
+    // Editar registro
+    $scope.editar = function(id) {
+        console.log('Editando registro id:', id);
+        $http.get("/bitacora/editar/" + id).then(function(res) {
+            if (res.data && res.data.length > 0) {
+                $scope.bitacora = res.data[0];
+            }
+        }, function(err) {
+            console.log("Error al cargar registro: " + err);
+        });
+    };
+
+    // Eliminar registro
+    $scope.eliminar = function(id) {
+        if (confirm("¿Está seguro de que desea eliminar este registro?")) {
+            $http.post("/bitacora/eliminar", { idBitacora: id }).then(function(res) {
+                $scope.cargarRegistros();
+                toast("Registro eliminado exitosamente", 2);
+            }, function(err) {
+                console.log("Error al eliminar: " + err);
+                toast("Error al eliminar el registro", 3, "error");
+            });
+        }
+    };
+
+    // Cancelar
+    $scope.cancelar = function() {
+        $scope.bitacora = {};
+    };
+
+    // Cargar registros al iniciar
+    $scope.cargarRegistros();
 })
 
 const DateTime = luxon.DateTime

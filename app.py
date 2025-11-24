@@ -701,8 +701,178 @@ def editarCliente(id1):
 
     cursor.execute(sql, val)
     registros = cursor.fetchall()
-    con.close()
+    cursor.close()
     return make_response(jsonify(registros))
+
+
+# BITÁCORA
+def triggerUpdateBitacora():
+    import pusher
+    
+    pusher_client = pusher.Pusher(
+        app_id="2046019",
+        key="db840e3e13b1c007269e",
+        secret="0f06a16c943fdf4bbc11",
+        cluster="us2",
+        ssl=True
+    )
+    
+    pusher_client.trigger("canalBitacora", "newDataInserted", {"message": "triggered"})
+    return make_response(jsonify({}))
+
+
+@app.route("/bitacora")
+def bitacora_view():
+    if not con.is_connected():
+        con.reconnect()
+    
+    cursor = con.cursor(dictionary=True)
+    cursor.close()
+    
+    return render_template("bitacora.html")
+
+
+@app.route("/bitacora/all")
+def bitacora_all():
+    if not con.is_connected():
+        con.reconnect()
+    
+    cursor = con.cursor(dictionary=True)
+    sql = """
+    SELECT * FROM bitacora ORDER BY fechaSemana DESC, horaInicio DESC
+    """
+    cursor.execute(sql)
+    registros = cursor.fetchall()
+    cursor.close()
+    
+    return render_template("tablaBitacora.html", registros=registros)
+
+
+@app.route("/bitacora/agregar", methods=["POST"])
+def guardar_bitacora():
+    if not con.is_connected():
+        con.reconnect()
+
+    try:
+        data = request.get_json()
+        id_bitacora = data.get("idBitacora")
+        fecha_semana = data.get("fechaSemana")
+        hora_inicio = data.get("horaInicio")
+        hora_fin = data.get("horaFin")
+        drenaje_inicial = data.get("drenajeInicial")
+        uf_total = data.get("ufTotal")
+        tiempo_medio_perm = data.get("tiempoMedioPerm")
+        liquido_ingerido = data.get("liquidoIngerido")
+        cantidad_orina = data.get("cantidadOrina")
+        glucosa = data.get("glucosa")
+        presion_arterial = data.get("presionArterial")
+
+        cursor = con.cursor(dictionary=True)
+        
+        if id_bitacora:
+            sql = """
+            UPDATE bitacora
+            SET fechaSemana = %s,
+                horaInicio = %s,
+                horaFin = %s,
+                drenajeInicial = %s,
+                ufTotal = %s,
+                tiempoMedioPerm = %s,
+                liquidoIngerido = %s,
+                cantidadOrina = %s,
+                glucosa = %s,
+                presionArterial = %s
+            WHERE idBitacora = %s
+            """
+            val = (fecha_semana, hora_inicio, hora_fin, drenaje_inicial, uf_total, 
+                   tiempo_medio_perm, liquido_ingerido, cantidad_orina, glucosa, presion_arterial, id_bitacora)
+        else:
+            sql = """
+            INSERT INTO bitacora (fechaSemana, horaInicio, horaFin, drenajeInicial, ufTotal, 
+                                 tiempoMedioPerm, liquidoIngerido, cantidadOrina, glucosa, presionArterial)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """
+            val = (fecha_semana, hora_inicio, hora_fin, drenaje_inicial, uf_total,
+                   tiempo_medio_perm, liquido_ingerido, cantidad_orina, glucosa, presion_arterial)
+
+        cursor.execute(sql, val)
+        con.commit()
+        cursor.close()
+        triggerUpdateBitacora()
+        return make_response(jsonify({}))
+    except Exception as e:
+        return make_response(jsonify({"error": str(e)}), 500)
+
+
+@app.route("/bitacora/buscar", methods=["GET"])
+def buscar_bitacora():
+    if not con.is_connected():
+        con.reconnect()
+
+    try:
+        args = request.args
+        busqueda = args.get("busqueda", "")
+        
+        cursor = con.cursor(dictionary=True)
+        sql = """
+        SELECT * FROM bitacora 
+        WHERE fechaSemana LIKE %s OR horaInicio LIKE %s
+        ORDER BY fechaSemana DESC, horaInicio DESC
+        """
+        busqueda_param = f"%{busqueda}%"
+        val = (busqueda_param, busqueda_param)
+        
+        cursor.execute(sql, val)
+        registros = cursor.fetchall()
+        cursor.close()
+        
+        return render_template("tablaBitacora.html", registros=registros)
+    except Exception as e:
+        return make_response(jsonify({"error": str(e)}), 500)
+
+
+@app.route("/bitacora/editar/<int:id_bitacora>", methods=["GET"])
+def editar_bitacora(id_bitacora):
+    if not con.is_connected():
+        con.reconnect()
+
+    try:
+        cursor = con.cursor(dictionary=True)
+        sql = """
+        SELECT * FROM bitacora
+        WHERE idBitacora = %s
+        """
+        cursor.execute(sql, (id_bitacora,))
+        registros = cursor.fetchall()
+        cursor.close()
+        
+        return make_response(jsonify(registros))
+    except Exception as e:
+        return make_response(jsonify({"error": str(e)}), 500)
+
+
+@app.route("/bitacora/eliminar", methods=["POST"])
+def eliminar_bitacora():
+    if not con.is_connected():
+        con.reconnect()
+
+    try:
+        data = request.get_json()
+        id_bitacora = data.get("idBitacora")
+        
+        if not id_bitacora:
+            return make_response(jsonify({"error": "ID no válido"}), 400)
+
+        cursor = con.cursor(dictionary=True)
+        sql = "DELETE FROM bitacora WHERE idBitacora = %s"
+        cursor.execute(sql, (id_bitacora,))
+        con.commit()
+        cursor.close()
+        triggerUpdateBitacora()
+        
+        return make_response(jsonify({"success": True}))
+    except Exception as e:
+        return make_response(jsonify({"error": str(e)}), 500)
 
 
 # ! ELIMINAR O COMENTAR AL SUBIR A GITHUB

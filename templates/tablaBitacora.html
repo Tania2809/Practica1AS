@@ -1,0 +1,32 @@
+{% for registro in registros %}
+<tr>
+    <td><strong>#{{ registro.idBitacora }}</strong></td>
+    <td>{{ registro.fechaSemana }}</td>
+    <td>{{ registro.horaInicio }}</td>
+    <td>{{ registro.horaFin }}</td>
+    <td>{{ registro.drenajeInicial }}</td>
+    <td>{{ registro.ufTotal }}</td>
+    <td>{{ registro.tiempoMedioPerm }}</td>
+    <td>{{ registro.liquidoIngerido }}</td>
+    <td>{{ registro.cantidadOrina }}</td>
+    <td>{{ registro.glucosa }}</td>
+    <td>{{ registro.presionArterial }}</td>
+    <td class="text-center">
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-sm btn-outline-warning" ng-click="editar('{{ registro.idBitacora }}')">
+                <i class="bi bi-pencil"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-danger" ng-click="eliminar('{{ registro.idBitacora }}')">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    </td>
+</tr>
+{% else %}
+<tr>
+    <td colspan="12" class="text-center text-muted py-4">
+        <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+        <p class="mt-2">No hay registros en la bitácora</p>
+    </td>
+</tr>
+{% endfor %}
