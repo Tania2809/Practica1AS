@@ -33,6 +33,10 @@ app.config(function($routeProvider, $locationProvider) {
             templateUrl: "/eventos",
             controller: "eventosCtrl"
         })
+        .when("/bitacora", {
+            templateUrl: "/bitacora",
+            controller: "/bitacoraCtrl"
+        })
         .otherwise({
             redirectTo: "/"
         })
