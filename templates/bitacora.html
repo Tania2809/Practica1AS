@@ -7,267 +7,100 @@
   }
   
   .form-card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    padding: 0;
-    border: none;
-  }
-  
-  .form-card .modal-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 12px 12px 0 0;
-    border: none;
-  }
-  
-  .form-card .modal-header .modal-title {
-    font-weight: 600;
-    font-size: 1.1rem;
-  }
-  
-  .section-divider {
-    border-top: 2px solid #e9ecef;
-    margin: 1.5rem 0 1rem 0;
-    padding-top: 1rem;
-  }
-  
-  .section-title {
-    font-weight: 600;
-    color: #495057;
-    font-size: 0.95rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  
-  .form-group-compact {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 15px;
-  }
-  
-  .form-control {
-    font-size: 0.9rem;
-    border: 1px solid #dee2e6;
-    border-radius: 6px;
-    padding: 8px 12px;
-  }
-  
-  .form-control:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
-  }
-  
-  .form-label {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #495057;
-    margin-bottom: 5px;
-  }
-  
-  .table-section {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-  }
-  
-  .search-box {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    padding: 15px;
-    margin-bottom: 20px;
-  }
-  
-  .table-responsive {
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  
-  .table {
-    margin-bottom: 0;
-    font-size: 0.85rem;
-  }
-  
-  .table thead th {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    font-weight: 600;
-    border: none;
-    padding: 12px 8px;
-    white-space: nowrap;
-  }
-  
-  .table tbody td {
-    padding: 10px 8px;
-    vertical-align: middle;
-    border-bottom: 1px solid #e9ecef;
-  }
-  
-  .table tbody tr:hover {
-    background-color: #f8f9fa;
-  }
-  
-  .btn-group-compact {
-    display: flex;
-    gap: 5px;
-  }
-  
-  .btn-sm {
-    padding: 5px 8px;
-    font-size: 0.8rem;
-  }
-  
-  .form-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    padding-top: 15px;
-    border-top: 1px solid #e9ecef;
-  }
-  
-  .form-actions .btn {
-    padding: 8px 20px;
-    font-weight: 500;
-    border-radius: 6px;
-  }
-</style>
+    <br>
+    <div class="container">
+      <div class="row">
+        <!-- Formulario simple y uniforme -->
+        <div class="col-md-4">
+          <form ng-submit="guardarBitacora(bitacora)" id="frmBitacora" class="card p-3">
+            <div class="card-body p-0">
+              <h5 class="card-title mb-3">Registrar Bitácora</h5>
 
-<div class="bitacora-container">
-  <div class="container-fluid">
-    <div class="row g-4">
-      <!-- FORMULARIO -->
-      <div class="col-lg-4">
-        <div class="form-card">
-          <form ng-submit="guardarBitacora(bitacora)" id="frmBitacora">
-            <div class="modal-header">
-              <h5 class="modal-title">
-                <i class="bi bi-plus-circle me-2"></i>Nueva Bitácora
-              </h5>
-            </div>
-            
-            <div class="modal-body">
-              <!-- SECCIÓN 1: FECHA Y HORARIO -->
-              <div class="section-title mb-3">
-                <i class="bi bi-calendar-event me-2"></i>Fecha y Horario
+              <div class="mb-3">
+                <label for="fecha" class="form-label">Fecha</label>
+                <input required type="date" class="form-control" ng-model="bitacora.fecha" id="fecha">
               </div>
-              
-              <div class="form-group-compact">
-                <div>
-                  <label for="fecha" class="form-label">Fecha</label>
-                  <input required type="date" class="form-control" ng-model="bitacora.fecha" id="fecha">
-                </div>
-              </div>
-              
-              <div class="form-group-compact">
-                <div>
-                  <label for="horaInicio" class="form-label">Inicio</label>
+
+              <div class="row mb-3">
+                <div class="col-6">
+                  <label for="horaInicio" class="form-label">Hora inicio</label>
                   <input required type="time" class="form-control" ng-model="bitacora.horaInicio" id="horaInicio">
                 </div>
-                <div>
-                  <label for="horaFin" class="form-label">Fin</label>
+                <div class="col-6">
+                  <label for="horaFin" class="form-label">Hora fin</label>
                   <input required type="time" class="form-control" ng-model="bitacora.horaFin" id="horaFin">
                 </div>
               </div>
 
-              <!-- SECCIÓN 2: REGISTRO DE SESIÓN -->
-              <div class="section-divider"></div>
-              <div class="section-title mb-3">
-                <i class="bi bi-clipboard-check me-2"></i>Registro de Sesión
+              <hr>
+
+              <div class="mb-3">
+                <label class="form-label">Drenaje inicial (mL)</label>
+                <input type="number" class="form-control" step="0.01" ng-model="bitacora.drenajeInicial" placeholder="0.00">
               </div>
-              
-              <div class="form-group-compact">
-                <div>
-                  <label for="drenajeInicial" class="form-label">Drenaje Inic. (mL)</label>
-                  <input required type="number" step="0.01" class="form-control" ng-model="bitacora.drenajeInicial" id="drenajeInicial" placeholder="0.00">
+
+              <div class="row mb-3">
+                <div class="col-6">
+                  <label class="form-label">UF Total (mL)</label>
+                  <input type="number" class="form-control" step="0.01" ng-model="bitacora.ufTotal" placeholder="0.00">
                 </div>
-                <div>
-                  <label for="ufTotal" class="form-label">UF Total (mL)</label>
-                  <input required type="number" step="0.01" class="form-control" ng-model="bitacora.ufTotal" id="ufTotal" placeholder="0.00">
-                </div>
-              </div>
-              
-              <div class="form-group-compact">
-                <div>
-                  <label for="tiempoMedioPerm" class="form-label">T. Medio (min)</label>
-                  <input required type="number" step="0.01" class="form-control" ng-model="bitacora.tiempoMedioPerm" id="tiempoMedioPerm" placeholder="0.00">
+                <div class="col-6">
+                  <label class="form-label">T. Medio (min)</label>
+                  <input type="number" class="form-control" step="0.01" ng-model="bitacora.tiempoMedioPerm" placeholder="0.00">
                 </div>
               </div>
 
-              <!-- SECCIÓN 3: MEDICIONES CLÍNICAS -->
-              <div class="section-divider"></div>
-              <div class="section-title mb-3">
-                <i class="bi bi-graph-up me-2"></i>Mediciones Clínicas
+              <hr>
+
+              <div class="mb-3">
+                <label class="form-label">Líquido ingerido 24h (mL)</label>
+                <input type="number" class="form-control" step="0.01" ng-model="bitacora.liquidoIngerido" placeholder="0.00">
               </div>
-              
-              <div class="form-group-compact">
-                <div>
-                  <label for="liquidoIngerido" class="form-label">Líquido 24h (mL)</label>
-                  <input required type="number" step="0.01" class="form-control" ng-model="bitacora.liquidoIngerido" id="liquidoIngerido" placeholder="0.00">
+
+              <div class="row mb-3">
+                <div class="col-6">
+                  <label class="form-label">Orina 24h (mL)</label>
+                  <input type="number" class="form-control" step="0.01" ng-model="bitacora.cantidadOrina" placeholder="0.00">
                 </div>
-                <div>
-                  <label for="cantidadOrina" class="form-label">Orina 24h (mL)</label>
-                  <input required type="number" step="0.01" class="form-control" ng-model="bitacora.cantidadOrina" id="cantidadOrina" placeholder="0.00">
-                </div>
-              </div>
-              
-              <div class="form-group-compact">
-                <div>
-                  <label for="glucosa" class="form-label">Glucosa (mg/dL)</label>
-                  <input required type="number" step="0.01" class="form-control" ng-model="bitacora.glucosa" id="glucosa" placeholder="0.00">
-                </div>
-                <div>
-                  <label for="presionArterial" class="form-label">P. Arterial</label>
-                  <input required type="text" class="form-control" ng-model="bitacora.presionArterial" id="presionArterial" placeholder="120/80">
+                <div class="col-6">
+                  <label class="form-label">Glucosa (mg/dL)</label>
+                  <input type="number" class="form-control" step="0.01" ng-model="bitacora.glucosa" placeholder="0.00">
                 </div>
               </div>
+
+              <div class="mb-3">
+                <label class="form-label">Presión arterial</label>
+                <input type="text" class="form-control" ng-model="bitacora.presionArterial" placeholder="ej: 120/80">
+              </div>
+
             </div>
-            
-            <div class="form-actions">
-              <button type="button" class="btn btn-outline-secondary" ng-click="cancelar()">
-                <i class="bi bi-x-circle me-1"></i>Cancelar
-              </button>
-              <button type="submit" class="btn btn-primary">
-                <i class="bi bi-check-circle me-1"></i>Guardar
-              </button>
+            <div class="card-footer bg-transparent d-flex justify-content-between">
+              <button type="button" class="btn btn-secondary" ng-click="cancelar()">Cancelar</button>
+              <button type="submit" class="btn btn-primary">Guardar</button>
             </div>
           </form>
         </div>
-      </div>
 
-      <!-- TABLA Y BÚSQUEDA -->
-      <div class="col-lg-8">
-        <div class="table-section">
-          <!-- BÚSQUEDA -->
-          <div class="search-box">
-            <form ng-submit="buscar(fechaBusqueda)" novalidate autocomplete="off">
-              <div class="row align-items-end g-2">
-                <div class="col">
-                  <label class="form-label">
-                    <i class="bi bi-search me-1"></i>Buscar por Semana
-                  </label>
-                  <input type="week" ng-model="fechaBusqueda" class="form-control" placeholder="Selecciona una semana...">
-                </div>
-                <div class="col-auto">
-                  <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-search me-1"></i>Buscar
-                  </button>
-                </div>
-                <div class="col-auto">
-                  <button type="button" class="btn btn-secondary" ng-click="limpiarBusqueda()">
-                    <i class="bi bi-arrow-clockwise me-1"></i>Limpiar
-                  </button>
-                </div>
+        <!-- Búsqueda y tabla sencilla -->
+        <div class="col-md-8">
+          <div class="mb-3">
+            <form ng-submit="buscar(fechaBusqueda)" class="row g-2 align-items-end">
+              <div class="col-7">
+                <label class="form-label">Buscar por semana</label>
+                <input type="week" ng-model="fechaBusqueda" class="form-control">
+              </div>
+              <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+              </div>
+              <div class="col-auto">
+                <button type="button" class="btn btn-outline-secondary" ng-click="limpiarBusqueda()">Limpiar</button>
               </div>
             </form>
           </div>
 
-          <!-- TABLA -->
           <div class="table-responsive">
-            <table class="table table-hover">
-              <thead>
+            <table class="table table-sm table-striped table-hover">
+              <thead class="table-light">
                 <tr>
                   <th>ID</th>
                   <th>Fecha</th>
@@ -290,5 +123,4 @@
         </div>
       </div>
     </div>
-  </div>
-</div>
+    justify-content: flex-end;
