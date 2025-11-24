@@ -739,7 +739,7 @@ def bitacora_all():
     
     cursor = con.cursor(dictionary=True)
     sql = """
-    SELECT * FROM bitacora ORDER BY fechaSemana DESC, horaInicio DESC
+    SELECT * FROM bitacora ORDER BY fecha DESC, horaInicio DESC
     """
     cursor.execute(sql)
     registros = cursor.fetchall()
@@ -756,7 +756,7 @@ def guardar_bitacora():
     try:
         data = request.get_json()
         id_bitacora = data.get("idBitacora")
-        fecha_semana = data.get("fechaSemana")
+        fecha = data.get("fecha")
         hora_inicio = data.get("horaInicio")
         hora_fin = data.get("horaFin")
         drenaje_inicial = data.get("drenajeInicial")
@@ -772,7 +772,7 @@ def guardar_bitacora():
         if id_bitacora:
             sql = """
             UPDATE bitacora
-            SET fechaSemana = %s,
+            SET fecha = %s,
                 horaInicio = %s,
                 horaFin = %s,
                 drenajeInicial = %s,
@@ -784,15 +784,15 @@ def guardar_bitacora():
                 presionArterial = %s
             WHERE idBitacora = %s
             """
-            val = (fecha_semana, hora_inicio, hora_fin, drenaje_inicial, uf_total, 
+            val = (fecha, hora_inicio, hora_fin, drenaje_inicial, uf_total, 
                    tiempo_medio_perm, liquido_ingerido, cantidad_orina, glucosa, presion_arterial, id_bitacora)
         else:
             sql = """
-            INSERT INTO bitacora (fechaSemana, horaInicio, horaFin, drenajeInicial, ufTotal, 
+            INSERT INTO bitacora (fecha, horaInicio, horaFin, drenajeInicial, ufTotal, 
                                  tiempoMedioPerm, liquidoIngerido, cantidadOrina, glucosa, presionArterial)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
-            val = (fecha_semana, hora_inicio, hora_fin, drenaje_inicial, uf_total,
+            val = (fecha, hora_inicio, hora_fin, drenaje_inicial, uf_total,
                    tiempo_medio_perm, liquido_ingerido, cantidad_orina, glucosa, presion_arterial)
 
         cursor.execute(sql, val)
@@ -811,16 +811,45 @@ def buscar_bitacora():
 
     try:
         args = request.args
-        busqueda = args.get("busqueda", "")
+        busqueda = args.get("busqueda", "")  # Formato: 2025-W47 (año-semana)
         
         cursor = con.cursor(dictionary=True)
-        sql = """
-        SELECT * FROM bitacora 
-        WHERE fechaSemana LIKE %s OR horaInicio LIKE %s
-        ORDER BY fechaSemana DESC, horaInicio DESC
-        """
-        busqueda_param = f"%{busqueda}%"
-        val = (busqueda_param, busqueda_param)
+        
+        if busqueda:
+            # Convertir semana ISO a rango de fechas
+            try:
+                year, week = busqueda.split('-W')
+                year = int(year)
+                week = int(week)
+                
+                # Calcular el lunes (inicio de la semana)
+                from datetime import date, timedelta
+                jan4 = date(year, 1, 4)
+                week_one_monday = jan4 - timedelta(days=jan4.weekday())
+                start_date = week_one_monday + timedelta(weeks=week-1)
+                end_date = start_date + timedelta(days=6)
+                
+                sql = """
+                SELECT * FROM bitacora 
+                WHERE fecha BETWEEN %s AND %s
+                ORDER BY fecha DESC, horaInicio DESC
+                """
+                val = (start_date, end_date)
+            except:
+                # Si falla el parseo, buscar por cualquier coincidencia
+                sql = """
+                SELECT * FROM bitacora 
+                WHERE fecha LIKE %s
+                ORDER BY fecha DESC, horaInicio DESC
+                """
+                busqueda_param = f"%{busqueda}%"
+                val = (busqueda_param,)
+        else:
+            sql = """
+            SELECT * FROM bitacora 
+            ORDER BY fecha DESC, horaInicio DESC
+            """
+            val = ()
         
         cursor.execute(sql, val)
         registros = cursor.fetchall()

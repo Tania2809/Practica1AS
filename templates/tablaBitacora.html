@@ -1,22 +1,22 @@
 {% for registro in registros %}
 <tr>
-    <td><strong>#{{ registro.idBitacora }}</strong></td>
-    <td>{{ registro.fechaSemana }}</td>
-    <td>{{ registro.horaInicio }}</td>
-    <td>{{ registro.horaFin }}</td>
-    <td>{{ registro.drenajeInicial }}</td>
-    <td>{{ registro.ufTotal }}</td>
-    <td>{{ registro.tiempoMedioPerm }}</td>
-    <td>{{ registro.liquidoIngerido }}</td>
-    <td>{{ registro.cantidadOrina }}</td>
-    <td>{{ registro.glucosa }}</td>
-    <td>{{ registro.presionArterial }}</td>
+    <td><small class="text-muted">#{{ registro.idBitacora }}</small></td>
+    <td><small>{{ registro.fecha }}</small></td>
+    <td><small>{{ registro.horaInicio }}</small></td>
+    <td><small>{{ registro.horaFin }}</small></td>
+    <td><small>{{ registro.drenajeInicial }}</small></td>
+    <td><small>{{ registro.ufTotal }}</small></td>
+    <td><small>{{ registro.tiempoMedioPerm }}</small></td>
+    <td><small>{{ registro.liquidoIngerido }}</small></td>
+    <td><small>{{ registro.cantidadOrina }}</small></td>
+    <td><small>{{ registro.glucosa }}</small></td>
+    <td><small>{{ registro.presionArterial }}</small></td>
     <td class="text-center">
-        <div class="btn-group" role="group">
-            <button type="button" class="btn btn-sm btn-outline-warning" ng-click="editar('{{ registro.idBitacora }}')">
+        <div class="btn-group-compact">
+            <button type="button" class="btn btn-sm btn-warning btn-icon" ng-click="editar('{{ registro.idBitacora }}')" title="Editar">
                 <i class="bi bi-pencil"></i>
             </button>
-            <button type="button" class="btn btn-sm btn-outline-danger" ng-click="eliminar('{{ registro.idBitacora }}')">
+            <button type="button" class="btn btn-sm btn-danger btn-icon" ng-click="eliminar('{{ registro.idBitacora }}')" title="Eliminar">
                 <i class="bi bi-trash"></i>
             </button>
         </div>
@@ -24,9 +24,33 @@
 </tr>
 {% else %}
 <tr>
-    <td colspan="12" class="text-center text-muted py-4">
-        <i class="bi bi-inbox" style="font-size: 2rem;"></i>
-        <p class="mt-2">No hay registros en la bitácora</p>
+    <td colspan="12" class="text-center text-muted py-5">
+        <i class="bi bi-inbox" style="font-size: 2.5rem; opacity: 0.5;"></i>
+        <p class="mt-3 mb-0">Sin registros en la bitácora</p>
     </td>
 </tr>
 {% endfor %}
+
+<style>
+  .btn-icon {
+    padding: 4px 8px !important;
+    border: 1px solid currentColor;
+    background: transparent;
+    color: inherit;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-icon:hover {
+    transform: scale(1.1);
+  }
+  
+  .btn-warning.btn-icon:hover {
+    background-color: #ffc107;
+    color: white;
+  }
+  
+  .btn-danger.btn-icon:hover {
+    background-color: #dc3545;
+    color: white;
+  }
+</style>

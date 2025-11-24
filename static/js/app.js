@@ -656,6 +656,12 @@ app.controller("bitacoraCtrl", function($scope, $http, $compile) {
         });
     };
 
+    // Limpiar búsqueda
+    $scope.limpiarBusqueda = function() {
+        $scope.fechaBusqueda = '';
+        $scope.cargarRegistros();
+    };
+
     // Editar registro
     $scope.editar = function(id) {
         console.log('Editando registro id:', id);

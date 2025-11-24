@@ -3,7 +3,7 @@
 
 CREATE TABLE IF NOT EXISTS bitacora (
     idBitacora INT AUTO_INCREMENT PRIMARY KEY,
-    fechaSemana VARCHAR(20) NOT NULL,
+    fecha DATE NOT NULL,
     horaInicio TIME NOT NULL,
     horaFin TIME NOT NULL,
     drenajeInicial DECIMAL(10, 2),
@@ -18,5 +18,5 @@ CREATE TABLE IF NOT EXISTS bitacora (
 );
 
 -- Ejemplo de índices para mejorar búsquedas
-ALTER TABLE bitacora ADD INDEX idx_fechaSemana (fechaSemana);
+ALTER TABLE bitacora ADD INDEX idx_fecha (fecha);
 ALTER TABLE bitacora ADD INDEX idx_horaInicio (horaInicio);
