@@ -1,115 +1,145 @@
-<br>
-<div class="container">
-  <div class="row">
-    <!-- Formulario simple y uniforme -->
-    <div class="col-md-4">
-      <form ng-submit="guardarBitacora(bitacora)" id="frmBitacora" class="card p-3">
-        <div class="card-body p-0">
-          <h5 class="card-title mb-3">Registrar Bitácora</h5>
+<div class="container-fluid mt-4">
+  <!-- Tabs para navegar entre secciones -->
+  <ul class="nav nav-tabs mb-4" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="registro-tab" data-bs-toggle="tab" data-bs-target="#registro" type="button" role="tab">
+        <i class="bi bi-plus-circle"></i> Nuevo Registro
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="tabla-tab" data-bs-toggle="tab" data-bs-target="#tabla" type="button" role="tab">
+        <i class="bi bi-table"></i> Ver Registros
+      </button>
+    </li>
+  </ul>
 
-          <div class="mb-3">
-            <label for="fecha" class="form-label">Fecha</label>
-            <input required type="date" class="form-control" ng-model="bitacora.fecha" id="fecha">
-          </div>
+  <!-- Contenido de tabs -->
+  <div class="tab-content">
+    <!-- Tab 1: Formulario de Registro -->
+    <div class="tab-pane fade show active" id="registro" role="tabpanel">
+      <div class="row justify-content-center">
+        <div class="col-lg-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title mb-4">Registrar Bitácora</h5>
 
-          <div class="row mb-3">
-            <div class="col-6">
-              <label for="horaInicio" class="form-label">Hora inicio</label>
-              <input required type="time" class="form-control" ng-model="bitacora.horaInicio" id="horaInicio">
+              <form ng-submit="guardarBitacora(bitacora)" id="frmBitacora">
+                <div class="mb-3">
+                  <label for="fecha" class="form-label">Fecha</label>
+                  <input required type="date" class="form-control" ng-model="bitacora.fecha" id="fecha">
+                </div>
+
+                <div class="row mb-3">
+                  <div class="col-6">
+                    <label for="horaInicio" class="form-label">Hora inicio</label>
+                    <input required type="time" class="form-control" ng-model="bitacora.horaInicio" id="horaInicio">
+                  </div>
+                  <div class="col-6">
+                    <label for="horaFin" class="form-label">Hora fin</label>
+                    <input required type="time" class="form-control" ng-model="bitacora.horaFin" id="horaFin">
+                  </div>
+                </div>
+
+                <hr class="my-4">
+
+                <h6 class="mb-3">Registro de Sesión</h6>
+                <div class="mb-3">
+                  <label class="form-label">Drenaje inicial (mL)</label>
+                  <input type="number" class="form-control" step="0.01" ng-model="bitacora.drenajeInicial" placeholder="0.00">
+                </div>
+
+                <div class="row mb-3">
+                  <div class="col-6">
+                    <label class="form-label">UF Total (mL)</label>
+                    <input type="number" class="form-control" step="0.01" ng-model="bitacora.ufTotal" placeholder="0.00">
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label">T. Medio (min)</label>
+                    <input type="number" class="form-control" step="0.01" ng-model="bitacora.tiempoMedioPerm" placeholder="0.00">
+                  </div>
+                </div>
+
+                <hr class="my-4">
+
+                <h6 class="mb-3">Mediciones</h6>
+                <div class="mb-3">
+                  <label class="form-label">Líquido ingerido 24h (mL)</label>
+                  <input type="number" class="form-control" step="0.01" ng-model="bitacora.liquidoIngerido" placeholder="0.00">
+                </div>
+
+                <div class="row mb-3">
+                  <div class="col-6">
+                    <label class="form-label">Orina 24h (mL)</label>
+                    <input type="number" class="form-control" step="0.01" ng-model="bitacora.cantidadOrina" placeholder="0.00">
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label">Glucosa (mg/dL)</label>
+                    <input type="number" class="form-control" step="0.01" ng-model="bitacora.glucosa" placeholder="0.00">
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <label class="form-label">Presión arterial</label>
+                  <input type="text" class="form-control" ng-model="bitacora.presionArterial" placeholder="ej: 120/80">
+                </div>
+
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-secondary" ng-click="cancelar()">Cancelar</button>
+                  <button type="submit" class="btn btn-primary">Guardar Registro</button>
+                </div>
+              </form>
             </div>
-            <div class="col-6">
-              <label for="horaFin" class="form-label">Hora fin</label>
-              <input required type="time" class="form-control" ng-model="bitacora.horaFin" id="horaFin">
-            </div>
           </div>
-
-          <hr>
-
-          <div class="mb-3">
-            <label class="form-label">Drenaje inicial (mL)</label>
-            <input type="number" class="form-control" step="0.01" ng-model="bitacora.drenajeInicial" placeholder="0.00">
-          </div>
-
-          <div class="row mb-3">
-            <div class="col-6">
-              <label class="form-label">UF Total (mL)</label>
-              <input type="number" class="form-control" step="0.01" ng-model="bitacora.ufTotal" placeholder="0.00">
-            </div>
-            <div class="col-6">
-              <label class="form-label">T. Medio (min)</label>
-              <input type="number" class="form-control" step="0.01" ng-model="bitacora.tiempoMedioPerm" placeholder="0.00">
-            </div>
-          </div>
-
-          <hr>
-
-          <div class="mb-3">
-            <label class="form-label">Líquido ingerido 24h (mL)</label>
-            <input type="number" class="form-control" step="0.01" ng-model="bitacora.liquidoIngerido" placeholder="0.00">
-          </div>
-
-          <div class="row mb-3">
-            <div class="col-6">
-              <label class="form-label">Orina 24h (mL)</label>
-              <input type="number" class="form-control" step="0.01" ng-model="bitacora.cantidadOrina" placeholder="0.00">
-            </div>
-            <div class="col-6">
-              <label class="form-label">Glucosa (mg/dL)</label>
-              <input type="number" class="form-control" step="0.01" ng-model="bitacora.glucosa" placeholder="0.00">
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Presión arterial</label>
-            <input type="text" class="form-control" ng-model="bitacora.presionArterial" placeholder="ej: 120/80">
-          </div>
-
         </div>
-        <div class="card-footer bg-transparent d-flex justify-content-between">
-          <button type="button" class="btn btn-secondary" ng-click="cancelar()">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Guardar</button>
-        </div>
-      </form>
+      </div>
     </div>
 
-    <!-- Búsqueda y tabla sencilla -->
-    <div class="col-md-8">
-      <div class="mb-3">
-        <form ng-submit="buscar(fechaBusqueda)" class="row g-2 align-items-end">
-          <div class="col-7">
-            <label class="form-label">Buscar por semana</label>
-            <input type="week" ng-model="fechaBusqueda" class="form-control">
-          </div>
-          <div class="col-auto">
-            <button type="submit" class="btn btn-primary">Buscar</button>
-          </div>
-          <div class="col-auto">
-            <button type="button" class="btn btn-outline-secondary" ng-click="limpiarBusqueda()">Limpiar</button>
-          </div>
-        </form>
-      </div>
+    <!-- Tab 2: Ver Registros -->
+    <div class="tab-pane fade" id="tabla" role="tabpanel">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Registros de Bitácora</h5>
 
-      <div class="table-responsive">
-        <table class="table table-sm table-striped table-hover">
-          <thead class="table-light">
-            <tr>
-              <th>ID</th>
-              <th>Fecha</th>
-              <th>Inicio</th>
-              <th>Fin</th>
-              <th>Drenaje</th>
-              <th>UF</th>
-              <th>Tiempo</th>
-              <th>Líquido</th>
-              <th>Orina</th>
-              <th>Glucosa</th>
-              <th>P.A.</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="tablaBitacora">
-          </tbody>
-        </table>
+          <!-- Búsqueda -->
+          <form ng-submit="buscar(fechaBusqueda)" class="mb-3">
+            <div class="row align-items-end">
+              <div class="col-md-6">
+                <label class="form-label">Buscar por semana</label>
+                <input type="week" ng-model="fechaBusqueda" class="form-control">
+              </div>
+              <div class="col-md-6">
+                <div class="d-flex gap-2">
+                  <button type="submit" class="btn btn-primary">Buscar</button>
+                  <button type="button" class="btn btn-outline-secondary" ng-click="limpiarBusqueda()">Limpiar</button>
+                </div>
+              </div>
+            </div>
+          </form>
+
+          <!-- Tabla -->
+          <div class="table-responsive">
+            <table class="table table-sm table-striped table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Fecha</th>
+                  <th>Inicio</th>
+                  <th>Fin</th>
+                  <th>Drenaje</th>
+                  <th>UF</th>
+                  <th>Tiempo</th>
+                  <th>Líquido</th>
+                  <th>Orina</th>
+                  <th>Glucosa</th>
+                  <th>P.A.</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tablaBitacora">
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </div>
